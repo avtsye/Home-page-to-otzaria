@@ -7,6 +7,7 @@ on:
       - 'index.html'
       - 'main.js'
       - 'manifest.json'
+      - 'otzaria-icon.png'
       - '.github/workflows/package.yml'
   workflow_dispatch:
 
@@ -35,7 +36,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          zip -9 -j "build/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js
+          zip -9 -j "build/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js otzaria-icon.png
       - uses: actions/upload-artifact@v4
         with:
           name: home-page-to-otzaria-${{ steps.version.outputs.version }}
