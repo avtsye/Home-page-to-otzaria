@@ -7,7 +7,8 @@ const debugLog=[];
 let featureSettings={
   density:'comfortable',background:'aurora',cardSize:'normal',focusMode:false,
   pluginSort:'host',pluginView:'grid',pluginFavorites:[],savedSearches:[],quickPins:[],
-  groupScope:'',lastSettingsTab:'general',lastSeenVersion:'',showDashboard:true
+  groupScope:'',lastSettingsTab:'general',lastSeenVersion:'',showDashboard:true,
+  advancedOpen:false,pluginLastUsed:{},cardSize:'normal'
 };
 let searchHistory=[];
 let appInfo=null;
@@ -53,7 +54,7 @@ function styleFeatureLayer(){
   :focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 46%,transparent)!important;outline-offset:2px}
   body.density-compact .sectionPanel{padding:10px;border-radius:15px}body.density-compact .row{padding:7px}body.density-compact .pluginCard{min-height:86px;padding:9px}
   body.focus-mode .sectionsHost,body.focus-mode .quick,body.focus-mode .homeDashboard,body.focus-mode .quickPins{display:none!important}
-  body.bg-flat{background:var(--bg)!important}body.bg-soft{background:linear-gradient(135deg,var(--bg),color-mix(in srgb,var(--soft) 28%,var(--bg)))!important}
+  body.bg-flat{background:var(--bg)!important}body.bg-soft{background:linear-gradient(135deg,var(--bg),color-mix(in srgb,var(--soft) 28%,var(--bg)))!important}body[data-theme="dark"] .heroCard,body[data-theme="dark"] .sectionPanel{box-shadow:0 16px 48px rgba(0,0,0,.28)}body.card-large .sectionPanel{padding:22px}body.card-large .pluginCard{min-height:132px}
   .homeDashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.statCard{border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 90%,transparent);border-radius:16px;padding:12px;text-align:center}.statCard b{display:block;font-size:20px}.statCard span{font-size:10px;color:var(--muted)}
   .historyChips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}.historyChip{border:1px solid var(--outline);background:var(--surface);border-radius:999px;padding:5px 9px;font-size:10px;cursor:pointer}.historyChip:hover{background:var(--soft)}
   .sectionPanel[draggable="true"]{cursor:grab}.sectionPanel.dragging{opacity:.48}.sectionPanel.dragOver{outline:2px dashed var(--primary);outline-offset:3px}
@@ -72,11 +73,14 @@ function styleFeatureLayer(){
   \`;
   document.head.appendChild(st);
 }
+const coreApplyThemeV4=applyTheme;
+applyTheme=function(t){coreApplyThemeV4(t);document.body.dataset.theme=(t&&t.mode)||'light'};
 function applyFeatureAppearance(){
   document.body.classList.toggle('density-compact',featureSettings.density==='compact');
   document.body.classList.toggle('focus-mode',!!featureSettings.focusMode);
   document.body.classList.toggle('bg-flat',featureSettings.background==='flat');
   document.body.classList.toggle('bg-soft',featureSettings.background==='soft');
+  document.body.classList.toggle('card-large',featureSettings.cardSize==='large');
 }
 function addDashboard(){
   if($('homeDashboard'))return;
@@ -141,6 +145,56 @@ buildSearchParams=function(q,offset){
   return p;
 };
 
+const coreNormalizeGroupsV4=normalizeGroups;
+normalizeGroups=function(raw){
+  const base=coreNormalizeGroupsV4(raw);
+  const source=Array.isArray(raw)?raw:[];
+  base.forEach((g,i)=>{
+    const old=source.find(x=>x&&x.id===g.id)||{};
+    g.color=old.color||['#6750a4','#2f7d6d','#a45a52','#4b6ea9','#8b5aa4'][i%5];
+    g.icon=old.icon||'★';
+  });
+  return base;
+};
+const coreRenderGroupsV4=renderGroups;
+renderGroups=function(){
+  coreRenderGroupsV4();
+  const active=groups.filter(g=>g.books.length);
+  [...$('groups').querySelectorAll('.groupBlock')].forEach((block,i)=>{
+    const g=active[i];if(!g)return;
+    block.style.borderInlineStart='4px solid '+g.color;
+    const head=block.querySelector('.groupBlockHead');
+    if(head&&!head.querySelector('.groupIcon')){const ic=document.createElement('span');ic.className='groupIcon';ic.textContent=g.icon+' ';head.prepend(ic)}
+    block.ondragover=e=>e.preventDefault();
+    block.ondrop=async e=>{
+      e.preventDefault();
+      const payload=e.dataTransfer&&e.dataTransfer.getData('application/x-home-book');
+      if(!payload)return;
+      try{
+        const book=JSON.parse(payload);
+        groups.forEach(x=>x.books=x.books.filter(b=>bookKey(b)!==bookKey(book)));
+        g.books.unshift(book);
+        await storageSet(GROUPS_KEY,groups);renderGroups();toast('הספר הועבר אל '+g.name);
+      }catch(_){}
+    };
+    [...block.querySelectorAll('.row')].forEach((row,ri)=>{
+      const book=g.books[ri];if(!book)return;
+      row.draggable=true;
+      row.ondragstart=e=>{e.dataTransfer&&e.dataTransfer.setData('application/x-home-book',JSON.stringify(book))};
+    });
+    head&&head.addEventListener('dblclick',()=>{featureSettings.groupScope=g.id;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=g.id;$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)});
+  });
+};
+const coreRenderGroupSettingsV4=renderGroupSettings;
+renderGroupSettings=function(){
+  coreRenderGroupSettingsV4();
+  [...$('groupSettings').querySelectorAll('.manageGroup')].forEach((row,i)=>{
+    const g=groups[i];if(!g)return;
+    const color=document.createElement('input');color.type='color';color.value=g.color||'#6750a4';color.title='צבע קבוצה';color.onchange=async e=>{g.color=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
+    const icon=document.createElement('select');icon.title='אייקון קבוצה';['★','📚','🔖','📌','●'].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;icon.appendChild(o)});icon.value=g.icon||'★';icon.onchange=async e=>{g.icon=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
+    row.append(color,icon);
+  });
+};
 function makeSectionsDraggable(){
   document.querySelectorAll('.sectionPanel').forEach(section=>{
     section.draggable=true;
@@ -172,7 +226,7 @@ function markUpdated(id){
 function setupPluginControls(){
   if($('pluginControls'))return;
   const box=document.createElement('div');box.id='pluginControls';box.className='pluginControls';
-  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><button id="pluginFavOnly" type="button">★ מועדפים</button>';
+  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><button id="pluginFavOnly" type="button">★ מועדפים</button>';
   $('section-plugins').querySelector('.pluginToolbar').insertAdjacentElement('beforebegin',box);
   $('pluginSort').value=featureSettings.pluginSort;$('pluginView').value=featureSettings.pluginView;
   $('pluginSort').onchange=async e=>{featureSettings.pluginSort=e.target.value;await saveFeatures();renderPlugins()};
@@ -186,12 +240,13 @@ function renderPluginsV4(favOnly){
   if(featureSettings.pluginSort==='name')allPlugins.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'he'));
   else if(featureSettings.pluginSort==='favorite')allPlugins.sort((a,b)=>(favs.has(b.pluginId)?1:0)-(favs.has(a.pluginId)?1:0));
   else if(featureSettings.pluginSort==='enabled')allPlugins.sort((a,b)=>(b.enabled?1:0)-(a.enabled?1:0));
+  else if(featureSettings.pluginSort==='recent')allPlugins.sort((a,b)=>(featureSettings.pluginLastUsed[b.pluginId]||0)-(featureSettings.pluginLastUsed[a.pluginId]||0));
   if(favOnly)allPlugins=allPlugins.filter(p=>favs.has(p.pluginId));
   coreRenderPlugins();$('plugins').classList.toggle('listView',featureSettings.pluginView==='list');
   const cards=[...$('plugins').querySelectorAll('.pluginCard')];const q=(($('pluginFilter')&&$('pluginFilter').value)||'').trim().toLowerCase();
   const visible=allPlugins.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.pluginId||'').toLowerCase().includes(q));
   cards.forEach((card,i)=>{
-    const p=visible[i];if(!p)return;const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');star.textContent=favs.has(p.pluginId)?'★':'☆';star.title='מועדף';
+    const p=visible[i];if(!p)return;const originalClick=card.onclick;card.onclick=async e=>{featureSettings.pluginLastUsed[p.pluginId]=Date.now();await saveFeatures();if(originalClick)originalClick.call(card,e)};const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');star.textContent=favs.has(p.pluginId)?'★':'☆';star.title='מועדף';
     star.onclick=async e=>{e.stopPropagation();const idx=featureSettings.pluginFavorites.indexOf(p.pluginId);if(idx>=0)featureSettings.pluginFavorites.splice(idx,1);else featureSettings.pluginFavorites.push(p.pluginId);await saveFeatures();renderPluginsV4(favOnly);renderQuickPins()};card.appendChild(star);
   });
   allPlugins=original;
@@ -240,7 +295,7 @@ function injectSettingsTabsV4(){
   for(const [id,label] of [['appearance','מראה'],['diagnostics','אבחון'],['about','אודות']]){const b=document.createElement('button');b.className='settingsTab';b.dataset.settingsTab=id;b.type='button';b.textContent=label;b.onclick=()=>setSettingsTab(id);tabs.appendChild(b)}
   const body=$('settingsTab-general').parentElement;
   const appearance=document.createElement('div');appearance.id='settingsTab-appearance';appearance.className='settingsPane';
-  appearance.innerHTML='<section class="settingBlock"><h3>מראה וצפיפות</h3><div class="settingRow"><span>צפיפות</span><select id="densitySelect"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></div><div class="settingRow"><span>רקע</span><select id="backgroundSelect"><option value="aurora">Aurora</option><option value="soft">עדין</option><option value="flat">שטוח</option></select></div><label class="option"><input id="focusModeSetting" type="checkbox"> מצב Focus — רק החיפוש</label><label class="option"><input id="dashboardSetting" type="checkbox"> הצג לוח נתונים קטן</label></section><section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn" type="button">📌 הצמד את הספר הפעיל</button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>';
+  appearance.innerHTML='<section class="settingBlock"><h3>מראה וצפיפות</h3><div class="settingRow"><span>צפיפות</span><select id="densitySelect"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></div><div class="settingRow"><span>רקע</span><select id="backgroundSelect"><option value="aurora">Aurora</option><option value="soft">עדין</option><option value="flat">שטוח</option></select></div><div class="settingRow"><span>גודל כרטיסים</span><select id="cardSizeSelect"><option value="normal">רגיל</option><option value="large">גדול</option></select></div><label class="option"><input id="focusModeSetting" type="checkbox"> מצב Focus — רק החיפוש</label><label class="option"><input id="dashboardSetting" type="checkbox"> הצג לוח נתונים קטן</label></section><section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn" type="button">📌 הצמד את הספר הפעיל</button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>';
   body.appendChild(appearance);
   const diag=document.createElement('div');diag.id='settingsTab-diagnostics';diag.className='settingsPane';
   diag.innerHTML='<section class="settingBlock"><h3>אבחון ותאימות</h3><div id="diagnosticGrid" class="diagnosticGrid"></div><div class="feedbackActions"><button id="runDiagnostics" class="secondaryBtn" type="button">הרץ בדיקה</button><button id="copyDiagnostics" class="secondaryBtn" type="button">העתק דוח</button></div></section><section class="settingBlock"><h3>יומן Debug</h3><pre id="debugOutput" style="white-space:pre-wrap;font-size:9px;max-height:220px;overflow:auto"></pre></section>';
@@ -248,9 +303,10 @@ function injectSettingsTabsV4(){
   const about=document.createElement('div');about.id='settingsTab-about';about.className='settingsPane';
   about.innerHTML='<section class="settingBlock aboutBox"><img src="otzaria-icon.png" alt=""><h3>דף הבית לאוצריא</h3><p>גרסה '+FEATURE_VERSION+' · מאת אברהם mch</p><p>חיפוש, המשך קריאה, תוספים, מועדפים והתאמה אישית במקום אחד.</p><a href="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט</a></section><section class="settingBlock"><h3>קיצורי מקלדת</h3><p class="hint">Ctrl+K — חיפוש · Ctrl+, — הגדרות · Esc — סגירת חלונות · Alt+F — מצב Focus</p></section>';
   body.appendChild(about);
-  $('densitySelect').value=featureSettings.density;$('backgroundSelect').value=featureSettings.background;$('focusModeSetting').checked=featureSettings.focusMode;$('dashboardSetting').checked=featureSettings.showDashboard;
+  $('densitySelect').value=featureSettings.density;$('backgroundSelect').value=featureSettings.background;$('cardSizeSelect').value=featureSettings.cardSize||'normal';$('focusModeSetting').checked=featureSettings.focusMode;$('dashboardSetting').checked=featureSettings.showDashboard;
   $('densitySelect').onchange=async e=>{featureSettings.density=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('backgroundSelect').onchange=async e=>{featureSettings.background=e.target.value;await saveFeatures();applyFeatureAppearance()};
+  $('cardSizeSelect').onchange=async e=>{featureSettings.cardSize=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('focusModeSetting').onchange=async e=>{featureSettings.focusMode=e.target.checked;await saveFeatures();applyFeatureAppearance()};
   $('dashboardSetting').onchange=async e=>{featureSettings.showDashboard=e.target.checked;await saveFeatures();if($('homeDashboard'))$('homeDashboard').hidden=!e.target.checked};
   $('pinCurrentBook').onclick=pinCurrentBook;$('runDiagnostics').onclick=runDiagnostics;$('copyDiagnostics').onclick=copyDiagnostics;
@@ -290,6 +346,12 @@ sendFeedback=async function(){
   let technical='';try{technical=await diagnosticText()}catch(_){}
   $('feedbackText').value=text+'\n\n--- מידע טכני אוטומטי ---\n'+technical;await coreSendFeedback();
 };
+function rememberUiState(){
+  const adv=$('advancedToggle');
+  if(adv)adv.addEventListener('click',async()=>{featureSettings.advancedOpen=!$('advancedPanel').hidden;await saveFeatures()});
+  document.querySelectorAll('.settingsTab').forEach(b=>b.addEventListener('click',async()=>{featureSettings.lastSettingsTab=b.dataset.settingsTab;await saveFeatures()}));
+  if(featureSettings.advancedOpen){$('advancedPanel').hidden=false;$('advancedToggle').classList.add('active')}
+}
 function setupKeyboard(){
   document.addEventListener('keydown',e=>{
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();closeSettings();$('q').focus();$('q').select()}
@@ -310,13 +372,21 @@ function enhanceAccessibility(){
 }
 function compatibilityCleanup(){if(typeof IntersectionObserver==='undefined')fLog('info','IntersectionObserver unavailable','using eager fallback')}
 function setupFeatureUi(){
-  styleFeatureLayer();applyFeatureAppearance();addDashboard();addSavedSearchControls();makeSectionsDraggable();addSectionTools();setupPluginControls();injectSettingsTabsV4();renderQuickPins();setupKeyboard();enhanceAccessibility();compatibilityCleanup();
+  styleFeatureLayer();applyFeatureAppearance();addDashboard();addSavedSearchControls();makeSectionsDraggable();addSectionTools();setupPluginControls();injectSettingsTabsV4();renderQuickPins();setupKeyboard();enhanceAccessibility();compatibilityCleanup();rememberUiState();
 }
+
+const coreRenderListV4=renderList;
+renderList=function(id,items,empty){
+  coreRenderListV4(id,items,empty);
+  if(id==='recent'){
+    [...$('recent').querySelectorAll('.row .meta')].forEach(meta=>{if(meta.textContent)meta.textContent='המשך · '+meta.textContent;else meta.textContent='המשך לקריאה'});
+  }
+};
 
 Otzaria.on('plugin.boot',async()=>{
   try{
     featureSettings=mergeFeatureSettings(await fGet(FEATURE_KEY,featureSettings));
-    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();lazyLoadPlugins();await refreshDashboard();showChangelog();fLog('info','Feature layer booted',FEATURE_VERSION);
+    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();lazyLoadPlugins();await refreshDashboard();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
   }catch(e){fLog('error','Feature layer boot failed',e);console.error('Feature layer boot failed',e)}
 });
 Otzaria.on('theme.changed',()=>applyFeatureAppearance());
