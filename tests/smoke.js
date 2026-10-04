@@ -38,3 +38,13 @@ assert(/Promise\.allSettled/.test(features),'saved tab open-all queue handling m
 assert(/homePushUndo/.test(features),'global undo workflow missing');
 assert(/deleteSavedSearchProfileV4/.test(features),'saved search delete workflow missing');
 assert(/groupBookRemove/.test(html)||/groupBookRemove/.test(main),'book group removal UI missing');
+
+
+assert(html.includes('official-otzaria-icons.js'),'official Otzaria icons script missing');
+assert(html.includes('official-fluent-icons.js'),'official Fluent icons script missing');
+assert(html.includes('github.com/avtsye/Home-page-to-otzaria/releases'),'settings releases link must point to GitHub Releases');
+assert(/OFFICIAL_OTZARIA_ICONS/.test(main),'Otzaria icon resolver missing');
+assert(/OFFICIAL_FLUENT_ICONS/.test(main),'Fluent icon resolver missing');
+assert(/openTabSetPreviewV4/.test(features),'saved tab preview workflow missing');
+assert(/tabSetBookSearchV4/.test(features),'manual book add search missing');
+assert(/existingBehavior/.test(features),'existing-tab behavior option missing');
