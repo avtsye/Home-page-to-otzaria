@@ -272,25 +272,21 @@ const ICONS={
   app:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'
 };
 function pluginIconMarkup(name){
-  const raw=(name||'').replace(/^.*:/,'').toLowerCase();
-  if(!raw||raw==='puzzle_piece_24_regular')return '<img src="otzaria-icon.png" alt="">';
-  let kind='app';
-  if(/home/.test(raw))kind='home';
-  else if(/book|library/.test(raw))kind='book';
-  else if(/search|find/.test(raw))kind='search';
-  else if(/calendar|date/.test(raw))kind='calendar';
-  else if(/setting|wrench|toolbox/.test(raw))kind='settings';
-  else if(/code|developer|terminal/.test(raw))kind='code';
-  else if(/database|storage|server/.test(raw))kind='database';
-  else if(/globe|earth|web/.test(raw))kind='globe';
-  else if(/chat|comment|message|mail/.test(raw))kind='message';
-  else if(/document|note|text|page/.test(raw))kind='document';
-  else if(/bookmark|star|favorite/.test(raw))kind='star';
-  else if(/clock|history|time/.test(raw))kind='clock';
-  else if(/music|audio|speaker|headphone|mic/.test(raw))kind='audio';
-  else if(/link|chain/.test(raw))kind='link';
-  else if(/person|people|contact|profile/.test(raw))kind='person';
-  return ICONS[kind];
+  const raw=String(name||'puzzle_piece_24_regular').trim();
+  let library='auto';
+  let key=raw;
+  if(raw.startsWith('otzaria:')){library='otzaria';key=raw.slice('otzaria:'.length)}
+  else if(raw.startsWith('fluent:')){library='fluent';key=raw.slice('fluent:'.length)}
+
+  const otz=window.OFFICIAL_OTZARIA_ICONS||{};
+  const fluent=window.OFFICIAL_FLUENT_ICONS||{};
+  let svg=null;
+  if(library==='otzaria')svg=otz[key]||null;
+  else if(library==='fluent')svg=fluent[key]||null;
+  else svg=otz[key]||fluent[key]||null;
+
+  if(!svg)svg=fluent.puzzle_piece_24_regular||ICONS.app;
+  return svg;
 }
 function renderPlugins(){
   const box=$('plugins');
