@@ -162,16 +162,20 @@ normalizeGroups=function(raw){
     const old=source.find(x=>x&&x.id===g.id)||{};
     g.color=old.color||['#6750a4','#2f7d6d','#a45a52','#4b6ea9','#8b5aa4'][i%5];
     g.icon=old.icon||'★';
+    g.parentId=old.parentId||'';
+    g.order=Number.isFinite(old.order)?old.order:i;
   });
   return base;
 };
 const coreRenderGroupsV4=renderGroups;
 renderGroups=function(){
   coreRenderGroupsV4();
-  const active=groups.filter(g=>g.books.length);
+  const active=groups.filter(g=>g.books.length).sort((a,b)=>(a.order||0)-(b.order||0));
   [...$('groups').querySelectorAll('.groupBlock')].forEach((block,i)=>{
     const g=active[i];if(!g)return;
     block.style.borderInlineStart='4px solid '+g.color;
+    block.style.marginInlineStart=g.parentId?'22px':'0';
+    if(g.parentId){const parent=groups.find(x=>x.id===g.parentId);if(parent)block.title='תת־קבוצה של '+parent.name}
     const head=block.querySelector('.groupBlockHead');
     if(head&&!head.querySelector('.groupIcon')){const ic=document.createElement('span');ic.className='groupIcon';ic.textContent=g.icon+' ';head.prepend(ic)}
     block.ondragover=e=>e.preventDefault();
@@ -202,7 +206,10 @@ renderGroupSettings=function(){
     const g=groups[i];if(!g)return;
     const color=document.createElement('input');color.type='color';color.value=g.color||'#6750a4';color.title='צבע קבוצה';color.onchange=async e=>{g.color=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
     const icon=document.createElement('select');icon.title='אייקון קבוצה';['★','📚','🔖','📌','●'].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;icon.appendChild(o)});icon.value=g.icon||'★';icon.onchange=async e=>{g.icon=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
-    row.append(color,icon);
+    const parent=document.createElement('select');parent.title='תת־קבוצה';const rootOpt=document.createElement('option');rootOpt.value='';rootOpt.textContent='קבוצה ראשית';parent.appendChild(rootOpt);groups.filter(x=>x.id!==g.id).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent='תחת '+x.name;parent.appendChild(o)});parent.value=g.parentId||'';parent.onchange=async e=>{g.parentId=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
+    const up=document.createElement('button');up.type='button';up.textContent='↑';up.title='העבר למעלה';up.onclick=async()=>{const idx=groups.indexOf(g);if(idx>0){[groups[idx-1],groups[idx]]=[groups[idx],groups[idx-1]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
+    const down=document.createElement('button');down.type='button';down.textContent='↓';down.title='העבר למטה';down.onclick=async()=>{const idx=groups.indexOf(g);if(idx>=0&&idx<groups.length-1){[groups[idx],groups[idx+1]]=[groups[idx+1],groups[idx]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
+    row.append(color,icon,parent,up,down);
   });
 };
 function makeSectionsDraggable(){
@@ -220,8 +227,9 @@ function addSectionTools(){
     const head=section.querySelector('.sectionHead');if(!head||head.querySelector('.sectionTools'))return;
     const tools=document.createElement('div');tools.className='sectionTools';
     const refresh=document.createElement('button');refresh.textContent='↻';refresh.title='רענן כרטיס';refresh.onclick=e=>{e.stopPropagation();refreshSection(section.id)};
+    const pin=document.createElement('button');pin.textContent='📌';pin.title='הצמד כרטיס לראש הדף';pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הוצמד לראש הדף')};
     const hide=document.createElement('button');hide.textContent='×';hide.title='הסתר כרטיס';hide.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.visibleSections[key]=false;section.classList.add('hiddenSection');await storageSet(SETTINGS_KEY,settings)};
-    tools.append(refresh,hide);head.appendChild(tools);
+    tools.append(refresh,pin,hide);head.appendChild(tools);
   });
 }
 async function refreshSection(id){
