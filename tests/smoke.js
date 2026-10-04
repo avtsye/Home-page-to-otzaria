@@ -3,6 +3,8 @@ const assert=(cond,msg)=>{if(!cond){console.error('SMOKE FAIL:',msg);process.exi
 const html=fs.readFileSync('index.html','utf8');
 const main=fs.readFileSync('main.js','utf8');
 const features=fs.readFileSync('features.js','utf8');
+const core=fs.readFileSync('home-core.js','utf8');
+const enhancements=fs.readFileSync('enhancements.js','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
 
 const ids=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
@@ -112,3 +114,25 @@ assert(/pluginId!==SELF/.test(main),'homepage plugin must be excluded from insta
 assert(/visibleInstalledPlugins\(dataOf\(r\)\)/.test(main),'plugin loader must filter self');
 assert(/visibleInstalledPlugins\(plugins\)/.test(features),'dashboard plugin count must exclude self');
 assert(/pluginFavorites\.filter\(id=>id!==SELF\)/.test(features),'stale self favorite must be removed');
+
+assert(html.includes('<script src="home-core.js"></script>'),'home-core.js must be loaded');
+assert(html.includes('<script src="enhancements.js"></script>'),'enhancements.js must be loaded');
+assert(html.indexOf('home-core.js')<html.indexOf('main.js'),'home-core.js must load before main.js');
+assert(html.indexOf('features.js')<html.indexOf('enhancements.js'),'enhancements.js must load after features.js');
+assert(/const listeners=new Map/.test(core),'HomeCore event bus missing');
+assert(/emit=async/.test(core)&&/on=\(name,fn\)/.test(core),'HomeCore event API incomplete');
+assert(/WORKSPACE_KEY/.test(enhancements),'workspace persistence missing');
+assert(/saveWorkspace/.test(enhancements)&&/restoreWorkspace/.test(enhancements),'workspace save/restore missing');
+assert(/BACKUP_FORMAT/.test(enhancements)&&/exportFullBackup/.test(enhancements)&&/importFullBackup/.test(enhancements),'full backup workflow missing');
+assert(/renderSuggestions=function/.test(enhancements)&&/חיפוש שמור/.test(enhancements),'unified local search augmentation missing');
+assert(/pluginStatusFilterV6/.test(enhancements),'advanced plugin filters missing');
+assert(/launcherModeSettingV6/.test(enhancements)&&/launcher-mode/.test(html),'true launcher mode missing');
+assert(/homeSkeletonList/.test(html)&&/showLoadingSkeletons/.test(enhancements),'loading skeletons missing');
+assert(/homeEmptyState/.test(html)&&/improveEmptyStates/.test(enhancements),'actionable empty states missing');
+assert(/cardOverflowBtn/.test(html)&&/addVisibleOverflowMenus/.test(enhancements),'visible overflow menus missing');
+assert(/duplicateTabSet/.test(enhancements)&&/mergeTabSetDialog/.test(enhancements),'saved-tab duplicate/merge workflow missing');
+assert(/openMissingFromSet/.test(enhancements),'open-missing-only saved-tab action missing');
+assert(/favorite/.test(enhancements)&&/lastOpenSummary/.test(enhancements),'saved-tab favorite/status enhancements missing');
+assert(/tabSetMetaEditorV6/.test(html)&&/tabSetDescriptionV6/.test(enhancements),'saved-tab metadata editor missing');
+assert(/auditUi/.test(enhancements),'UX audit helper missing');
+assert(html.includes('Deep UX wave: Otzaria-native workspace'),'deep Otzaria-native styling block missing');
