@@ -107,26 +107,28 @@ jobs:
           TAG="v$VERSION"
           TITLE="דף הבית לאוצריא $VERSION"
           RELEASE_FILE="build/home-page-to-otzaria-$VERSION.otzplugin"
-          DEBUG_FILE="build/home-page-to-otzaria-$VERSION-debug.otzplugin"
-          DEV_FILE="build/home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
+          DEBUG_ASSET="home-page-to-otzaria-$VERSION-debug.otzplugin"
+          DEV_ASSET="home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
 
           cat > release-notes.md <<EOF
           ## דף הבית לאוצריא $VERSION
 
           גרסה יציבה של תוסף דף הבית לאוצריא.
 
-          **להתקנה רגילה:** הורידו את `home-page-to-otzaria-$VERSION.otzplugin`.
-
-          שינויים עיקריים:
-          - אייקונים חדשים וברורים יותר לנכסי הפרויקט.
-          - בדיקת אריזה שמוודאת שתיקיית `assets/` אינה נכנסת לחבילת התוסף.
-          - קישורים חיצוניים במסך אודות נפתחים בדפדפן המערכת.
+          **להתקנה:** הורידו את `home-page-to-otzaria-$VERSION.otzplugin`.
 
           נדרשת אוצריא 0.9.98 ומעלה.
           EOF
 
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$RELEASE_FILE" "$DEBUG_FILE" "$DEV_FILE" --clobber
+            # Keep GitHub Releases clean: only the regular/store package is public here.
+            gh release delete-asset "$TAG" "$DEBUG_ASSET" -y >/dev/null 2>&1 || true
+            gh release delete-asset "$TAG" "$DEV_ASSET" -y >/dev/null 2>&1 || true
+            gh release upload "$TAG" "$RELEASE_FILE" --clobber
           else
-            gh release create "$TAG"               "$RELEASE_FILE" "$DEBUG_FILE" "$DEV_FILE"               --target main               --title "$TITLE"               --notes-file release-notes.md
+            gh release create "$TAG" \
+              "$RELEASE_FILE" \
+              --target main \
+              --title "$TITLE" \
+              --notes-file release-notes.md
           fi
