@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>דף הבית</title>
+<style>
+:root{--bg:#fff;--surface:#fff;--surface2:#f5f5f5;--top:#f5f5f5;--text:#1d1b20;--muted:#79747e;--primary:#6750a4;--onPrimary:#fff;--soft:#e8def8;--outline:#cac4d0;--error:#b3261e;--ui:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--ui)}button,input,select,textarea{font:inherit;color:inherit}.topbar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px 0 10px;background:var(--top);border-bottom:1px solid color-mix(in srgb,var(--outline) 45%,transparent);position:sticky;top:0;z-index:30}.topbar strong{font-size:14px}.topActions{display:flex;gap:4px}.topActions button{border:0;background:transparent;border-radius:10px;padding:7px 9px;cursor:pointer}.topActions button:hover{background:var(--soft)}.page{width:min(1120px,calc(100% - 34px));margin:auto;padding:5vh 0 54px}.hero{text-align:center;margin-bottom:24px}.brand{font-size:38px;font-weight:750;letter-spacing:-.7px;margin:0 0 8px}.subtitle{font-size:13px;color:var(--muted)}.searchWrap{position:relative;max-width:760px;margin:22px auto 0}.searchbox{min-height:54px;display:flex;align-items:center;gap:10px;border:1px solid var(--outline);border-radius:18px;padding:0 14px;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.07)}.searchbox:focus-within{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 18%,transparent),0 4px 16px rgba(0,0,0,.08)}.searchbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:16px}.iconBtn,.searchAll{border:0;cursor:pointer;color:var(--muted);background:transparent;border-radius:10px}.iconBtn{font-size:20px;padding:8px}.searchAll{padding:8px 11px;background:var(--surface2);white-space:nowrap;font-size:12px}.searchAll:hover,.iconBtn:hover{background:var(--soft);color:var(--text)}.dropdown{position:absolute;top:62px;inset-inline:0;background:var(--surface);border:1px solid var(--outline);border-radius:16px;padding:7px;box-shadow:0 12px 32px rgba(0,0,0,.14);max-height:62vh;overflow:auto;z-index:40}.dropdown[hidden]{display:none}.groupTitle{font-size:11px;font-weight:800;color:var(--muted);padding:8px 12px 4px}.resultRow{display:grid;grid-template-columns:minmax(0,1fr) 38px;gap:3px;align-items:stretch}.result{width:100%;border:0;background:transparent;color:inherit;text-align:right;padding:10px 12px;border-radius:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.result:hover,.result.active{background:var(--surface2)}.result strong,.snippet{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.snippet{font-size:11px;color:var(--muted);margin-top:3px}.tag{font-size:10px;color:var(--muted);white-space:nowrap}.favBtn{border:0;background:transparent;border-radius:10px;cursor:pointer;font-size:19px}.favBtn:hover{background:var(--soft)}.status{height:18px;text-align:center;color:var(--muted);font-size:11px;padding-top:4px}.quick{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:23px auto 28px}.quick button{border:1px solid var(--outline);background:var(--surface);color:inherit;border-radius:13px;min-width:108px;padding:10px 13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}.quick button:hover{background:var(--surface2)}.sectionsHost{display:grid;gap:14px}.sectionPanel{border:1px solid var(--outline);background:var(--surface);border-radius:17px;padding:14px;min-width:0}.hiddenSection{display:none!important}.sectionHead{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}.sectionHead h2{font-size:15px;margin:0}.sectionHead span{font-size:11px;color:var(--muted)}.pluginGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}.pluginCard{border:1px solid var(--outline);background:var(--surface);color:inherit;border-radius:15px;padding:13px 10px;cursor:pointer;text-align:center;min-height:83px}.pluginCard:hover{background:var(--surface2);transform:translateY(-1px)}.pluginIcon{width:34px;height:34px;border-radius:11px;background:var(--soft);display:grid;place-items:center;margin:0 auto 7px;font-weight:800}.pluginCard b{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pluginCard small{font-size:9px;color:var(--muted)}.list{display:grid;gap:2px}.row{border:0;background:transparent;color:inherit;width:100%;text-align:right;border-radius:10px;padding:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.row:hover{background:var(--surface2)}.row b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .meta{font-size:10px;color:var(--muted);white-space:nowrap}.empty{padding:18px;text-align:center;color:var(--muted);font-size:12px}.footer{color:var(--muted);font-size:10px;text-align:center;margin-top:24px}.groupBlock{border-top:1px solid color-mix(in srgb,var(--outline) 45%,transparent);padding-top:10px;margin-top:10px}.groupBlock:first-child{border-top:0;padding-top:0;margin-top:0}.groupBlockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.groupBlockHead small{color:var(--muted)}.modal{position:fixed;inset:0;background:rgba(0,0,0,.36);display:grid;place-items:center;padding:18px;z-index:80}.modal[hidden]{display:none}.dialog{width:min(720px,100%);max-height:min(760px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:20px;box-shadow:0 20px 70px rgba(0,0,0,.28)}.dialog.small{width:min(560px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.dialogBody{padding:16px}.settingsGrid{display:grid;gap:18px}.settingBlock{border:1px solid var(--outline);border-radius:14px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:color-mix(in srgb,var(--soft) 70%,transparent)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn,.secondaryBtn{border-radius:10px;padding:9px 14px;cursor:pointer}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary)}.secondaryBtn{border:1px solid var(--outline);background:var(--surface)}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 16px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}textarea{width:100%;min-height:170px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:none}textarea:focus{border-color:var(--primary)}.hint{font-size:11px;color:var(--muted);line-height:1.5}.feedbackButtons{display:flex;gap:7px}.feedbackButtons button{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:7px 10px;cursor:pointer}.feedbackButtons button:hover{background:var(--surface2)}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.toast[hidden]{display:none}.groupPicker{position:fixed;width:180px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
+@media(max-width:900px){.radioGrid,.checkGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.page{width:min(100% - 20px,1120px);padding-top:3vh}.brand{font-size:31px}.searchAll{display:none}.pluginGrid{grid-template-columns:repeat(3,1fr)}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.feedbackButtons span{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <strong>דף הבית</strong>
+  <div class="topActions">
+    <div class="feedbackButtons"><button id="ideaBtn" title="הצעת רעיון">💡 <span>רעיון</span></button><button id="bugBtn" title="דיווח על תקלה">⚠ <span>תקלה</span></button></div>
+    <button id="settingsBtn" title="הגדרות" aria-label="הגדרות">⚙</button>
+  </div>
+</header>
+<main class="page">
+  <section class="hero">
+    <h1 class="brand">אוצריא</h1>
+    <div class="subtitle">פתח ספר, חפש בתוכן או המשך מאיפה שעצרת</div>
+    <div class="searchWrap">
+      <div class="searchbox"><span aria-hidden="true">⌕</span><input id="q" autocomplete="off" placeholder="חיפוש ספרים ובתוכן הספרייה…" aria-label="חיפוש"><button id="searchAll" class="searchAll" title="פתח בחיפוש המלא של אוצריא">חיפוש מלא</button><button id="clear" class="iconBtn" title="נקה" aria-label="נקה">×</button></div>
+      <div id="dropdown" class="dropdown" hidden></div>
+    </div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <nav class="quick" aria-label="פעולות מהירות">
+    <button id="goLibrary" data-quick="library">▦ ספרייה</button>
+    <button id="goReading" data-quick="reading">▤ עיון</button>
+    <button id="goSearch" data-quick="search">⌕ חיפוש</button>
+    <button id="goHistory" data-quick="history">◷ היסטוריה</button>
+    <button id="goBookmarks" data-quick="bookmarks">☆ סימניות</button>
+  </nav>
+
+  <div id="sectionsHost" class="sectionsHost">
+    <section id="section-groups" class="sectionPanel"><div class="sectionHead"><h2>מועדפים וקבוצות ספרים</h2><span>מותאם אישית</span></div><div id="groups"></div></section>
+    <section id="section-plugins" class="sectionPanel"><div class="sectionHead"><h2>תוספים</h2><span id="pluginCount"></span></div><div id="plugins" class="pluginGrid"></div></section>
+    <section id="section-recent" class="sectionPanel"><div class="sectionHead"><h2>המשך לקרוא</h2><span>נפתח לאחרונה</span></div><div id="recent" class="list"></div></section>
+    <section id="section-bookmarks" class="sectionPanel"><div class="sectionHead"><h2>סימניות אחרונות</h2></div><div id="bookmarks" class="list"></div></section>
+    <section id="section-history" class="sectionPanel"><div class="sectionHead"><h2>היסטוריה אחרונה</h2></div><div id="history" class="list"></div></section>
+  </div>
+  <div class="footer">דף הבית משתמש ב־API הרשמי של אוצריא · גרסה 3.1.0</div>
+</main>
+
+<div id="settingsModal" class="modal" hidden>
+  <div class="dialog">
+    <div class="dialogHead"><h2>הגדרות דף הבית</h2><button id="closeSettings">✕</button></div>
+    <div class="dialogBody settingsGrid">
+      <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid">
+        <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
+        <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
+        <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
+      </div><p class="hint">ברירת המחדל היא דף הבית. בחירה בספרייה מחזירה את התנהגות ברירת המחדל של אוצריא.</p></section>
+      <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
+        <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label><label class="option"><input id="show-plugins" type="checkbox"> תוספים</label><label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label><label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label><label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
+      </div></section>
+      <section class="settingBlock"><h3>סדר הכרטיסים</h3><div id="orderList" class="orderList"></div></section>
+      <section class="settingBlock"><h3>פעולות מהירות</h3><div class="checkGrid">
+        <label class="option"><input id="quick-library" type="checkbox"> ספרייה</label><label class="option"><input id="quick-reading" type="checkbox"> עיון</label><label class="option"><input id="quick-search" type="checkbox"> חיפוש</label><label class="option"><input id="quick-history" type="checkbox"> היסטוריה</label><label class="option"><input id="quick-bookmarks" type="checkbox"> סימניות</label>
+      </div></section>
+      <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">משפיע על היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option></select></div></section>
+      <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">כדי להוסיף ספר לקבוצה, חפש אותו בדף הבית ולחץ על הכוכב ליד תוצאת הספר.</p></section>
+    </div>
+    <div class="dialogFoot"><button id="saveSettings" class="primaryBtn">שמור</button><button id="cancelSettings" class="secondaryBtn">ביטול</button></div>
+  </div>
+</div>
+
+<div id="feedbackModal" class="modal" hidden>
+  <div class="dialog small"><div class="dialogHead"><h2 id="feedbackTitle">דיווח</h2><button id="closeFeedback">✕</button></div><div class="dialogBody"><textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את הפרטים…"></textarea><p class="hint">הדיווח יישלח דרך מנגנון המשוב הרשמי של אוצריא. לפני השליחה אוצריא תציג לך דיאלוג אישור.</p></div><div class="dialogFoot"><button id="sendFeedback" class="primaryBtn">שלח</button><button id="cancelFeedback" class="secondaryBtn">ביטול</button></div></div>
+</div>
+<div id="toast" class="toast" hidden></div>
+<script src="main.js"></script>
+</body>
+</html>
