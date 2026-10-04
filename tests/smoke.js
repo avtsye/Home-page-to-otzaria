@@ -49,3 +49,14 @@ assert(/tabSetBookSearchV4/.test(features),'manual book add search missing');
 assert(/existingBehavior/.test(features),'existing-tab behavior option missing');
 
 assert(/loadPluginsReliableV4/.test(features),'reliable plugin loading workflow missing');
+
+
+assert(/TAB_SETS_BACKUP_KEY/.test(features),'saved-tab backup storage missing');
+assert(/tabIdentityScoreV4/.test(features),'strong saved-tab book identity matching missing');
+assert(/positionMode/.test(features),'per-book saved-tab position mode missing');
+assert(/askTabConflictV4/.test(features),'saved-tab conflict prompt missing');
+assert(/tabSetPreviewSelectTools/.test(features),'partial saved-tab opening UI missing');
+assert(/exportSingleTabSetV4/.test(features),'single saved-tab export missing');
+assert(/confirmImportTabSetsV4/.test(features),'saved-tab import preview missing');
+assert(/uniqueTabSetNameV4/.test(features),'saved-tab import name conflict handling missing');
+assert(/tabSetRepairV4/.test(features),'saved-tab repair workflow missing');
