@@ -524,26 +524,44 @@ function highlightHtml(text,q){
   }
   return out;
 }
-function renderSuggestions(items){
+function renderSuggestions(bookItems,contentItems,q){
   const box=$('suggestions');
   box.innerHTML='';
-  if(!items||!items.length){
+  const books=bookItems||[];
+  const content=contentItems||[];
+  if(!books.length&&!content.length){
     box.hidden=true;
     return;
   }
-  for(const item of items){
-    const b=document.createElement('button');
-    b.className='suggestion';
-    b.innerHTML='<span><b>'+esc(item.title||item.book||item.bookId||'ספר')+'</b><br><small>'+esc(item.categoryPath||item.ref||'')+'</small></span><span>↵</span>';
-    b.onclick=()=>{
-      box.hidden=true;
-      openBook(item);
-    };
-    b.oncontextmenu=e=>{
-      e.preventDefault();
-      addToGroupMenu(item,b);
-    };
-    box.appendChild(b);
+  if(books.length){
+    const title=document.createElement('div');
+    title.className='suggestionsGroupTitle';
+    title.textContent='ספרים';
+    box.appendChild(title);
+    for(const item of books.slice(0,6)){
+      const b=document.createElement('button');
+      b.className='suggestion';
+      b.innerHTML='<span><b>'+esc(item.title||item.book||item.bookId||'ספר')+'</b><br><small>'+esc(item.categoryPath||item.ref||'')+'</small></span><span class="suggestionTag">ספר</span>';
+      b.onclick=()=>{box.hidden=true;openBook(item)};
+      b.oncontextmenu=e=>{e.preventDefault();addToGroupMenu(item,b)};
+      box.appendChild(b);
+    }
+  }
+  if(content.length){
+    const title=document.createElement('div');
+    title.className='suggestionsGroupTitle';
+    title.textContent='מתוך התוכן';
+    box.appendChild(title);
+    for(const item of content.slice(0,8)){
+      const b=document.createElement('button');
+      b.className='suggestion';
+      const titleText=item.book||item.bookTitle||item.bookId||'ספר';
+      const ref=item.reference||item.ref||'';
+      b.innerHTML='<span><b>'+esc(titleText)+'</b><small>'+esc(ref)+'</small><span class="suggestionText">'+highlightHtml(item.text||'',q)+'</span></span><span class="suggestionTag">תוכן</span>';
+      b.onclick=()=>{box.hidden=true;openBook(item,q)};
+      b.oncontextmenu=e=>{e.preventDefault();addToGroupMenu(item,b)};
+      box.appendChild(b);
+    }
   }
   box.hidden=false;
 }
@@ -608,11 +626,33 @@ function renderSearchResults(){
   $('loadMore').hidden=shown===0||(totalKnown>0&&shown>=totalKnown)||lastBatchSize<SEARCH_LIMIT;
 }
 async function fetchSuggestions(q,mySeq){
+  let books=[];
+  let content=[];
   try{
-    const r=await Otzaria.call('library.findBooks',{query:q,limit:8});
+    const booksPromise=Otzaria.call('library.findBooks',{query:q,limit:6});
+    try{
+      const stream=Otzaria.call('search.query',{
+        query:q,
+        mode:'exact',
+        order:'relevance',
+        grouping:'none',
+        limit:8,
+        offset:0
+      });
+      for await(const chunk of stream){
+        if(mySeq!==searchSeq)return;
+        if(Array.isArray(chunk.results))content.push(...chunk.results);
+        if(content.length>=8)break;
+      }
+    }catch(err){
+      console.warn('Live content suggestions failed',err);
+    }
+    const r=await booksPromise;
+    books=dataOf(r)||[];
     if(mySeq!==searchSeq)return;
-    renderSuggestions(dataOf(r)||[]);
-  }catch(_){
+    renderSuggestions(books,content,q);
+  }catch(err){
+    console.warn('Live suggestions failed',err);
     if(mySeq===searchSeq)$('suggestions').hidden=true;
   }
 }
@@ -661,11 +701,12 @@ async function runSearch(append){
     if(groupCount!=null)currentGroupCount=groupCount;
     if(bookCounts)currentBookCounts=bookCounts;
     renderSearchResults();
-  }catch(_){
+  }catch(err){
     if(my!==searchSeq)return;
+    console.error('Full-text search failed',err);
     $('searchResults').innerHTML='';
     $('searchEmpty').hidden=false;
-    $('searchEmpty').textContent='החיפוש נכשל. ייתכן ששילוב האפשרויות אינו נתמך בגרסה הנוכחית של אוצריא.';
+    $('searchEmpty').textContent='חיפוש התוכן נכשל: '+(err&&err.message?err.message:'שגיאה לא ידועה');
   }
 }
 
@@ -783,6 +824,7 @@ async function saveSettingsFromUi(){
 }
 function openSettings(){
   renderSettings();
+  setSettingsTab('general');
   $('settingsModal').hidden=false;
 }
 function closeSettings(){
@@ -795,31 +837,35 @@ function toast(msg){
   clearTimeout(t._tm);
   t._tm=setTimeout(()=>t.hidden=true,2400);
 }
-function openFeedback(type){
-  $('feedbackTitle').textContent=type==='bug'?'דיווח על תקלה':'הצעת רעיון';
-  $('feedbackText').value='';
-  $('feedbackModal').dataset.type=type;
-  $('feedbackModal').hidden=false;
-  $('feedbackText').focus();
+function setSettingsTab(name){
+  document.querySelectorAll('.settingsTab').forEach(b=>b.classList.toggle('active',b.dataset.settingsTab===name));
+  document.querySelectorAll('.settingsPane').forEach(p=>p.classList.toggle('active',p.id==='settingsTab-'+name));
 }
 async function sendFeedback(){
   const details=$('feedbackText').value.trim();
   if(!details){
-    toast('יש לכתוב את פרטי הדיווח');
+    $('feedbackStatus').textContent='יש לכתוב את תוכן המשוב.';
     return;
   }
-  const type=$('feedbackModal').dataset.type||'other';
+  const selected=document.querySelector('input[name="feedbackType"]:checked');
+  const reportType=selected&&selected.value==='bug'?'bug':'other';
   $('sendFeedback').disabled=true;
+  $('feedbackStatus').textContent='מכין את הדיווח…';
   try{
-    const r=await Otzaria.call('feedback.report',{
-      details,
-      reportType:type==='bug'?'bug':'other'
-    });
+    const r=await Otzaria.call('feedback.report',{details,reportType});
     if(!r||!r.success)throw new Error();
-    $('feedbackModal').hidden=true;
-    toast(r.data==='queued'?'הדיווח נשמר לשליחה מאוחרת':r.data==='cancelled'?'השליחה בוטלה':'הדיווח נשלח, תודה!');
-  }catch(_){
-    toast('הדיווח לא נשלח');
+    if(r.data==='cancelled'){
+      $('feedbackStatus').textContent='השליחה בוטלה.';
+    }else if(r.data==='queued'){
+      $('feedbackStatus').textContent='הדיווח נשמר באוצריא וישלח אוטומטית כשיתאפשר.';
+      $('feedbackText').value='';
+    }else{
+      $('feedbackStatus').textContent='הדיווח נשלח בהצלחה. תודה!';
+      $('feedbackText').value='';
+    }
+  }catch(err){
+    console.error('Feedback send failed',err);
+    $('feedbackStatus').textContent='הדיווח לא נשלח.';
   }finally{
     $('sendFeedback').disabled=false;
   }
@@ -848,7 +894,7 @@ function wire(){
     }
     const my=++searchSeq;
     fetchSuggestions(q,my);
-    searchTimer=setTimeout(()=>runSearch(false),320);
+    searchTimer=setTimeout(()=>runSearch(false),420);
   });
   must('q').addEventListener('keydown',e=>{
     if(e.key==='Enter'){
@@ -914,10 +960,9 @@ function wire(){
     renderGroups();
   };
 
-  $('bugBtn').onclick=()=>openFeedback('bug');
-  $('ideaBtn').onclick=()=>openFeedback('idea');
-  $('closeFeedback').onclick=()=>{$('feedbackModal').hidden=true};
-  $('cancelFeedback').onclick=()=>{$('feedbackModal').hidden=true};
+  document.querySelectorAll('.settingsTab').forEach(b=>{
+    b.onclick=()=>setSettingsTab(b.dataset.settingsTab);
+  });
   $('sendFeedback').onclick=sendFeedback;
 
   document.addEventListener('click',e=>{
