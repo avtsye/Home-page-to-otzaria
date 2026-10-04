@@ -14,8 +14,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.0.2','manifest version must be 4.0.2');
-assert(html.includes('4.0.2'),'UI must show current version');
+assert(manifest.version==='4.0.3','manifest version must be 4.0.3');
+assert(html.includes('4.0.3'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.minAppVersion==='0.9.98','store release must require Otzaria 0.9.98');
 assert(['stable','beta','experimental'].includes(manifest.stability),'manifest stability must be stable, beta or experimental');
