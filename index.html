@@ -1134,6 +1134,103 @@ mark{
 
 /* Plus-button settings visibility. */
 #plusTargetSettings[hidden]{display:none!important}
+
+/* Deep UX wave: Otzaria-native workspace, launcher, skeleton and overflow patterns. */
+.cardOverflowBtn{
+  width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
+  display:grid!important;place-items:center!important;padding:0!important;
+  border:0!important;border-radius:999px!important;background:transparent!important;
+  color:var(--color-on-surface-variant)!important;font:700 18px/1 var(--font-ui)!important;cursor:pointer!important;
+}
+.cardOverflowBtn:hover,.cardOverflowBtn:focus-visible{background:var(--color-surface-container-highest)!important}
+.savedTabCardV6{
+  border-inline-start:4px solid var(--set-accent,var(--color-outline-variant))!important;
+  min-height:150px!important;
+}
+.savedTabCardV6.favorite{background:color-mix(in srgb,var(--color-secondary-container) 28%,var(--color-surface))!important}
+.savedTabCardV6.dragOver{outline:2px solid var(--color-primary)!important;outline-offset:2px!important}
+.savedTabCardV6.dragging{opacity:.48!important}
+.savedTabCardTitle{display:flex;align-items:center;gap:8px;padding-inline-end:36px}
+.savedTabCardTitle h3{margin:0!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.savedTabCardIcon{width:22px;height:22px;display:grid;place-items:center;color:var(--set-accent,var(--color-primary))}
+.savedTabCardIcon svg{width:20px;height:20px;stroke:currentColor;fill:none}
+.savedTabFavoriteMark{color:var(--color-primary);margin-inline-start:auto}
+.savedTabDescription{font-size:10px;line-height:1.5;color:var(--color-on-surface-variant);margin:6px 0 8px}
+.savedTabLastStatus{margin-top:9px;padding-top:7px;border-top:1px solid var(--color-outline-variant);font-size:9px;color:var(--color-on-surface-variant)}
+.savedTabCardV6>.cardOverflowBtn{position:absolute;top:7px;inset-inline-end:7px}
+.tabSetMetaEditorV6{display:grid;grid-template-columns:minmax(0,1fr) 130px 74px;gap:8px;margin:8px 0 10px}
+.tabSetMetaEditorV6 label{display:grid;gap:4px;font-size:10px;color:var(--color-on-surface-variant)}
+.tabSetMetaEditorV6 input,.tabSetMetaEditorV6 select{width:100%;min-height:38px;border:1px solid var(--color-outline);border-radius:8px;background:var(--color-surface);color:var(--color-on-surface);padding:6px 8px}
+.tabSetMetaEditorV6 input[type=color]{padding:4px}
+
+.workspaceSectionV6{grid-column:1/-1!important}
+.workspaceGridV6{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.workspaceCardV6{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:76px;padding:12px 14px;border:1px solid var(--color-outline-variant);
+  border-radius:12px;background:var(--color-surface);
+}
+.workspaceCardV6>div:first-child{display:grid;gap:4px;min-width:0}
+.workspaceCardV6 b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.workspaceCardV6 span{font-size:9px;color:var(--color-on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.workspaceActionsV6{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.smallDialogV6{width:min(430px,100%)!important}
+
+.homeEmptyState{
+  min-height:132px;display:grid;place-items:center;align-content:center;gap:7px;
+  text-align:center;padding:20px;border-radius:12px;background:var(--color-surface-container-low);
+  color:var(--color-on-surface-variant)
+}
+.homeEmptyState b{font-size:12px;color:var(--color-on-surface)}
+.homeEmptyState span{font-size:10px;max-width:420px;line-height:1.5}
+.homeEmptyState button{margin-top:4px}
+.homeSkeletonList{display:grid;gap:8px;width:100%}
+.homeSkeletonRow{
+  display:grid;grid-template-columns:38% 62%;gap:10px;min-height:42px;padding:9px 10px;
+  border-radius:10px;background:var(--color-surface)
+}
+.homeSkeletonRow span{
+  display:block;border-radius:999px;min-height:10px;
+  background:linear-gradient(90deg,var(--color-surface-container) 25%,var(--color-surface-container-highest) 50%,var(--color-surface-container) 75%);
+  background-size:200% 100%;animation:homeSkeletonPulse 1.3s linear infinite
+}
+.homeSkeletonRow span:last-child{align-self:center;height:8px}
+@keyframes homeSkeletonPulse{to{background-position:-200% 0}}
+
+.pluginCard{position:relative}
+.pluginOverflowV6{position:absolute!important;top:6px;inset-inline-start:6px;z-index:3}
+.groupBlockHead{position:relative}
+.groupOverflowV6{margin-inline-start:auto!important}
+.backupActionsV6{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 8px}
+
+.unifiedSuggestionV6 .suggestionTag{background:var(--color-tertiary-container);color:var(--color-on-tertiary-container)}
+
+body.launcher-mode .heroHeader,
+body.launcher-mode .homeDashboard,
+body.launcher-mode .historyChips,
+body.launcher-mode .footer{display:none!important}
+body.launcher-mode .page{width:min(980px,calc(100% - 22px));padding-top:18px!important}
+body.launcher-mode .heroCard{
+  padding:14px!important;border-radius:18px!important;background:var(--color-surface-container-low)!important
+}
+body.launcher-mode .searchWrap{margin-top:0!important;max-width:none!important}
+body.launcher-mode .searchbox{min-height:52px!important;border-radius:999px!important}
+body.launcher-mode .quick{margin-top:10px!important;gap:5px!important}
+body.launcher-mode .quick button{min-height:34px!important;padding:6px 10px!important}
+body.launcher-mode .sectionsHost{gap:8px!important;margin-top:10px!important}
+body.launcher-mode .sectionPanel{padding:10px!important;border-radius:12px!important;box-shadow:none!important}
+body.launcher-mode .sectionHead{margin-bottom:6px!important}
+body.launcher-mode .sectionHead h2{font-size:13px!important}
+body.launcher-mode .row{padding:6px 8px!important;min-height:36px!important}
+body.launcher-mode .pluginCard{min-height:64px!important;padding:8px!important}
+body.launcher-mode .savedTabCardV6{min-height:110px!important;padding:10px!important}
+body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!important}
+
+@media(max-width:620px){
+  .tabSetMetaEditorV6{grid-template-columns:1fr 1fr}
+  .tabSetMetaEditorV6 label:first-child{grid-column:1/-1}
+  .workspaceGridV6{grid-template-columns:1fr}
+}
 </style>
 
 </head>
@@ -1393,7 +1490,9 @@ mark{
 <div id="toast" class="toast" hidden></div>
 <script src="official-otzaria-icons.js"></script>
 <script src="official-fluent-icons.js"></script>
+<script src="home-core.js"></script>
 <script src="main.js"></script>
 <script src="features.js"></script>
+<script src="enhancements.js"></script>
 </body>
 </html>
