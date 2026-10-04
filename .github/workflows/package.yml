@@ -134,11 +134,7 @@ jobs:
           EOF
 
           if gh release view "$TAG" >/dev/null 2>&1; then
-            # Keep GitHub Releases clean: only the regular/store package is public here.
-            gh release delete-asset "$TAG" "$DEBUG_ASSET" -y >/dev/null 2>&1 || true
-            gh release delete-asset "$TAG" "$DEV_ASSET" -y >/dev/null 2>&1 || true
-            gh release upload "$TAG" "$RELEASE_FILE" --clobber
-            gh release edit "$TAG" --title "$TITLE" --notes-file release-notes.md
+            echo "Release $TAG already exists; leaving the published release unchanged."
           else
             gh release create "$TAG" \
               "$RELEASE_FILE" \
