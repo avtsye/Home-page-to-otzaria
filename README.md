@@ -2,7 +2,9 @@
 
 תוסף דף בית מתקדם לאוצריא, המבוסס על ה־Plugin API הרשמי.
 
-גרסה נוכחית: **4.0.2**
+גרסה נוכחית: **4.0.3**
+
+**תיאור קצר לחנות:** דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.
 
 ## מה יש ב־4.0
 
@@ -122,7 +124,7 @@
 
 הורידו את הקובץ האחרון מתוך:
 
-`dist/home-page-to-otzaria-4.0.2.otzplugin`
+`dist/home-page-to-otzaria-4.0.3.otzplugin`
 
 או מתוך Artifact של ריצת GitHub Actions האחרונה.
 
@@ -140,7 +142,7 @@
 ├── tests/
 │   └── smoke.js
 ├── dist/
-│   └── home-page-to-otzaria-4.0.2.otzplugin
+│   └── home-page-to-otzaria-4.0.3.otzplugin
 └── .github/
     └── workflows/
         └── package.yml
