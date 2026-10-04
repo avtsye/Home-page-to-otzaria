@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Saved-tab hub upgrades: favorites, card metadata, Drag & Drop ordering, duplication, merging, open-missing-only and last-open status.
+- Full workspace snapshots containing open books, active book, search state, group scope and Focus mode.
+- Unified home search suggestions for groups, saved tab cards, installed plugins and saved searches.
+- Advanced installed-plugin status filters and visible overflow menus.
+- Full JSON backup/restore for settings, groups, favorites, saved tabs, saved searches, pins and workspaces.
+- True Launcher mode for a compact, search-first home screen.
+- Loading skeletons and actionable empty/error states.
+- `home-core.js` with an internal Event Bus and shared UI helpers.
+- `enhancements.js` as a separate module for the new feature wave.
+
+### Changed
+- Internal rendering now emits events such as `tabs:changed`, `groups:rendered`, `plugins:rendered`, `plugins:changed`, `search:completed` and `home:rendered`.
+- Key cards now expose visible “…” menus in addition to right-click menus.
+- Search empty states and group/plugin empty states now provide direct recovery actions.
+- README and packaging workflow updated for the modular file layout.
+
+
 ## 4.0.10
 
 ### Added
