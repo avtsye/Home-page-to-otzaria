@@ -657,19 +657,24 @@ mark{
   flex:0 0 auto!important;
   border-radius:10px!important;
 }
+#newTabSetBtn{
+  min-width:124px!important;
+  max-width:160px!important;
+  justify-content:center!important;
+}
 #captureTabsBtn{
-  min-width:190px!important;
-  max-width:250px!important;
+  min-width:158px!important;
+  max-width:210px!important;
   justify-content:center!important;
 }
 #exportTabSetsBtn,#importTabSetsBtn{
-  min-width:78px!important;
-  max-width:100px!important;
+  min-width:72px!important;
+  max-width:92px!important;
   justify-content:center!important;
 }
 @media(max-width:560px){
   .savedTabToolbar{gap:7px!important}
-  #captureTabsBtn{min-width:0!important;max-width:none!important;flex:1 1 100%!important}
+  #newTabSetBtn,#captureTabsBtn{min-width:0!important;max-width:none!important;flex:1 1 calc(50% - 4px)!important}
   #exportTabSetsBtn,#importTabSetsBtn{flex:1 1 calc(50% - 4px)!important;max-width:none!important}
 }
 
