@@ -1,6 +1,6 @@
 /* Home Page to Otzaria 4.0 feature layer */
 const FEATURE_KEY='homeFeaturesV4';
-const FEATURE_VERSION='4.0.4';
+const FEATURE_VERSION='4.0.5';
 const CACHE_TTL=30000;
 const memCache=new Map();
 const debugLog=[];
@@ -388,6 +388,24 @@ function enhanceFeedbackCategories(){
   select.value=featureSettings.feedbackCategory||'general';
   select.onchange=async e=>{featureSettings.feedbackCategory=e.target.value;await saveFeatures()};
 }
+async function openExternalBrowserUrl(url){
+  if(!/^https?:\/\//i.test(url||'')){
+    toast('כתובת חיצונית לא תקינה');
+    return;
+  }
+  try{
+    const r=await Otzaria.call('app.openUrl',{url});
+    if(!r||r.success===false)throw new Error(r&&r.error&&r.error.message||'openUrl failed');
+  }catch(err){
+    fLog('error','External URL open failed',err);
+    toast('לא ניתן לפתוח את הקישור בדפדפן');
+  }
+}
+function wireExternalLinks(){
+  document.querySelectorAll('[data-external-url]').forEach(btn=>{
+    btn.onclick=()=>openExternalBrowserUrl(btn.dataset.externalUrl);
+  });
+}
 function setupKeyboard(){
   document.addEventListener('keydown',e=>{
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();closeSettings();$('q').focus();$('q').select()}
@@ -425,7 +443,7 @@ async function compatibilityCleanup(){
   }catch(e){$('advancedToggle').hidden=true;fLog('warn','Advanced search unavailable',e)}
 }
 function setupFeatureUi(){
-  styleFeatureLayer();applyFeatureAppearance();addDashboard();addSavedSearchControls();makeSectionsDraggable();addSectionTools();setupPluginControls();injectSettingsTabsV4();enhanceFeedbackCategories();renderQuickPins();setupKeyboard();enhanceAccessibility();compatibilityCleanup();rememberUiState();
+  styleFeatureLayer();applyFeatureAppearance();addDashboard();addSavedSearchControls();makeSectionsDraggable();addSectionTools();setupPluginControls();injectSettingsTabsV4();enhanceFeedbackCategories();wireExternalLinks();renderQuickPins();setupKeyboard();enhanceAccessibility();compatibilityCleanup();rememberUiState();
 }
 
 const coreRenderListV4=renderList;
