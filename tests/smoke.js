@@ -100,3 +100,9 @@ assert(/composedPath/.test(main),'outside-click detection must survive rerendere
 assert(html.includes('id="eraOptionsGroup"'),'era options group missing');
 assert(html.includes('id="wordOptionsGroup"'),'word options group missing');
 assert(html.includes('Clarify dynamic advanced-search option groups.'),'advanced option group styling missing');
+
+assert(/plusEnabled:true/.test(main),'plus button enabled default missing');
+assert(/plugin\.setNewTabPage/.test(main)&&/enabled:settings\.plusEnabled!==false/.test(main),'plus registration must follow plusEnabled setting');
+assert(html.includes('id="plusEnabled"'),'plus button toggle missing from settings');
+assert(html.includes('id="plusTargetSettings"'),'plus target settings wrapper missing');
+assert(/plusTargetSettings.*hidden/.test(main),'plus destination settings must hide when plus button is disabled');
