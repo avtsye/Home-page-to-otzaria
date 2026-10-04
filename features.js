@@ -825,7 +825,6 @@ function openTabSetEditorV4({mode,set,books}){
   const input=dialog.querySelector('#tabSetNameV4');input.focus();input.select();
   dialog.querySelector('#tabSetSaveV4').onclick=async()=>{
     const name=input.value.trim();if(!name){input.focus();return}
-    if(!draftBooks.length){toast('יש להוסיף לפחות ספר אחד לכרטיס');return}
     const conflictDefault=['keep','restore'].includes(behavior.value)?behavior.value:'ask';
     if(mode==='create'){
       const item={id:makeFeatureIdV4('tabs'),name,books:cloneSafeV4(draftBooks),conflictDefault,createdAt:Date.now(),updatedAt:Date.now(),lastOpenedAt:0};
