@@ -592,6 +592,9 @@ mark{
   outline:0!important;
   box-shadow:none!important;
 }
+
+/* Four-tab settings navigation after diagnostics screen removal. */
+.settingsTabs .settingsTab{flex:1 1 25%!important}
 </style>
 
 </head>
@@ -710,7 +713,6 @@ mark{
         <button class="settingsTab active" data-settings-tab="general" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></span><b>כללי</b><small>התנהגות ותוכן</small></button>
         <button class="settingsTab" data-settings-tab="appearance" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z"/></svg></span><b>מראה</b><small>צבעים ופריסה</small></button>
         <button class="settingsTab" data-settings-tab="feedback" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><b>משוב</b><small>תקלה או רעיון</small></button>
-        <button class="settingsTab" data-settings-tab="diagnostics" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v6a5 5 0 0 0 10 0V3"/><path d="M5 3h4M15 3h4"/><path d="M12 14v2a4 4 0 0 0 8 0v-2"/><circle cx="20" cy="12" r="2"/></svg></span><b>אבחון</b><small>בדיקות ו־Debug</small></button>
         <button class="settingsTab" data-settings-tab="about" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v7M12 7h.01"/></svg></span><b>אודות</b><small>גרסה וקיצורים</small></button>
       </nav>
 
@@ -785,17 +787,6 @@ mark{
               <p class="hint">לפני השליחה אוצריא תציג חלון אישור. לדיווח מצורף מידע טכני בסיסי לצורך אבחון.</p>
               <div class="feedbackActions"><button id="sendFeedback" class="primaryBtn" type="button">שלח משוב</button><span id="feedbackStatus" class="hint"></span></div>
             </section>
-          </section>
-
-          <section id="settingsTab-diagnostics" class="settingsPane settingsGrid" role="tabpanel">
-            <div class="settingsPaneHead"><h3>אבחון ותאימות</h3><p>בדוק את ה־API המרכזיים וקבל דוח שאפשר לצרף למשוב.</p></div>
-
-            <section class="settingBlock">
-              <div id="diagnosticGrid" class="diagnosticGrid"><div class="empty">לחץ על “הרץ בדיקה” כדי לבדוק את מצב התוסף.</div></div>
-              <div class="feedbackActions"><button id="runDiagnostics" class="secondaryBtn" type="button">הרץ בדיקה</button><button id="copyDiagnostics" class="secondaryBtn" type="button">העתק דוח</button></div>
-            </section>
-
-            <section class="settingBlock"><h3>יומן Debug</h3><pre id="debugOutput" class="debugOutput">אין אירועי debug.</pre></section>
           </section>
 
           <section id="settingsTab-about" class="settingsPane settingsGrid" role="tabpanel">
