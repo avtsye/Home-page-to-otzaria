@@ -4,6 +4,26 @@ const FEATURE_VERSION='4.0.6';
 const CACHE_TTL=30000;
 const memCache=new Map();
 const debugLog=[];
+const UI_ICONS_V4={
+  star:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></svg>',
+  book:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v16H7.5A3.5 3.5 0 0 0 4 21.5z"/><path d="M4 5.5v16"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 4 6 6-3 2-3 6-2-2-6 3 3-6-2-2z"/><path d="m5 19-2 2"/></svg>',
+  dot:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v5h5"/><path d="M5.5 9.5A8 8 0 1 1 4.8 15"/></svg>',
+  close:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+  up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5"/></svg>',
+  down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>'
+};
+function uiIconV4(name){return UI_ICONS_V4[name]||UI_ICONS_V4.star}
+function iconTextV4(name,label){return uiIconV4(name)+'<span>'+esc(label)+'</span>'}
+function setIconButtonV4(button,name,label){
+  button.classList.add('nativeIconButton');
+  button.innerHTML=uiIconV4(name);
+  button.title=label;
+  button.setAttribute('aria-label',label);
+  return button;
+}
 let featureSettings={
   density:'comfortable',background:'flat',cardSize:'normal',focusMode:false,
   pluginSort:'host',pluginView:'grid',pluginFavorites:[],savedSearches:[],quickPins:[],
@@ -163,8 +183,9 @@ normalizeGroups=function(raw){
   const source=Array.isArray(raw)?raw:[];
   base.forEach((g,i)=>{
     const old=source.find(x=>x&&x.id===g.id)||{};
-    g.color=old.color||['#6750a4','#2f7d6d','#a45a52','#4b6ea9','#8b5aa4'][i%5];
-    g.icon=old.icon||'★';
+    g.color=old.color||'';
+    const legacyIcons={'★':'star','📚':'book','🔖':'bookmark','📌':'pin','●':'dot'};
+    g.icon=legacyIcons[old.icon]||old.icon||['star','book','bookmark','pin','dot'][i%5];
     g.parentId=old.parentId||'';
     g.order=Number.isFinite(old.order)?old.order:i;
   });
@@ -176,11 +197,11 @@ renderGroups=function(){
   const active=groups.filter(g=>g.books.length).sort((a,b)=>(a.order||0)-(b.order||0));
   [...$('groups').querySelectorAll('.groupBlock')].forEach((block,i)=>{
     const g=active[i];if(!g)return;
-    block.style.borderInlineStart='4px solid '+g.color;
+    block.style.borderInlineStart='4px solid '+(g.color||['var(--color-primary)','var(--color-secondary)','var(--color-tertiary)'][i%3]);
     block.style.marginInlineStart=g.parentId?'22px':'0';
     if(g.parentId){const parent=groups.find(x=>x.id===g.parentId);if(parent)block.title='תת־קבוצה של '+parent.name}
     const head=block.querySelector('.groupBlockHead');
-    if(head&&!head.querySelector('.groupIcon')){const ic=document.createElement('span');ic.className='groupIcon';ic.textContent=g.icon+' ';head.prepend(ic)}
+    if(head&&!head.querySelector('.groupIcon')){const ic=document.createElement('span');ic.className='groupIcon nativeInlineIcon';ic.innerHTML=uiIconV4(g.icon);head.prepend(ic)}
     block.ondragover=e=>e.preventDefault();
     block.ondrop=async e=>{
       e.preventDefault();
@@ -198,7 +219,7 @@ renderGroups=function(){
       row.draggable=true;
       row.ondragstart=e=>{e.dataTransfer&&e.dataTransfer.setData('application/x-home-book',JSON.stringify(book))};
     });
-    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';pin.textContent='📌';pin.title='הצמד קבוצה לפעולות מהירות';pin.style.cssText='border:0;background:transparent;cursor:pointer';pin.onclick=async e=>{e.stopPropagation();if(!featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id))featureSettings.quickPins.push({type:'group',groupId:g.id,title:g.name});await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה')};head.appendChild(pin)}
+    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';setIconButtonV4(pin,'pin','הצמד קבוצה לפעולות מהירות');pin.onclick=async e=>{e.stopPropagation();if(!featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id))featureSettings.quickPins.push({type:'group',groupId:g.id,title:g.name});await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה')};head.appendChild(pin)}
     head&&head.addEventListener('dblclick',()=>{featureSettings.groupScope=g.id;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=g.id;$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)});
   });
 };
@@ -207,11 +228,11 @@ renderGroupSettings=function(){
   coreRenderGroupSettingsV4();
   [...$('groupSettings').querySelectorAll('.manageGroup')].forEach((row,i)=>{
     const g=groups[i];if(!g)return;
-    const color=document.createElement('input');color.type='color';color.value=g.color||'#6750a4';color.title='צבע קבוצה';color.onchange=async e=>{g.color=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
-    const icon=document.createElement('select');icon.title='אייקון קבוצה';['★','📚','🔖','📌','●'].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;icon.appendChild(o)});icon.value=g.icon||'★';icon.onchange=async e=>{g.icon=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
+    const color=document.createElement('input');color.type='color';color.value=g.color||getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()||'#6750a4';color.title='צבע קבוצה';color.onchange=async e=>{g.color=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
+    const icon=document.createElement('select');icon.title='אייקון קבוצה';[['star','כוכב'],['book','ספר'],['bookmark','סימנייה'],['pin','סיכה'],['dot','נקודה']].forEach(([v,label])=>{const o=document.createElement('option');o.value=v;o.textContent=label;icon.appendChild(o)});icon.value=g.icon||'star';icon.onchange=async e=>{g.icon=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
     const parent=document.createElement('select');parent.title='תת־קבוצה';const rootOpt=document.createElement('option');rootOpt.value='';rootOpt.textContent='קבוצה ראשית';parent.appendChild(rootOpt);groups.filter(x=>x.id!==g.id).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent='תחת '+x.name;parent.appendChild(o)});parent.value=g.parentId||'';parent.onchange=async e=>{g.parentId=e.target.value;await storageSet(GROUPS_KEY,groups);renderGroups()};
-    const up=document.createElement('button');up.type='button';up.textContent='↑';up.title='העבר למעלה';up.onclick=async()=>{const idx=groups.indexOf(g);if(idx>0){[groups[idx-1],groups[idx]]=[groups[idx],groups[idx-1]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
-    const down=document.createElement('button');down.type='button';down.textContent='↓';down.title='העבר למטה';down.onclick=async()=>{const idx=groups.indexOf(g);if(idx>=0&&idx<groups.length-1){[groups[idx],groups[idx+1]]=[groups[idx+1],groups[idx]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
+    const up=document.createElement('button');up.type='button';setIconButtonV4(up,'up','העבר למעלה');up.onclick=async()=>{const idx=groups.indexOf(g);if(idx>0){[groups[idx-1],groups[idx]]=[groups[idx],groups[idx-1]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
+    const down=document.createElement('button');down.type='button';setIconButtonV4(down,'down','העבר למטה');down.onclick=async()=>{const idx=groups.indexOf(g);if(idx>=0&&idx<groups.length-1){[groups[idx],groups[idx+1]]=[groups[idx+1],groups[idx]];groups.forEach((x,j)=>x.order=j);await storageSet(GROUPS_KEY,groups);renderGroupSettings();renderGroups()}};
     row.append(color,icon,parent,up,down);
   });
 };
@@ -229,9 +250,9 @@ function addSectionTools(){
   document.querySelectorAll('.sectionPanel').forEach(section=>{
     const head=section.querySelector('.sectionHead');if(!head||head.querySelector('.sectionTools'))return;
     const tools=document.createElement('div');tools.className='sectionTools';
-    const refresh=document.createElement('button');refresh.textContent='↻';refresh.title='רענן כרטיס';refresh.onclick=e=>{e.stopPropagation();refreshSection(section.id)};
-    const pin=document.createElement('button');pin.textContent='📌';pin.title='הצמד כרטיס לראש הדף';pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הוצמד לראש הדף')};
-    const hide=document.createElement('button');hide.textContent='×';hide.title='הסתר כרטיס';hide.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.visibleSections[key]=false;section.classList.add('hiddenSection');await storageSet(SETTINGS_KEY,settings)};
+    const refresh=document.createElement('button');setIconButtonV4(refresh,'refresh','רענן כרטיס');refresh.onclick=e=>{e.stopPropagation();refreshSection(section.id)};
+    const pin=document.createElement('button');setIconButtonV4(pin,'pin','הצמד כרטיס לראש הדף');pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הוצמד לראש הדף')};
+    const hide=document.createElement('button');setIconButtonV4(hide,'close','הסתר כרטיס');hide.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.visibleSections[key]=false;section.classList.add('hiddenSection');await storageSet(SETTINGS_KEY,settings)};
     tools.append(refresh,pin,hide);head.appendChild(tools);
   });
 }
@@ -247,9 +268,9 @@ function markUpdated(id){
 function setupPluginControls(){
   if($('pluginControls'))return;
   const box=document.createElement('div');box.id='pluginControls';box.className='pluginControls';
-  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><button id="pluginFavOnly" type="button">★ מועדפים</button>';
+  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><button id="pluginFavOnly" type="button"></button>';
   $('section-plugins').querySelector('.pluginToolbar').insertAdjacentElement('beforebegin',box);
-  $('pluginSort').value=featureSettings.pluginSort;$('pluginView').value=featureSettings.pluginView;
+  $('pluginSort').value=featureSettings.pluginSort;$('pluginView').value=featureSettings.pluginView;const favOnlyBtn=$('pluginFavOnly');favOnlyBtn.innerHTML=iconTextV4('star','מועדפים');
   $('pluginSort').onchange=async e=>{featureSettings.pluginSort=e.target.value;await saveFeatures();renderPlugins()};
   $('pluginView').onchange=async e=>{featureSettings.pluginView=e.target.value;await saveFeatures();renderPlugins()};
   let favOnly=false;$('pluginFavOnly').onclick=()=>{favOnly=!favOnly;renderPluginsV4(favOnly)};
@@ -267,7 +288,7 @@ function renderPluginsV4(favOnly){
   const cards=[...$('plugins').querySelectorAll('.pluginCard')];const q=(($('pluginFilter')&&$('pluginFilter').value)||'').trim().toLowerCase();
   const visible=allPlugins.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.pluginId||'').toLowerCase().includes(q));
   cards.forEach((card,i)=>{
-    const p=visible[i];if(!p)return;const originalClick=card.onclick;card.onclick=async e=>{featureSettings.pluginLastUsed[p.pluginId]=Date.now();await saveFeatures();if(originalClick)originalClick.call(card,e)};const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');star.textContent=favs.has(p.pluginId)?'★':'☆';star.title='מועדף';
+    const p=visible[i];if(!p)return;const originalClick=card.onclick;card.onclick=async e=>{featureSettings.pluginLastUsed[p.pluginId]=Date.now();await saveFeatures();if(originalClick)originalClick.call(card,e)};const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');setIconButtonV4(star,'star','מועדף');star.setAttribute('aria-pressed',favs.has(p.pluginId)?'true':'false');
     star.onclick=async e=>{e.stopPropagation();const idx=featureSettings.pluginFavorites.indexOf(p.pluginId);if(idx>=0)featureSettings.pluginFavorites.splice(idx,1);else featureSettings.pluginFavorites.push(p.pluginId);await saveFeatures();renderPluginsV4(favOnly);renderQuickPins()};card.appendChild(star);
   });
   allPlugins=original;
@@ -300,8 +321,8 @@ async function smartOpenPinnedBook(book){
 function renderQuickPins(){
   let box=$('quickPins');if(!box){box=document.createElement('div');box.id='quickPins';box.className='quickPins';document.querySelector('.quick').insertAdjacentElement('afterend',box)}
   box.innerHTML='';
-  featureSettings.quickPins.forEach((pin,i)=>{const b=document.createElement('button');b.textContent='📌 '+pin.title;b.onclick=()=>{if(pin.type==='group'){featureSettings.groupScope=pin.groupId;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=pin.groupId;$('q').focus();toast('החיפוש הוגבל לקבוצה '+pin.title)}else smartOpenPinnedBook(pin.book)};b.oncontextmenu=async e=>{e.preventDefault();featureSettings.quickPins.splice(i,1);await saveFeatures();renderQuickPins()};box.appendChild(b)});
-  allPlugins.filter(p=>featureSettings.pluginFavorites.includes(p.pluginId)).slice(0,5).forEach(p=>{const b=document.createElement('button');b.textContent='★ '+(p.name||p.pluginId);b.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:p.pluginId});box.appendChild(b)});
+  featureSettings.quickPins.forEach((pin,i)=>{const b=document.createElement('button');b.className='iconTextBtn';b.innerHTML=iconTextV4('pin',pin.title);b.onclick=()=>{if(pin.type==='group'){featureSettings.groupScope=pin.groupId;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=pin.groupId;$('q').focus();toast('החיפוש הוגבל לקבוצה '+pin.title)}else smartOpenPinnedBook(pin.book)};b.oncontextmenu=async e=>{e.preventDefault();featureSettings.quickPins.splice(i,1);await saveFeatures();renderQuickPins()};box.appendChild(b)});
+  allPlugins.filter(p=>featureSettings.pluginFavorites.includes(p.pluginId)).slice(0,5).forEach(p=>{const b=document.createElement('button');b.className='iconTextBtn';b.innerHTML=iconTextV4('star',p.name||p.pluginId);b.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:p.pluginId});box.appendChild(b)});
 }
 async function pinCurrentBook(){
   try{
