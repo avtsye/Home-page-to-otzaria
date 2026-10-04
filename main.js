@@ -670,18 +670,30 @@ async function runSearch(append){
 }
 
 async function syncPlusRegistration(){
+  // The + button exists only while at least one plugin is registered.
+  // Keep this plugin registered for every configured target; the target
+  // itself is resolved after plugin.page_opened fires.
   try{
-    await Otzaria.call('plugin.setNewTabPage',{enabled:settings.plusTarget!=='library'});
+    await Otzaria.call('plugin.setNewTabPage',{enabled:true});
   }catch(_){}
 }
+async function closeSelfTabIfPresent(){
+  try{
+    const state=dataOf(await Otzaria.call('reader.getCurrentState'));
+    const idx=state&&state.openTabs?state.openTabs.findIndex(t=>t&&t.isSelf):-1;
+    if(idx>=0)await Otzaria.call('reader.closeTab',{index:idx});
+  }catch(_){}
+}
+
 async function handleNewTabOpen(){
+  if(settings.plusTarget==='library'){
+    await Otzaria.call('navigation.goTo',{target:'library'});
+    await closeSelfTabIfPresent();
+    return;
+  }
   if(settings.plusTarget==='reading'){
     await Otzaria.call('navigation.goTo',{target:'reading'});
-    try{
-      const s=dataOf(await Otzaria.call('reader.getCurrentState'));
-      const idx=s&&s.openTabs?s.openTabs.findIndex(t=>t&&t.isSelf):-1;
-      if(idx>=0)await Otzaria.call('reader.closeTab',{index:idx});
-    }catch(_){}
+    await closeSelfTabIfPresent();
     return;
   }
   if(settings.plusTarget==='plugin'){
@@ -821,7 +833,12 @@ function resetSearchOptions(){
   searchChanged(true);
 }
 function wire(){
-  $('q').addEventListener('input',()=>{
+  const must=id=>{
+    const el=$(id);
+    if(!el)throw new Error('Missing UI element: '+id);
+    return el;
+  };
+  must('q').addEventListener('input',()=>{
     clearTimeout(searchTimer);
     const q=$('q').value.trim();
     if(q.length<2){
@@ -833,7 +850,7 @@ function wire(){
     fetchSuggestions(q,my);
     searchTimer=setTimeout(()=>runSearch(false),320);
   });
-  $('q').addEventListener('keydown',e=>{
+  must('q').addEventListener('keydown',e=>{
     if(e.key==='Enter'){
       e.preventDefault();
       $('suggestions').hidden=true;
@@ -880,7 +897,7 @@ function wire(){
   };
   $('loadMore').onclick=()=>runSearch(true);
 
-  $('pluginFilter').addEventListener('input',renderPlugins);
+  must('pluginFilter').addEventListener('input',renderPlugins);
   $('refreshPlugins').onclick=loadPlugins;
 
   $('settingsBtn').onclick=openSettings;
@@ -908,7 +925,22 @@ function wire(){
   });
 }
 
-wire();
+function startUi(){
+  try{
+    wire();
+    document.documentElement.dataset.uiReady='true';
+  }catch(err){
+    console.error('Homepage UI wiring failed',err);
+    const t=$('toast');
+    if(t){
+      t.textContent='שגיאה באתחול הממשק: '+(err&&err.message?err.message:String(err));
+      t.hidden=false;
+    }
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startUi,{once:true});
+else startUi();
+
 Otzaria.on('plugin.boot',async p=>{
   settings=normalizeSettings(await storageGet(SETTINGS_KEY,DEFAULT_SETTINGS));
   groups=normalizeGroups(await storageGet(GROUPS_KEY,groups));
