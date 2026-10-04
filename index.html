@@ -949,6 +949,150 @@ mark{
     border-radius:0!important;
   }
 }
+
+/* Floating search settings popover, matching Otzaria's compact overlay pattern. */
+.advancedPanel{
+  position:absolute!important;
+  top:calc(100% + 8px)!important;
+  inset-inline-end:0!important;
+  z-index:80!important;
+  width:min(700px,calc(100vw - 32px))!important;
+  max-height:min(68vh,620px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  margin:0!important;
+  padding:14px!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:16px!important;
+  background:var(--color-surface-container-high)!important;
+  color:var(--color-on-surface)!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--color-shadow) 18%,transparent)!important;
+  scrollbar-gutter:stable!important;
+}
+.advancedPanel[hidden]{display:none!important}
+.advancedPanelHead{
+  position:sticky!important;
+  top:-14px!important;
+  z-index:3!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin:-14px -14px 10px!important;
+  padding:14px 14px 10px!important;
+  background:var(--color-surface-container-high)!important;
+}
+.advancedPanelTitle{
+  font-size:15px!important;
+  font-weight:700!important;
+  color:var(--color-on-surface)!important;
+}
+.advancedPanelSubtitle{
+  margin-top:3px!important;
+  font-size:10px!important;
+  line-height:1.45!important;
+  color:var(--color-on-surface-variant)!important;
+}
+.advancedCloseBtn{
+  flex:0 0 auto!important;
+  width:32px!important;
+  height:32px!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:var(--color-on-surface-variant)!important;
+  font:24px/1 var(--font-ui)!important;
+  cursor:pointer!important;
+}
+.advancedCloseBtn:hover{background:var(--color-surface-container-highest)!important}
+.searchModeBlock{margin-bottom:12px!important}
+.searchModeSegments{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  overflow:hidden!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:999px!important;
+  background:var(--color-surface)!important;
+  padding:3px!important;
+}
+.searchModeSegments button{
+  min-height:38px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:var(--color-on-surface-variant)!important;
+  font:600 11px/1 var(--font-ui)!important;
+  cursor:pointer!important;
+}
+.searchModeSegments button:hover{background:var(--color-surface-container-low)!important}
+.searchModeSegments button.active{
+  background:var(--color-secondary-container)!important;
+  color:var(--color-on-secondary-container)!important;
+}
+.advancedPanel .advancedGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px 12px!important;
+}
+.advancedPanel .field.span2{grid-column:1/-1!important}
+.advancedPanel .field label,
+.advancedPanel .optionGroupTitle{
+  font-size:10px!important;
+  font-weight:600!important;
+  color:var(--color-on-surface-variant)!important;
+}
+.advancedPanel .field select,
+.advancedPanel .field input[type=text],
+.advancedPanel .field input[type=number]{
+  min-height:42px!important;
+  border:1px solid var(--color-outline)!important;
+  border-radius:8px!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  box-shadow:none!important;
+  font-family:var(--font-ui)!important;
+}
+.advancedPanel .checkline{
+  min-height:42px!important;
+  padding-top:18px!important;
+}
+.advancedPanel .advancedWide{
+  margin-top:12px!important;
+  gap:12px!important;
+}
+.advancedPanel .toggleChip{
+  min-height:34px!important;
+  padding:6px 10px!important;
+  border:1px solid var(--color-outline-variant)!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface-variant)!important;
+}
+.advancedPanel .toggleChip.on{
+  border-color:transparent!important;
+  background:var(--color-secondary-container)!important;
+  color:var(--color-on-secondary-container)!important;
+}
+.advancedPanel .advancedFooter{
+  position:sticky!important;
+  bottom:-14px!important;
+  margin:12px -14px -14px!important;
+  padding:10px 14px!important;
+  background:var(--color-surface-container-high)!important;
+  border-top:1px solid var(--color-outline-variant)!important;
+}
+@media(max-width:620px){
+  .advancedPanel{
+    position:fixed!important;
+    top:96px!important;
+    inset-inline:12px!important;
+    width:auto!important;
+    max-height:calc(100vh - 116px)!important;
+  }
+  .advancedPanel .advancedGrid{grid-template-columns:1fr!important}
+  .advancedPanel .field.span2{grid-column:auto!important}
+}
 </style>
 
 </head>
@@ -976,14 +1120,24 @@ mark{
         <button id="searchGo" class="searchBtn">חפש</button>
       </div>
       <div id="suggestions" class="suggestions" hidden></div>
-    </div>
 
-    <div id="searchSummary" class="searchSummary"></div>
+      <div id="advancedPanel" class="advancedPanel" hidden>
+        <div class="advancedPanelHead">
+          <div>
+            <div class="advancedPanelTitle">אפשרויות חיפוש</div>
+            <div id="searchModeHelp" class="advancedPanelSubtitle">בחר את סוג החיפוש והאפשרויות המתאימות לו.</div>
+          </div>
+          <button id="closeAdvancedSearch" class="advancedCloseBtn" type="button" aria-label="סגור אפשרויות חיפוש">×</button>
+        </div>
 
-    <div id="advancedPanel" class="advancedPanel" hidden>
-      <div class="advancedGrid">
-        <div class="field"><label>מצב חיפוש</label><select id="searchMode"></select></div>
-        <div class="field"><label>מיון</label><select id="searchOrder"></select></div>
+        <div class="searchModeBlock">
+          <div class="optionGroupTitle">סוג החיפוש</div>
+          <div id="searchModeSegments" class="searchModeSegments" role="tablist" aria-label="סוג החיפוש"></div>
+          <select id="searchMode" hidden aria-hidden="true" tabindex="-1"></select>
+        </div>
+
+        <div class="advancedGrid">
+          <div class="field"><label>מיון</label><select id="searchOrder"></select></div>
         <div class="field"><label>איחוד תוצאות</label><select id="searchGrouping"></select></div>
         <div class="field" id="distanceField"><label>מרחק מילים</label><input id="searchDistance" type="number" min="0" max="20" value="0"></div>
         <div class="field" id="proximityField"><label>תחום קירבה</label><select id="searchProximity"></select></div>
@@ -996,11 +1150,14 @@ mark{
         <div><div class="optionGroupTitle">תקופות</div><div id="eraChips" class="chipSet"></div></div>
         <div id="wordOptionsBlock"><div class="optionGroupTitle">אפשרויות מילים</div><div id="wordOptionChips" class="chipSet"></div></div>
       </div>
-      <div class="advancedFooter">
-        <button id="resetSearchOptions" class="linkBtn">איפוס אפשרויות</button>
-        <span class="hint">האפשרויות נטענות ישירות מ־search.getOptions של אוצריא.</span>
+        <div class="advancedFooter">
+          <button id="resetSearchOptions" class="linkBtn">איפוס אפשרויות</button>
+          <span class="hint">האפשרויות מסונכרנות עם מנוע החיפוש של אוצריא.</span>
+        </div>
       </div>
     </div>
+
+    <div id="searchSummary" class="searchSummary"></div>
 
     <nav class="quick" aria-label="פעולות מהירות">
       <button id="goLibrary" data-quick="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/></svg><span>ספרייה</span></button>
