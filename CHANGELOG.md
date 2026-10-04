@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.6
+
+### Changed
+- Added refreshed high-resolution icon assets for project/release presentation.
+- Packaging now verifies that the project `assets/` directory is never included inside `.otzplugin` packages.
+- GitHub Actions now publishes versioned GitHub Releases with downloadable plugin packages.
+
+
 ## 4.0.5
 
 ### Changed
