@@ -1131,6 +1131,9 @@ mark{
   text-align:end!important;
   font-size:9px!important;
 }
+
+/* Plus-button settings visibility. */
+#plusTargetSettings[hidden]{display:none!important}
 </style>
 
 </head>
@@ -1284,7 +1287,15 @@ mark{
           <section id="settingsTab-general" class="settingsPane settingsGrid active" role="tabpanel">
             <div class="settingsPaneHead"><h3>הגדרות כלליות</h3><p>בחר מה ייפתח, אילו אזורים יוצגו ואיך דף הבית יתנהג.</p></div>
 
-            <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid segmentedSetting" role="radiogroup">
+            <section class="settingBlock">
+              <h3>כפתור +</h3>
+              <div class="checkGrid">
+                <label class="option"><input id="plusEnabled" type="checkbox"> הצג את לחצן + של אוצריא</label>
+              </div>
+              <p class="hint">כאשר האפשרות כבויה, התוסף לא נרשם כדף כרטיסייה חדשה.</p>
+            </section>
+
+            <section id="plusTargetSettings" class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid segmentedSetting" role="radiogroup">
               <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
               <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
               <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
