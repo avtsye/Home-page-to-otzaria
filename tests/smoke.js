@@ -136,3 +136,8 @@ assert(/favorite/.test(enhancements)&&/lastOpenSummary/.test(enhancements),'save
 assert(/tabSetMetaEditorV6/.test(html)&&/tabSetDescriptionV6/.test(enhancements),'saved-tab metadata editor missing');
 assert(/auditUi/.test(enhancements),'UX audit helper missing');
 assert(html.includes('Deep UX wave: Otzaria-native workspace'),'deep Otzaria-native styling block missing');
+
+assert(/improveGroupEmptyState/.test(enhancements),'group empty state missing');
+assert(/baseRunSearchV6/.test(enhancements)&&/search:completed/.test(enhancements),'search empty/event enhancement missing');
+assert(/groups:rendered/.test(enhancements)&&/plugins:rendered/.test(enhancements),'event-backed render signals missing');
+assert(/plugins:changed/.test(enhancements),'plugin data event missing');
