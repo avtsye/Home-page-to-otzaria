@@ -43,6 +43,10 @@ let currentOffset=0;
 let currentBookCounts=[];
 let selectedScopeBook=null;
 let allPlugins=[];
+
+function visibleInstalledPlugins(list){
+  return (Array.isArray(list)?list:[]).filter(p=>p&&p.pluginId!==SELF);
+}
 let lastBatchSize=0;
 
 async function storageGet(key,fallback){
@@ -330,7 +334,7 @@ function renderPlugins(){
 async function loadPlugins(){
   try{
     const r=await Otzaria.call('plugin.listInstalled');
-    allPlugins=dataOf(r)||[];
+    allPlugins=visibleInstalledPlugins(dataOf(r));
   }catch(_){allPlugins=[]}
   renderPlugins();
 }
@@ -345,7 +349,7 @@ async function loadHome(){
   renderList('recent',val(0)||[],'אין ספרים אחרונים');
   renderList('bookmarks',val(1)||[],'אין סימניות');
   renderList('history',val(2)||[],'אין היסטוריה');
-  allPlugins=val(3)||[];
+  allPlugins=visibleInstalledPlugins(val(3));
   renderPlugins();
   renderGroups();
   applyLayout();
