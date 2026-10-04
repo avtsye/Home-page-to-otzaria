@@ -103,6 +103,7 @@ function styleFeatureLayer(){
   .savedTabGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.savedTabCard{position:relative;border:1px solid var(--color-outline-variant,var(--outline));background:var(--color-surface,var(--surface));border-radius:12px;padding:14px;cursor:pointer;text-align:right;min-width:0}.savedTabCard:hover{background:var(--color-surface-container-low,var(--surface2));border-color:var(--color-primary,var(--primary))}.savedTabCard h3{margin:0 0 5px;font-size:14px}.savedTabMeta{font-size:10px;color:var(--color-on-surface-variant,var(--muted));margin-bottom:10px}.savedTabBooks{display:grid;gap:4px}.savedTabBook{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.savedTabMore{font-size:10px;color:var(--color-on-surface-variant,var(--muted))}.savedTabActions{display:flex;gap:4px;position:absolute;top:8px;inset-inline-end:8px}.savedTabActions button{width:30px;height:30px}
   .savedTabsEmpty{padding:24px;text-align:center;color:var(--color-on-surface-variant,var(--muted))}
   .tabSetDialog{position:fixed;inset:0;z-index:170;background:color-mix(in srgb,var(--color-scrim,#000) 30%,transparent);display:grid;place-items:center;padding:16px}.tabSetDialogCard{width:min(520px,100%);max-height:80vh;overflow:auto;background:var(--color-surface-container-high,var(--surface3));border-radius:18px;padding:16px;box-shadow:0 8px 24px color-mix(in srgb,var(--color-shadow,#000) 18%,transparent)}.tabSetDialogCard h2{margin:0 0 10px;font-size:18px}.tabSetDialogCard input{width:100%;margin-bottom:10px}.tabSetPreview{display:grid;gap:5px;max-height:300px;overflow:auto;margin:10px 0}.tabSetPreviewRow{padding:8px 10px;background:var(--color-surface,var(--surface));border-radius:8px;font-size:11px}.tabSetDialogActions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+  .tabSetDialogHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.tabSetDialogHeader h2{margin:0}.tabSetEditorSetting{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:10px 0}.tabSetEditorSetting select{border:1px solid var(--color-outline,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px}.tabSetEditorTools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.tabSetLibraryAdd{position:relative;margin:10px 0}.tabSetLibraryAdd>input{width:100%}.tabSetBookSearchResults{display:grid;gap:4px;margin-top:5px;max-height:180px;overflow:auto}.tabSetBookSearchResult{display:flex;justify-content:space-between;gap:10px;text-align:start;border:1px solid var(--color-outline-variant,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px;cursor:pointer}.tabSetBookSearchResult:hover{background:var(--color-surface-container-low,var(--surface2))}.tabSetBookSearchResult span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetPreviewRow.editable,.tabSetPreviewRow.previewOnly{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}.tabSetPreviewText{display:grid;gap:2px;min-width:0}.tabSetPreviewText b,.tabSetPreviewText span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tabSetPreviewText span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetPreviewActions{display:flex;gap:3px}.tabSetPreviewActions button:disabled{opacity:.35;cursor:default}.tabSetOpenState{font-size:10px;padding:4px 7px;border-radius:999px}.tabSetOpenState.open{background:var(--color-secondary-container,var(--soft));color:var(--color-on-secondary-container,var(--text))}.tabSetOpenState.missing{background:var(--color-surface-container-high,var(--surface3));color:var(--color-on-surface-variant,var(--muted))}
   .groupBookRow{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center}.groupBookOpen{min-width:0}.groupBookRemove{border:0;background:transparent;color:var(--color-on-surface-variant,var(--muted));width:30px;height:30px;border-radius:999px;cursor:pointer}.groupBookRemove:hover{background:var(--color-error-container);color:var(--color-error)}
   .groupPickerAction.selected{color:var(--color-primary,var(--primary));background:var(--color-primary-container,var(--soft))}
   @media(max-width:700px){.homeDashboard{grid-template-columns:1fr 1fr}.diagnosticGrid{grid-template-columns:1fr}.savedTabGrid{grid-template-columns:1fr}}
@@ -544,6 +545,7 @@ function normalizeTabSetV4(raw){
     id:String(raw.id||makeFeatureIdV4('tabs')),
     name:String(raw.name||'כרטיסיות שמורות').trim().slice(0,80)||'כרטיסיות שמורות',
     books:books.slice(0,100),
+    existingBehavior:['keep','restore'].includes(raw.existingBehavior)?raw.existingBehavior:'keep',
     createdAt:Number(raw.createdAt)||Date.now(),
     updatedAt:Number(raw.updatedAt)||Date.now(),
     lastOpenedAt:Number(raw.lastOpenedAt)||0
@@ -585,8 +587,8 @@ function renderSavedTabSetsV4(){
     const preview=set.books.slice(0,4).map(b=>'<div class="savedTabBook">'+esc(b.title||b.bookId||'ספר')+(b.ref?' · '+esc(b.ref):'')+'</div>').join('');
     card.innerHTML='<h3>'+esc(set.name)+'</h3><div class="savedTabMeta">'+set.books.length+' ספרים</div><div class="savedTabBooks">'+preview+(set.books.length>4?'<div class="savedTabMore">ועוד '+(set.books.length-4)+'…</div>':'')+'</div>';
     card.appendChild(actions);
-    card.onclick=()=>openTabSetV4(set);
-    card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTabSetV4(set)}};
+    card.onclick=()=>openTabSetPreviewV4(set);
+    card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTabSetPreviewV4(set)}};
     grid.appendChild(card);
   });
 }
@@ -600,31 +602,99 @@ async function captureCurrentTabsV4(){
 function openTabSetEditorV4({mode,set,books}){
   const old=$('tabSetDialogV4');if(old)old.remove();
   const dialog=document.createElement('div');dialog.id='tabSetDialogV4';dialog.className='tabSetDialog';
-  const current=set||{name:'',books:books||[]};
-  const suggested=current.name||('כרטיסיות '+(savedTabSets.length+1));
-  dialog.innerHTML='<div class="tabSetDialogCard"><h2>'+(mode==='create'?'שמירת הכרטיסיות הפתוחות':'עריכת כרטיס')+'</h2><label>שם הכרטיס</label><input id="tabSetNameV4" maxlength="80" value="'+esc(suggested)+'"><div class="hint">'+current.books.length+' ספרים יישמרו בכרטיס.</div><div class="tabSetPreview">'+current.books.map(b=>'<div class="tabSetPreviewRow">'+esc(b.title||b.bookId||'ספר')+(b.ref?' · '+esc(b.ref):'')+'</div>').join('')+'</div><div class="tabSetDialogActions"><button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
-  $('tabSetCancelV4');
+  const source=set||{name:'',books:books||[],existingBehavior:'keep'};
+  const draftBooks=cloneSafeV4(source.books||[]);
+  const suggested=source.name||('כרטיסיות '+(savedTabSets.length+1));
+
+  dialog.innerHTML='<div class="tabSetDialogCard tabSetEditorCard">'+
+    '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'שמירת הכרטיסיות הפתוחות':'עריכת כרטיס')+'</h2><div class="hint">אפשר לשנות סדר, להסיר ולהוסיף ספרים לפני השמירה.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
+    '<label>שם הכרטיס</label><input id="tabSetNameV4" maxlength="80" value="'+esc(suggested)+'">'+
+    '<div class="tabSetEditorSetting"><span>ספר שכבר פתוח</span><select id="tabSetExistingBehaviorV4"><option value="keep">השאר במיקום הנוכחי</option><option value="restore">שחזר למיקום השמור</option></select></div>'+
+    '<div class="tabSetEditorTools"><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button></div>'+
+    '<div class="tabSetLibraryAdd"><input id="tabSetBookSearchV4" type="text" placeholder="חפש ספר להוספה…"><div id="tabSetBookSearchResultsV4" class="tabSetBookSearchResults"></div></div>'+
+    '<div id="tabSetPreviewV4" class="tabSetPreview"></div>'+
+    '<div class="tabSetDialogActions"><button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
+
   document.body.appendChild(dialog);
-  dialog.querySelector('#tabSetCancelV4').onclick=()=>dialog.remove();
-  dialog.onclick=e=>{if(e.target===dialog)dialog.remove()};
+  const behavior=dialog.querySelector('#tabSetExistingBehaviorV4');
+  behavior.value=source.existingBehavior||'keep';
+
+  const close=()=>dialog.remove();
+  dialog.querySelector('#tabSetCloseV4').onclick=close;
+  dialog.querySelector('#tabSetCancelV4').onclick=close;
+  dialog.onclick=e=>{if(e.target===dialog)close()};
+
+  const renderDraft=()=>{
+    const box=dialog.querySelector('#tabSetPreviewV4');box.innerHTML='';
+    if(!draftBooks.length){box.innerHTML='<div class="savedTabsEmpty">אין ספרים בכרטיס.</div>';return}
+    draftBooks.forEach((book,i)=>{
+      const row=document.createElement('div');row.className='tabSetPreviewRow editable';
+      const text=document.createElement('div');text.className='tabSetPreviewText';
+      text.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><span>'+esc(book.ref||'')+'</span>';
+      const actions=document.createElement('div');actions.className='tabSetPreviewActions';
+      const up=document.createElement('button');setIconButtonV4(up,'up','העבר למעלה');up.disabled=i===0;
+      up.onclick=()=>{if(i<=0)return;[draftBooks[i-1],draftBooks[i]]=[draftBooks[i],draftBooks[i-1]];renderDraft()};
+      const down=document.createElement('button');setIconButtonV4(down,'down','העבר למטה');down.disabled=i===draftBooks.length-1;
+      down.onclick=()=>{if(i>=draftBooks.length-1)return;[draftBooks[i+1],draftBooks[i]]=[draftBooks[i],draftBooks[i+1]];renderDraft()};
+      const remove=document.createElement('button');setIconButtonV4(remove,'close','הסר מהכרטיס');remove.onclick=()=>{draftBooks.splice(i,1);renderDraft()};
+      actions.append(up,down,remove);row.append(text,actions);box.appendChild(row);
+    });
+  };
+  const addBooks=(items)=>{
+    const keys=new Set(draftBooks.map(tabKeyV4));let added=0;
+    for(const raw of items||[]){const b=normalizeOpenTabV4(raw)||compactBook(raw);const k=tabKeyV4(b);if(!k||keys.has(k))continue;keys.add(k);draftBooks.push(b);added++}
+    renderDraft();return added;
+  };
+  renderDraft();
+
+  dialog.querySelector('#tabSetAddOpenV4').onclick=async()=>{
+    let state=null;try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(_){}
+    const added=addBooks(readerTabsV4(state));toast(added?'נוספו '+added+' ספרים':'לא נמצאו ספרים חדשים להוספה');
+  };
+
+  const searchInput=dialog.querySelector('#tabSetBookSearchV4');
+  const resultsBox=dialog.querySelector('#tabSetBookSearchResultsV4');
+  let timer=0,seq=0;
+  const runLibrarySearch=()=>{
+    clearTimeout(timer);const q=searchInput.value.trim();const my=++seq;
+    if(q.length<2){resultsBox.innerHTML='';return}
+    timer=setTimeout(async()=>{
+      try{
+        const r=await Otzaria.call('library.findBooks',{query:q,limit:8});if(my!==seq)return;
+        const rows=dataOf(r)||[];resultsBox.innerHTML='';
+        rows.forEach(book=>{
+          const b=document.createElement('button');b.type='button';b.className='tabSetBookSearchResult';
+          b.innerHTML='<b>'+esc(book.title||book.book||book.bookId||'ספר')+'</b><span>'+esc(book.categoryPath||book.ref||'')+'</span>';
+          b.onclick=()=>{const added=addBooks([book]);if(added){searchInput.value='';resultsBox.innerHTML=''}else toast('הספר כבר נמצא בכרטיס')};
+          resultsBox.appendChild(b);
+        });
+        if(!rows.length)resultsBox.innerHTML='<div class="hint">לא נמצאו ספרים.</div>';
+      }catch(e){resultsBox.innerHTML='<div class="hint">לא ניתן לחפש כרגע.</div>'}
+    },220);
+  };
+  searchInput.addEventListener('input',runLibrarySearch);
+
   const input=dialog.querySelector('#tabSetNameV4');input.focus();input.select();
   dialog.querySelector('#tabSetSaveV4').onclick=async()=>{
     const name=input.value.trim();if(!name){input.focus();return}
+    if(!draftBooks.length){toast('יש להוסיף לפחות ספר אחד לכרטיס');return}
+    const existingBehavior=behavior.value==='restore'?'restore':'keep';
     if(mode==='create'){
-      const item={id:makeFeatureIdV4('tabs'),name,books:cloneSafeV4(current.books),createdAt:Date.now(),updatedAt:Date.now(),lastOpenedAt:0};
-      savedTabSets.push(item);await saveSavedTabSetsV4();renderSavedTabSetsV4();dialog.remove();toast('הכרטיס נשמר');
+      const item={id:makeFeatureIdV4('tabs'),name,books:cloneSafeV4(draftBooks),existingBehavior,createdAt:Date.now(),updatedAt:Date.now(),lastOpenedAt:0};
+      savedTabSets.push(item);await saveSavedTabSetsV4();renderSavedTabSetsV4();close();toast('הכרטיס נשמר');
       window.homePushUndo('הכרטיס “'+name+'” נוסף',async()=>{savedTabSets=savedTabSets.filter(x=>x.id!==item.id);await saveSavedTabSetsV4();renderSavedTabSetsV4()});
     }else{
-      const before=cloneSafeV4(set);set.name=name;set.updatedAt=Date.now();await saveSavedTabSetsV4();renderSavedTabSetsV4();dialog.remove();toast('שם הכרטיס עודכן');
-      window.homePushUndo('שם הכרטיס שונה',async()=>{Object.assign(set,before);await saveSavedTabSetsV4();renderSavedTabSetsV4()});
+      const before=cloneSafeV4(set);set.name=name;set.books=cloneSafeV4(draftBooks);set.existingBehavior=existingBehavior;set.updatedAt=Date.now();
+      await saveSavedTabSetsV4();renderSavedTabSetsV4();close();toast('הכרטיס עודכן');
+      window.homePushUndo('הכרטיס עודכן',async()=>{Object.assign(set,before);await saveSavedTabSetsV4();renderSavedTabSetsV4()});
     }
   };
 }
-function buildOpenParamsV4(book){
+function buildOpenParamsV4(book,navigateToPositionIfReused=true){
   const p={};
   for(const k of ['bookUid','id','bookId','type','source'])if(book&&book[k]!=null&&book[k]!=='')p[k]=book[k];
   if(book&&Number.isFinite(Number(book.index)))p.index=Number(book.index);
-  p.navigateToPositionIfReused=true;
+  p.navigateToPositionIfReused=!!navigateToPositionIfReused;
   return p;
 }
 async function openTabSetV4(set){
@@ -632,20 +702,39 @@ async function openTabSetV4(set){
   let current=[];
   try{current=readerTabsV4(dataOf(await Otzaria.call('reader.getCurrentState')))}catch(_){}
   const openKeys=new Set(current.map(tabKeyV4));
-  const missing=set.books.filter(b=>!openKeys.has(tabKeyV4(b)));
-  if(!missing.length){
+  const restoreExisting=set.existingBehavior==='restore';
+  const targets=restoreExisting?set.books:set.books.filter(b=>!openKeys.has(tabKeyV4(b)));
+
+  if(!targets.length){
     const firstKey=tabKeyV4(set.books[0]);const idx=current.findIndex(x=>tabKeyV4(x)===firstKey);
     if(idx>=0){try{await Otzaria.call('reader.activateTab',{index:idx})}catch(_){}}
-    set.lastOpenedAt=Date.now();await saveSavedTabSetsV4();renderSavedTabSetsV4();toast('כל הספרים בכרטיס כבר פתוחים');return;
+    set.lastOpenedAt=Date.now();await saveSavedTabSetsV4();renderSavedTabSetsV4();toast('כל ספרי הכרטיס כבר פתוחים');return;
   }
 
-  // Queue every bridge call before awaiting: the plugin WebView can be suspended
-  // as soon as the first successful open navigates to the reader.
-  const queued=missing.map(book=>({book,promise:Otzaria.call('reader.openBook',buildOpenParamsV4(book))}));
-  const results=await Promise.allSettled(queued.map(x=>x.promise));
+  // Queue before awaiting because opening a book can suspend the plugin WebView.
+  const queued=targets.map(book=>Otzaria.call('reader.openBook',buildOpenParamsV4(book,restoreExisting)));
+  const results=await Promise.allSettled(queued);
   const ok=results.filter(r=>r.status==='fulfilled'&&(!r.value||r.value.success!==false)).length;
   set.lastOpenedAt=Date.now();await saveSavedTabSetsV4();renderSavedTabSetsV4();
-  toast(ok===missing.length?'כל ספרי הכרטיס נפתחו':'נפתחו '+ok+' מתוך '+missing.length+' ספרים חסרים');
+  toast(ok===targets.length?'הכרטיס נפתח':'נפתחו '+ok+' מתוך '+targets.length+' ספרים');
+}
+
+async function openTabSetPreviewV4(set){
+  const old=$('tabSetPreviewDialogV4');if(old)old.remove();
+  let current=[];try{current=readerTabsV4(dataOf(await Otzaria.call('reader.getCurrentState')))}catch(_){}
+  const openKeys=new Set(current.map(tabKeyV4));
+  const dialog=document.createElement('div');dialog.id='tabSetPreviewDialogV4';dialog.className='tabSetDialog';
+  const rows=set.books.map(book=>{
+    const opened=openKeys.has(tabKeyV4(book));
+    return '<div class="tabSetPreviewRow previewOnly"><div class="tabSetPreviewText"><b>'+esc(book.title||book.bookId||'ספר')+'</b><span>'+esc(book.ref||'')+'</span></div><span class="tabSetOpenState '+(opened?'open':'missing')+'">'+(opened?'פתוח':'ייפתח')+'</span></div>';
+  }).join('');
+  dialog.innerHTML='<div class="tabSetDialogCard"><div class="tabSetDialogHeader"><div><h2>'+esc(set.name)+'</h2><div class="hint">'+set.books.length+' ספרים · '+(set.existingBehavior==='restore'?'מיקומים שמורים ישוחזרו':'ספרים פתוחים יישארו במיקומם')+'</div></div><button id="tabSetPreviewCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="tabSetPreview">'+rows+'</div><div class="tabSetDialogActions"><button id="tabSetPreviewEditV4" class="secondaryBtn" type="button">ערוך</button><button id="tabSetPreviewOpenV4" class="primaryBtn" type="button">פתח את כולם</button></div></div>';
+  document.body.appendChild(dialog);
+  const close=()=>dialog.remove();
+  dialog.querySelector('#tabSetPreviewCloseV4').onclick=close;
+  dialog.onclick=e=>{if(e.target===dialog)close()};
+  dialog.querySelector('#tabSetPreviewEditV4').onclick=()=>{close();openTabSetEditorV4({mode:'edit',set})};
+  dialog.querySelector('#tabSetPreviewOpenV4').onclick=()=>{close();openTabSetV4(set)};
 }
 function openTabSetActionsV4(set,anchor){
   const old=document.querySelector('.tabSetActionMenu');if(old)old.remove();
@@ -653,7 +742,7 @@ function openTabSetActionsV4(set,anchor){
   const actions=[
     ['פתח את כולם',()=>openTabSetV4(set)],
     ['עדכן מיקומים מהלשוניות הפתוחות',()=>updateTabSetPositionsV4(set)],
-    ['שנה שם',()=>openTabSetEditorV4({mode:'edit',set})],
+    ['ערוך כרטיס',()=>openTabSetEditorV4({mode:'edit',set})],
     ['מחק',()=>deleteTabSetV4(set)]
   ];
   actions.forEach(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=e=>{e.stopPropagation();menu.remove();fn()};menu.appendChild(b)});
