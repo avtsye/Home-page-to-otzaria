@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.0.8
+
+### Added
+- Right-click context menu for saved book sets with open/select, update positions, export, edit, and delete actions.
+- Partial opening and stronger management of saved book sets inspired by the attached reference plugin.
+- Book-only filtering for saved sets so plugin/tool tabs are never stored.
+
+### Fixed
+- Restored external links in the About screen.
+- Stabilized saved-tab initialization so one failed feature can no longer break the entire home page.
+- Fixed feedback/settings layout sizing and saved-tab visibility.
+- Balanced saved-tab toolbar button sizes.
+
+
 ## 4.0.7
 
 ### Added
