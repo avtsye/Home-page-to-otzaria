@@ -1,0 +1,27 @@
+{
+  "id": "new-tab-home",
+  "name": "דף הבית",
+  "version": "3.1.0",
+  "minAppVersion": "0.9.97",
+  "entrypoint": "index.html",
+  "permissions": [
+    "app.info.read",
+    "navigation.write",
+    "library.books.read",
+    "reader.open",
+    "search.fulltext.read",
+    "history.read",
+    "bookmarks.read",
+    "plugin.open_other",
+    "plugin.storage.read",
+    "plugin.storage.write",
+    "app.startup_contributions",
+    "app.run_on_startup"
+  ],
+  "contributes": {
+    "startup": {
+      "activationEvents": ["app.startup"],
+      "keepAlive": false
+    }
+  }
+}
