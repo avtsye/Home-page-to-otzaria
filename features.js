@@ -109,7 +109,7 @@ function styleFeatureLayer(){
   .savedTabGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.savedTabCard{position:relative;border:1px solid var(--color-outline-variant,var(--outline));background:var(--color-surface,var(--surface));border-radius:12px;padding:14px;cursor:pointer;text-align:right;min-width:0}.savedTabCard:hover{background:var(--color-surface-container-low,var(--surface2));border-color:var(--color-primary,var(--primary))}.savedTabCard h3{margin:0 0 5px;font-size:14px}.savedTabMeta{font-size:10px;color:var(--color-on-surface-variant,var(--muted));margin-bottom:10px}.savedTabBooks{display:grid;gap:4px}.savedTabBook{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.savedTabMore{font-size:10px;color:var(--color-on-surface-variant,var(--muted))}.savedTabActions{display:flex;gap:4px;position:absolute;top:8px;inset-inline-end:8px}.savedTabActions button{width:30px;height:30px}
   .savedTabsEmpty{padding:24px;text-align:center;color:var(--color-on-surface-variant,var(--muted))}
   .tabSetDialog{position:fixed;inset:0;z-index:170;background:color-mix(in srgb,var(--color-scrim,#000) 30%,transparent);display:grid;place-items:center;padding:16px}.tabSetDialogCard{width:min(520px,100%);max-height:80vh;overflow:auto;background:var(--color-surface-container-high,var(--surface3));border-radius:18px;padding:16px;box-shadow:0 8px 24px color-mix(in srgb,var(--color-shadow,#000) 18%,transparent)}.tabSetDialogCard h2{margin:0 0 10px;font-size:18px}.tabSetDialogCard input{width:100%;margin-bottom:10px}.tabSetPreview{display:grid;gap:5px;max-height:300px;overflow:auto;margin:10px 0}.tabSetPreviewRow{padding:8px 10px;background:var(--color-surface,var(--surface));border-radius:8px;font-size:11px}.tabSetDialogActions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
-  .tabSetDialogHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.tabSetDialogHeader h2{margin:0}.tabSetEditorSetting{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:10px 0}.tabSetEditorSetting select{border:1px solid var(--color-outline,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px}.tabSetEditorTools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.tabSetLibraryAdd{position:relative;margin:10px 0}.tabSetLibraryAdd>input{width:100%}.tabSetBookSearchResults{display:grid;gap:4px;margin-top:5px;max-height:180px;overflow:auto}.tabSetBookSearchResult{display:flex;justify-content:space-between;gap:10px;text-align:start;border:1px solid var(--color-outline-variant,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px;cursor:pointer}.tabSetBookSearchResult:hover{background:var(--color-surface-container-low,var(--surface2))}.tabSetBookSearchResult span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetPreviewRow.editable,.tabSetPreviewRow.previewOnly{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}.tabSetPreviewText{display:grid;gap:2px;min-width:0}.tabSetPreviewText b,.tabSetPreviewText span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tabSetPreviewText span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetPreviewActions{display:flex;gap:3px}.tabSetPreviewActions button:disabled{opacity:.35;cursor:default}.tabSetOpenState{font-size:10px;padding:4px 7px;border-radius:999px}.tabSetOpenState.open{background:var(--color-secondary-container,var(--soft));color:var(--color-on-secondary-container,var(--text))}.tabSetOpenState.missing{background:var(--color-surface-container-high,var(--surface3));color:var(--color-on-surface-variant,var(--muted))}
+  .tabSetDialogHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.tabSetDialogHeader h2{margin:0}.tabSetEditorSetting{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:10px 0}.tabSetEditorSetting select{border:1px solid var(--color-outline,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px}.tabSetEditorTools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.tabSetLibraryAdd{position:relative;margin:10px 0}.tabSetLibraryAdd>input{width:100%}.tabSetBookSearchResults{display:grid;gap:4px;margin-top:5px;max-height:180px;overflow:auto}.tabSetBookSearchResult{display:flex;justify-content:space-between;gap:10px;text-align:start;border:1px solid var(--color-outline-variant,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:8px 10px;cursor:pointer}.tabSetBookSearchResult:hover{background:var(--color-surface-container-low,var(--surface2))}.tabSetBookSearchResult span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetPreviewRow.editable,.tabSetPreviewRow.previewOnly{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}.tabSetPreviewText{display:grid;gap:2px;min-width:0}.tabSetPreviewText b,.tabSetPreviewText span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tabSetPreviewText span{color:var(--color-on-surface-variant,var(--muted));font-size:10px}.tabSetBookControls{display:flex;align-items:center;gap:6px}.tabSetPositionMode{max-width:125px;border:1px solid var(--color-outline,var(--outline));background:var(--color-surface,var(--surface));border-radius:8px;padding:6px 8px}.tabSetPreviewActions{display:flex;gap:3px}.tabSetPreviewActions button:disabled{opacity:.35;cursor:default}.tabSetOpenState{font-size:10px;padding:4px 7px;border-radius:999px}.tabSetOpenState.open{background:var(--color-secondary-container,var(--soft));color:var(--color-on-secondary-container,var(--text))}.tabSetOpenState.missing{background:var(--color-surface-container-high,var(--surface3));color:var(--color-on-surface-variant,var(--muted))}
   .groupBookRow{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center}.groupBookOpen{min-width:0}.groupBookRemove{border:0;background:transparent;color:var(--color-on-surface-variant,var(--muted));width:30px;height:30px;border-radius:999px;cursor:pointer}.groupBookRemove:hover{background:var(--color-error-container);color:var(--color-error)}
   .groupPickerAction.selected{color:var(--color-primary,var(--primary));background:var(--color-primary-container,var(--soft))}
   @media(max-width:700px){.homeDashboard{grid-template-columns:1fr 1fr}.diagnosticGrid{grid-template-columns:1fr}.savedTabGrid{grid-template-columns:1fr}}
@@ -669,22 +669,22 @@ async function captureCurrentTabsV4(){
 function openTabSetEditorV4({mode,set,books}){
   const old=$('tabSetDialogV4');if(old)old.remove();
   const dialog=document.createElement('div');dialog.id='tabSetDialogV4';dialog.className='tabSetDialog';
-  const source=set||{name:'',books:books||[],existingBehavior:'keep'};
+  const source=set||{name:'',books:books||[],conflictDefault:'ask'};
   const draftBooks=cloneSafeV4(source.books||[]);
   const suggested=source.name||('כרטיסיות '+(savedTabSets.length+1));
 
   dialog.innerHTML='<div class="tabSetDialogCard tabSetEditorCard">'+
     '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'שמירת הכרטיסיות הפתוחות':'עריכת כרטיס')+'</h2><div class="hint">אפשר לשנות סדר, להסיר ולהוסיף ספרים לפני השמירה.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
     '<label>שם הכרטיס</label><input id="tabSetNameV4" maxlength="80" value="'+esc(suggested)+'">'+
-    '<div class="tabSetEditorSetting"><span>ספר שכבר פתוח</span><select id="tabSetExistingBehaviorV4"><option value="keep">השאר במיקום הנוכחי</option><option value="restore">שחזר למיקום השמור</option></select></div>'+
-    '<div class="tabSetEditorTools"><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button></div>'+
+    '<div class="tabSetEditorSetting"><span>ספר שכבר פתוח</span><select id="tabSetConflictDefaultV4"><option value="ask">שאל בכל פתיחה</option><option value="keep">השאר במיקום הנוכחי</option><option value="restore">שחזר למיקום השמור</option></select></div>'+
+    '<div class="tabSetEditorTools"><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button><button id="tabSetRepairV4" class="secondaryBtn" type="button">בדוק ותקן ספרים</button></div>'+
     '<div class="tabSetLibraryAdd"><input id="tabSetBookSearchV4" type="text" placeholder="חפש ספר להוספה…"><div id="tabSetBookSearchResultsV4" class="tabSetBookSearchResults"></div></div>'+
     '<div id="tabSetPreviewV4" class="tabSetPreview"></div>'+
     '<div class="tabSetDialogActions"><button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
 
   document.body.appendChild(dialog);
-  const behavior=dialog.querySelector('#tabSetExistingBehaviorV4');
-  behavior.value=source.existingBehavior||'keep';
+  const behavior=dialog.querySelector('#tabSetConflictDefaultV4');
+  behavior.value=source.conflictDefault||'ask';
 
   const close=()=>dialog.remove();
   dialog.querySelector('#tabSetCloseV4').onclick=close;
@@ -698,13 +698,19 @@ function openTabSetEditorV4({mode,set,books}){
       const row=document.createElement('div');row.className='tabSetPreviewRow editable';
       const text=document.createElement('div');text.className='tabSetPreviewText';
       text.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><span>'+esc(book.ref||'')+'</span>';
+      const controls=document.createElement('div');controls.className='tabSetBookControls';
+      const mode=document.createElement('select');mode.className='tabSetPositionMode';mode.title='מיקום פתיחה';
+      mode.innerHTML='<option value="fixed">מיקום שמור</option><option value="last">המיקום האחרון</option>';
+      mode.value=book.positionMode||'fixed';
+      mode.onchange=()=>{book.positionMode=mode.value==='last'?'last':'fixed'};
+      controls.appendChild(mode);
       const actions=document.createElement('div');actions.className='tabSetPreviewActions';
       const up=document.createElement('button');setIconButtonV4(up,'up','העבר למעלה');up.disabled=i===0;
       up.onclick=()=>{if(i<=0)return;[draftBooks[i-1],draftBooks[i]]=[draftBooks[i],draftBooks[i-1]];renderDraft()};
       const down=document.createElement('button');setIconButtonV4(down,'down','העבר למטה');down.disabled=i===draftBooks.length-1;
       down.onclick=()=>{if(i>=draftBooks.length-1)return;[draftBooks[i+1],draftBooks[i]]=[draftBooks[i],draftBooks[i+1]];renderDraft()};
       const remove=document.createElement('button');setIconButtonV4(remove,'close','הסר מהכרטיס');remove.onclick=()=>{draftBooks.splice(i,1);renderDraft()};
-      actions.append(up,down,remove);row.append(text,actions);box.appendChild(row);
+      actions.append(up,down,remove);controls.appendChild(actions);row.append(text,controls);box.appendChild(row);
     });
   };
   const addBooks=(items)=>{
@@ -717,6 +723,33 @@ function openTabSetEditorV4({mode,set,books}){
   dialog.querySelector('#tabSetAddOpenV4').onclick=async()=>{
     let state=null;try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(_){}
     const added=addBooks(readerTabsV4(state));toast(added?'נוספו '+added+' ספרים':'לא נמצאו ספרים חדשים להוספה');
+  };
+
+  dialog.querySelector('#tabSetRepairV4').onclick=async()=>{
+    const button=dialog.querySelector('#tabSetRepairV4');button.disabled=true;
+    let repaired=0,missing=0;
+    for(let i=0;i<draftBooks.length;i++){
+      const book=draftBooks[i];
+      try{
+        const q=String(book.title||book.bookId||'').trim();
+        if(!q){missing++;continue}
+        const r=await Otzaria.call('library.findBooks',{query:q,limit:12});
+        const rows=dataOf(r)||[];
+        let best=null,bestScore=-1;
+        for(const candidate of rows){
+          const score=tabIdentityScoreV4(normalizeOpenTabV4(candidate)||candidate,book);
+          if(score>bestScore){best=candidate;bestScore=score}
+        }
+        if(!best&&rows.length===1)best=rows[0];
+        if(best){
+          const normalized=normalizeOpenTabV4({...best,index:book.index,ref:book.ref,positionMode:book.positionMode})||book;
+          draftBooks[i]={...book,...normalized,index:book.index,ref:book.ref,positionMode:book.positionMode||'fixed'};
+          repaired++;
+        }else missing++;
+      }catch(_){missing++}
+    }
+    renderDraft();button.disabled=false;
+    toast(repaired+' ספרים אומתו/תוקנו'+(missing?' · '+missing+' לא זוהו':''));
   };
 
   const searchInput=dialog.querySelector('#tabSetBookSearchV4');
@@ -745,13 +778,13 @@ function openTabSetEditorV4({mode,set,books}){
   dialog.querySelector('#tabSetSaveV4').onclick=async()=>{
     const name=input.value.trim();if(!name){input.focus();return}
     if(!draftBooks.length){toast('יש להוסיף לפחות ספר אחד לכרטיס');return}
-    const existingBehavior=behavior.value==='restore'?'restore':'keep';
+    const conflictDefault=['keep','restore'].includes(behavior.value)?behavior.value:'ask';
     if(mode==='create'){
-      const item={id:makeFeatureIdV4('tabs'),name,books:cloneSafeV4(draftBooks),existingBehavior,createdAt:Date.now(),updatedAt:Date.now(),lastOpenedAt:0};
+      const item={id:makeFeatureIdV4('tabs'),name,books:cloneSafeV4(draftBooks),conflictDefault,createdAt:Date.now(),updatedAt:Date.now(),lastOpenedAt:0};
       savedTabSets.push(item);await saveSavedTabSetsV4();renderSavedTabSetsV4();close();toast('הכרטיס נשמר');
       window.homePushUndo('הכרטיס “'+name+'” נוסף',async()=>{savedTabSets=savedTabSets.filter(x=>x.id!==item.id);await saveSavedTabSetsV4();renderSavedTabSetsV4()});
     }else{
-      const before=cloneSafeV4(set);set.name=name;set.books=cloneSafeV4(draftBooks);set.existingBehavior=existingBehavior;set.updatedAt=Date.now();
+      const before=cloneSafeV4(set);set.name=name;set.books=cloneSafeV4(draftBooks);set.conflictDefault=conflictDefault;set.updatedAt=Date.now();
       await saveSavedTabSetsV4();renderSavedTabSetsV4();close();toast('הכרטיס עודכן');
       window.homePushUndo('הכרטיס עודכן',async()=>{Object.assign(set,before);await saveSavedTabSetsV4();renderSavedTabSetsV4()});
     }
