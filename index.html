@@ -350,6 +350,42 @@ mark{
   .brand{font-size:28px!important}
   .settingsDialog{width:min(100%,430px)!important}
 }
+.iconTextBtn,.quick button{display:inline-flex!important;align-items:center!important;gap:7px!important}
+.iconTextBtn svg,.quick button svg,.iconOnlyBtn svg,.searchIcon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.iconOnlyBtn{display:grid!important;place-items:center!important;padding:9px!important}
+.heroHeader{text-align:start!important}
+.heroTitleRow{display:flex;align-items:center;justify-content:center;gap:12px;max-width:860px;margin:auto}
+.heroTitleRow>div{min-width:0}
+.heroLogo{margin:0!important;width:48px!important;height:48px!important}
+.brand{font-size:26px!important}
+.subtitle{margin-top:4px!important}
+.searchWrap{max-width:860px!important}
+.quick{margin-top:16px!important}
+.quick button{padding:8px 11px!important;color:var(--color-on-surface-variant)!important}
+.quick button:hover{color:var(--color-on-secondary-container)!important}
+.sectionHead h2,.searchHead h2{font-weight:650!important;color:var(--color-on-surface)!important}
+.sectionHead{margin-bottom:8px!important}
+.secondaryBtn{font-weight:550!important}
+.segmentedSetting{display:flex!important;grid-template-columns:none!important;gap:0!important;margin:0 16px 12px!important;border:1px solid var(--color-outline)!important;border-radius:var(--radius-sm)!important;overflow:hidden!important}
+.segmentedSetting .option{flex:1!important;justify-content:center!important;border:0!important;border-inline-start:1px solid var(--color-outline)!important;padding:10px 8px!important}
+.segmentedSetting .option:first-child{border-inline-start:0!important}
+.segmentedSetting .option input{position:absolute;opacity:0;pointer-events:none}
+.segmentedSetting .option:has(input:checked){background:var(--color-secondary-container)!important;color:var(--color-on-secondary-container)!important}
+.checkGrid .option{position:relative;padding-inline-end:62px!important}
+.checkGrid .option input[type=checkbox]{appearance:none!important;-webkit-appearance:none!important;position:absolute!important;inset-inline-end:0!important;top:50%!important;transform:translateY(-50%)!important;width:46px!important;height:26px!important;border-radius:999px!important;border:2px solid var(--color-outline)!important;background:var(--color-surface-container-highest)!important;cursor:pointer!important;transition:.18s!important}
+.checkGrid .option input[type=checkbox]::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:16px;height:16px;border-radius:50%;background:var(--color-outline);transition:.18s}
+.checkGrid .option input[type=checkbox]:checked{background:var(--color-primary)!important;border-color:var(--color-primary)!important}
+.checkGrid .option input[type=checkbox]:checked::after{transform:translateX(20px);background:var(--color-on-primary)}
+.settingRows select{min-width:120px;background:var(--color-surface)!important;border:1px solid var(--color-outline)!important;border-radius:var(--radius-sm)!important;padding:8px 10px!important}
+.feedbackTypeRow{display:flex!important;gap:0!important;border:1px solid var(--color-outline)!important;border-radius:var(--radius-sm)!important;overflow:hidden!important;margin:0 16px!important}
+.feedbackTypeRow .option{flex:1!important;justify-content:center!important;border:0!important;border-inline-start:1px solid var(--color-outline)!important}
+.feedbackTypeRow .option:first-child{border-inline-start:0!important}
+.pinnedBookBtn{margin:0 16px 10px!important}
+.aboutBox{padding:18px 16px!important}
+.aboutBox img{box-shadow:none!important}
+.shortcutList{padding:0 16px 16px!important}
+.shortcutList kbd{background:var(--color-surface-container-high)!important;border-color:var(--color-outline-variant)!important}
+@media(max-width:620px){.heroTitleRow{justify-content:flex-start}.quick{justify-content:flex-start!important;overflow-x:auto;flex-wrap:nowrap!important;padding-bottom:4px}.quick button{white-space:nowrap}}
 </style>
 
 </head>
