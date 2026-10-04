@@ -299,7 +299,17 @@ function renderPlugins(){
   const box=$('plugins');
   box.innerHTML='';
   const q=(($('pluginFilter')&&$('pluginFilter').value)||'').trim().toLowerCase();
+  const timeline=allPlugins.find(p=>p.pluginId==='timeline-plugin');
+  if(timeline&&timeline.enabled&&(!q||'timeline ציר זמן המשך עבודה'.includes(q))){
+    const cont=document.createElement('button');
+    cont.className='pluginCard timelineContinueCard';
+    cont.title='המשך מהמקום שבו הפסקת באמצעות Timeline';
+    cont.innerHTML='<div class="pluginIcon">'+pluginIconMarkup(timeline.toolTabIconName||'history_24_regular')+'</div><b>המשך עבודה</b><small>פתח את מצב העבודה האחרון ב-Timeline</small>';
+    cont.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:'timeline-plugin',param:{action:'continueLatest',source:'home-page'}});
+    box.appendChild(cont);
+  }
   const rows=allPlugins.filter(p=>{
+    if(p.pluginId==='timeline-plugin')return false;
     const name=String(p.name||'').toLowerCase();
     const id=String(p.pluginId||'').toLowerCase();
     return !q||name.includes(q)||id.includes(q);
