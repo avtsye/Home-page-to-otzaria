@@ -425,7 +425,8 @@ function renderSearchModeSegments(){
     b.className=option.value===active?'active':'';
     b.setAttribute('role','tab');
     b.setAttribute('aria-selected',option.value===active?'true':'false');
-    b.onclick=()=>{
+    b.onclick=e=>{
+      e.stopPropagation();
       if(select.value===option.value)return;
       select.value=option.value;
       searchChanged(true);
@@ -539,13 +540,15 @@ function renderDynamicSearchControls(){
     b.className='toggleChip'+(s.eras&&s.eras.includes(era)?' on':'');
     b.dataset.value=era;
     b.textContent=era;
-    b.onclick=()=>{
+    b.onclick=e=>{
+      e.stopPropagation();
       b.classList.toggle('on');
       searchChanged(true);
     };
     eras.appendChild(b);
   }
-  if(!(searchOptions.eras||[]).length)eras.innerHTML='<span class="hint">אין תקופות זמינות מהמארח.</span>';
+  const eraGroup=$('eraOptionsGroup');
+  if(eraGroup)eraGroup.hidden=!(searchOptions.eras||[]).length;
 
   const wordBox=$('wordOptionChips');
   wordBox.innerHTML='';
@@ -560,13 +563,15 @@ function renderDynamicSearchControls(){
     b.className='toggleChip'+(on?' on':'');
     b.dataset.value=opt;
     b.textContent=opt;
-    b.onclick=()=>{
+    b.onclick=e=>{
+      e.stopPropagation();
       b.classList.toggle('on');
       searchChanged(true);
     };
     wordBox.appendChild(b);
   }
-  if(mode!=='fuzzy'&&!supported.length)wordBox.innerHTML='<span class="hint">אין אפשרויות מילים למצב הזה.</span>';
+  const wordGroup=$('wordOptionsGroup');
+  if(wordGroup)wordGroup.hidden=mode==='fuzzy'||!supported.length;
   renderSearchSummary();
 }
 function renderSearchSummary(){
@@ -1123,6 +1128,7 @@ function wire(){
   $('searchGo').onclick=()=>runSearch(false);
   $('advancedToggle').setAttribute('aria-expanded','false');
   $('advancedToggle').onclick=toggleAdvancedSearch;
+  $('advancedPanel').addEventListener('click',e=>e.stopPropagation());
   $('closeAdvancedSearch').onclick=closeAdvancedSearch;
   $('resetSearchOptions').onclick=resetSearchOptions;
 
@@ -1182,7 +1188,9 @@ function wire(){
   $('sendFeedback').onclick=sendFeedback;
 
   document.addEventListener('click',e=>{
-    if(!e.target.closest('.searchWrap')){
+    const path=typeof e.composedPath==='function'?e.composedPath():[];
+    const insideSearch=path.includes($('advancedPanel'))||path.includes(document.querySelector('.searchWrap'))||!!(e.target&&e.target.closest&&e.target.closest('.searchWrap'));
+    if(!insideSearch){
       $('suggestions').hidden=true;
       closeAdvancedSearch();
     }
