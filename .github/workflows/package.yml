@@ -49,22 +49,28 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist build debug-build dev-compat-build
-          rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
+          rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin"
           zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
+
           printf "debug" > debug.flag
           cp manifest.json index.html main.js features.js otzaria-icon.png debug.flag debug-build/
-          (cd debug-build && zip -9 "../build/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png debug.flag)
+          (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png debug.flag)
+          cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" build/
+
           cp manifest.json index.html main.js features.js otzaria-icon.png dev-compat-build/
           node -e "const fs=require('fs'); const p='dev-compat-build/manifest.json'; const m=JSON.parse(fs.readFileSync(p,'utf8')); m.minAppVersion='0.9.97'; fs.writeFileSync(p,JSON.stringify(m,null,2)+'\\n')"
-          (cd dev-compat-build && zip -9 "../build/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png)
+          (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png)
+          cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" build/
       - name: Commit packaged plugin to dist
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
+          git add "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" \
+                  "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" \
+                  "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin"
           if git diff --cached --quiet; then
             echo "dist already up to date"
           else
