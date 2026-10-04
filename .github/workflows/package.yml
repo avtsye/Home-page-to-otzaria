@@ -12,13 +12,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -32,11 +34,26 @@ jobs:
         run: |
           VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-      - name: Build package
+      - name: Build package into dist
         shell: bash
         run: |
-          mkdir -p build
-          zip -9 -j "build/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js otzaria-icon.png
+          mkdir -p dist build
+          rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
+          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js otzaria-icon.png
+          cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
+      - name: Commit packaged plugin to dist
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
+          if git diff --cached --quiet; then
+            echo "dist already up to date"
+          else
+            git commit -m "Package plugin ${{ steps.version.outputs.version }} [skip ci]"
+            git push
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: home-page-to-otzaria-${{ steps.version.outputs.version }}
