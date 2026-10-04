@@ -14,8 +14,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.0.8','manifest version must be 4.0.8');
-assert(html.includes('4.0.8'),'UI must show current version');
+assert(manifest.version==='4.0.9','manifest version must be 4.0.9');
+assert(html.includes('4.0.9'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
@@ -74,3 +74,12 @@ assert(html.includes('Saved-tab toolbar proportions'),'saved-tab toolbar sizing 
 assert(/oncontextmenu/.test(features),'saved-set right-click menu missing');
 assert(/openTabSetActionsV4/.test(features),'saved-set context actions missing');
 assert(html.includes('Saved-set context menu polish'),'saved-set context menu styling missing');
+
+assert(/setupGlobalContextMenusV5/.test(features),'global context menu setup missing');
+assert(/showHomeContextMenuV5/.test(features),'context menu renderer missing');
+assert(/contextForBookV5/.test(features),'book context menu missing');
+assert(/contextForTabSetV5/.test(features),'saved-tab context menu missing');
+assert(/contextForPluginV5/.test(features),'plugin context menu missing');
+assert(/contextForGroupV5/.test(features),'group context menu missing');
+assert(/contextForQuickPinV5/.test(features),'quick-pin context menu missing');
+assert(html.includes('Unified right-click context menus.'),'context menu CSS missing');
