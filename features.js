@@ -1,6 +1,6 @@
 /* Home Page to Otzaria 4.0 feature layer */
 const FEATURE_KEY='homeFeaturesV4';
-const FEATURE_VERSION='4.0.3';
+const FEATURE_VERSION='4.0.4';
 const CACHE_TTL=30000;
 const memCache=new Map();
 const debugLog=[];
@@ -309,19 +309,21 @@ async function pinCurrentBook(){
   }catch(e){toast('לא ניתן להצמיד את הספר הנוכחי')}
 }
 function injectSettingsTabsV4(){
-  const tabs=document.querySelector('.settingsTabs');if(!tabs||tabs.querySelector('[data-settings-tab="appearance"]'))return;
-  for(const [id,label] of [['appearance','מראה'],['diagnostics','אבחון'],['about','אודות']]){const b=document.createElement('button');b.className='settingsTab';b.dataset.settingsTab=id;b.type='button';b.textContent=label;b.onclick=()=>setSettingsTab(id);tabs.appendChild(b)}
-  const body=$('settingsTab-general').parentElement;
-  const appearance=document.createElement('div');appearance.id='settingsTab-appearance';appearance.className='settingsPane';
-  appearance.innerHTML='<section class="settingBlock"><h3>מראה וצפיפות</h3><div class="settingRow"><span>צפיפות</span><select id="densitySelect"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></div><div class="settingRow"><span>רקע</span><select id="backgroundSelect"><option value="aurora">Aurora</option><option value="soft">עדין</option><option value="flat">שטוח</option></select></div><div class="settingRow"><span>גודל כרטיסים</span><select id="cardSizeSelect"><option value="normal">רגיל</option><option value="large">גדול</option></select></div><div class="settingRow"><span>עמודות</span><select id="columnsSelect"><option value="1">אחת</option><option value="2">שתיים</option><option value="3">שלוש</option></select></div><div class="settingRow"><span>צבע הדגשה</span><select id="accentSelect"><option value="host">אוצריא</option><option value="purple">סגול</option><option value="blue">כחול</option><option value="green">ירוק</option><option value="rose">ורוד כהה</option></select></div><div class="settingRow"><span>פינות</span><select id="radiusSelect"><option value="rounded">עגולות</option><option value="soft">עדינות</option><option value="square">מרובעות</option></select></div><label class="option"><input id="focusModeSetting" type="checkbox"> מצב Focus — רק החיפוש</label><label class="option"><input id="dashboardSetting" type="checkbox"> הצג לוח נתונים קטן</label></section><section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn" type="button">📌 הצמד את הספר הפעיל</button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>';
-  body.appendChild(appearance);
-  const diag=document.createElement('div');diag.id='settingsTab-diagnostics';diag.className='settingsPane';
-  diag.innerHTML='<section class="settingBlock"><h3>אבחון ותאימות</h3><div id="diagnosticGrid" class="diagnosticGrid"></div><div class="feedbackActions"><button id="runDiagnostics" class="secondaryBtn" type="button">הרץ בדיקה</button><button id="copyDiagnostics" class="secondaryBtn" type="button">העתק דוח</button></div></section><section class="settingBlock"><h3>יומן Debug</h3><pre id="debugOutput" style="white-space:pre-wrap;font-size:9px;max-height:220px;overflow:auto"></pre></section>';
-  body.appendChild(diag);
-  const about=document.createElement('div');about.id='settingsTab-about';about.className='settingsPane';
-  about.innerHTML='<section class="settingBlock aboutBox"><img src="plugin-icon.jpg" alt=""><h3>דף הבית לאוצריא</h3><p>גרסה '+FEATURE_VERSION+' · מאת אברהם mch</p><p>חיפוש, המשך קריאה, תוספים, מועדפים והתאמה אישית במקום אחד.</p><a href="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט</a><p><a href="https://github.com/avtsye/Home-page-to-otzaria/tree/main/dist">בדוק גרסאות חדשות</a></p></section><section class="settingBlock"><h3>קיצורי מקלדת</h3><p class="hint">Ctrl+K — חיפוש · Ctrl+, — הגדרות · Esc — סגירת חלונות · Alt+F — מצב Focus</p></section>';
-  body.appendChild(about);
-  $('densitySelect').value=featureSettings.density;$('backgroundSelect').value=featureSettings.background;$('cardSizeSelect').value=featureSettings.cardSize||'normal';$('columnsSelect').value=featureSettings.columns||'2';$('accentSelect').value=featureSettings.accent||'host';$('radiusSelect').value=featureSettings.radius||'rounded';$('focusModeSetting').checked=featureSettings.focusMode;$('dashboardSetting').checked=featureSettings.showDashboard;
+  const required=['densitySelect','backgroundSelect','cardSizeSelect','columnsSelect','accentSelect','radiusSelect','focusModeSetting','dashboardSetting','pinCurrentBook','runDiagnostics','copyDiagnostics'];
+  if(required.some(id=>!$(id))){
+    fLog('error','Settings markup is incomplete',required.filter(id=>!$(id)).join(', '));
+    return;
+  }
+
+  $('densitySelect').value=featureSettings.density;
+  $('backgroundSelect').value=featureSettings.background;
+  $('cardSizeSelect').value=featureSettings.cardSize||'normal';
+  $('columnsSelect').value=featureSettings.columns||'2';
+  $('accentSelect').value=featureSettings.accent||'host';
+  $('radiusSelect').value=featureSettings.radius||'rounded';
+  $('focusModeSetting').checked=featureSettings.focusMode;
+  $('dashboardSetting').checked=featureSettings.showDashboard;
+
   $('densitySelect').onchange=async e=>{featureSettings.density=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('backgroundSelect').onchange=async e=>{featureSettings.background=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('cardSizeSelect').onchange=async e=>{featureSettings.cardSize=e.target.value;await saveFeatures();applyFeatureAppearance()};
@@ -330,7 +332,13 @@ function injectSettingsTabsV4(){
   $('radiusSelect').onchange=async e=>{featureSettings.radius=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('focusModeSetting').onchange=async e=>{featureSettings.focusMode=e.target.checked;await saveFeatures();applyFeatureAppearance()};
   $('dashboardSetting').onchange=async e=>{featureSettings.showDashboard=e.target.checked;await saveFeatures();if($('homeDashboard'))$('homeDashboard').hidden=!e.target.checked};
-  $('pinCurrentBook').onclick=pinCurrentBook;$('runDiagnostics').onclick=runDiagnostics;$('copyDiagnostics').onclick=copyDiagnostics;
+  $('pinCurrentBook').onclick=pinCurrentBook;
+  $('runDiagnostics').onclick=runDiagnostics;
+  $('copyDiagnostics').onclick=copyDiagnostics;
+
+  document.querySelectorAll('.settingsTab').forEach(b=>{
+    b.onclick=()=>setSettingsTab(b.dataset.settingsTab);
+  });
 }
 async function probe(name,fn){
   try{const r=await fn();return{name,ok:!!(r&&r.success!==false),detail:r&&r.success===false?(r.error||'נכשל'):'זמין'}}
@@ -375,14 +383,10 @@ function rememberUiState(){
   if(featureSettings.advancedOpen){$('advancedPanel').hidden=false;$('advancedToggle').classList.add('active')}
 }
 function enhanceFeedbackCategories(){
-  const block=$('settingsTab-feedback');if(!block||$('feedbackCategory'))return;
-  const label=document.querySelector('label[for="feedbackText"]');
-  if(!label)return;
-  const wrap=document.createElement('div');wrap.className='settingRow';
-  wrap.innerHTML='<span>קטגוריה</span><select id="feedbackCategory"><option value="general">כללי</option><option value="search">חיפוש</option><option value="display">תצוגה</option><option value="plus">כפתור +</option><option value="plugins">תוספים</option><option value="performance">ביצועים</option></select>';
-  label.parentElement.insertBefore(wrap,label);
-  $('feedbackCategory').value=featureSettings.feedbackCategory||'general';
-  $('feedbackCategory').onchange=async e=>{featureSettings.feedbackCategory=e.target.value;await saveFeatures()};
+  const select=$('feedbackCategory');
+  if(!select)return;
+  select.value=featureSettings.feedbackCategory||'general';
+  select.onchange=async e=>{featureSettings.feedbackCategory=e.target.value;await saveFeatures()};
 }
 function setupKeyboard(){
   document.addEventListener('keydown',e=>{
