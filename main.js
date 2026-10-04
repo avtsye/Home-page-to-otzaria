@@ -22,6 +22,7 @@ const DEFAULT_SEARCH={
   options:{}
 };
 const DEFAULT_SETTINGS={
+  plusEnabled:true,
   plusTarget:'plugin',
   sectionOrder:['groups','recent','bookmarks','history','plugins'],
   visibleSections:{groups:true,plugins:true,recent:true,bookmarks:true,history:true},
@@ -64,6 +65,7 @@ function normalizeSettings(raw){
   const valid=DEFAULT_SETTINGS.sectionOrder;
   const incoming=Array.isArray(raw&&raw.sectionOrder)?raw.sectionOrder:[];
   s.sectionOrder=incoming.filter(x=>valid.includes(x)).concat(valid.filter(x=>!incoming.includes(x)));
+  s.plusEnabled=s.plusEnabled!==false;
   if(!['plugin','library','reading'].includes(s.plusTarget))s.plusTarget='plugin';
   if(![5,7,10,12,20].includes(Number(s.listLimit)))s.listLimit=7;
   return s;
@@ -886,11 +888,9 @@ async function runSearch(append){
 }
 
 async function syncPlusRegistration(){
-  // The + button exists only while at least one plugin is registered.
-  // Keep this plugin registered for every configured target; the target
-  // itself is resolved after plugin.page_opened fires.
+  // When disabled, unregister this plugin from Otzaria's new-tab (+) contribution.
   try{
-    await Otzaria.call('plugin.setNewTabPage',{enabled:true});
+    await Otzaria.call('plugin.setNewTabPage',{enabled:settings.plusEnabled!==false});
   }catch(_){}
 }
 async function closeSelfTabIfPresent(){
@@ -902,6 +902,7 @@ async function closeSelfTabIfPresent(){
 }
 
 async function handleNewTabOpen(){
+  if(settings.plusEnabled===false)return;
   if(settings.plusTarget==='library'){
     await Otzaria.call('navigation.goTo',{target:'library'});
     await closeSelfTabIfPresent();
@@ -923,6 +924,10 @@ async function handleNewTabOpen(){
 }
 
 function renderSettings(){
+  const plusEnabled=$('plusEnabled');
+  if(plusEnabled)plusEnabled.checked=settings.plusEnabled!==false;
+  const plusTargetSettings=$('plusTargetSettings');
+  if(plusTargetSettings)plusTargetSettings.hidden=settings.plusEnabled===false;
   document.querySelectorAll('input[name="plusTarget"]').forEach(r=>{
     r.checked=r.value===settings.plusTarget;
   });
@@ -988,8 +993,10 @@ function renderGroupSettings(){
   }
 }
 async function saveSettingsFromUi(){
+  const plusEnabled=$('plusEnabled');
+  settings.plusEnabled=plusEnabled?!!plusEnabled.checked:true;
   const chosen=document.querySelector('input[name="plusTarget"]:checked');
-  settings.plusTarget=chosen?chosen.value:'plugin';
+  settings.plusTarget=chosen?chosen.value:(settings.plusTarget||'plugin');
   settings.listLimit=Number($('listLimit').value)||7;
   Object.keys(settings.visibleSections).forEach(key=>{
     const el=$('show-'+key);
@@ -1160,6 +1167,10 @@ function wire(){
 
   $('settingsBtn').onclick=openSettings;
   $('closeSettings').onclick=closeSettings;
+  if($('plusEnabled'))$('plusEnabled').onchange=e=>{
+    const block=$('plusTargetSettings');
+    if(block)block.hidden=!e.target.checked;
+  };
   $('cancelSettings').onclick=closeSettings;
   $('saveSettings').onclick=saveSettingsFromUi;
   $('addGroup').onclick=async()=>{
