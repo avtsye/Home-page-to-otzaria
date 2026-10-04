@@ -83,16 +83,31 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          TMP_DIR="$(mktemp -d)"
+          cp "dist/home-page-to-otzaria-$VERSION.otzplugin" "$TMP_DIR/"
+          cp "dist/home-page-to-otzaria-$VERSION-debug.otzplugin" "$TMP_DIR/"
+          cp "dist/home-page-to-otzaria-$VERSION-dev-compat.otzplugin" "$TMP_DIR/"
+
+          # Another packaging run may have advanced main with binary dist files.
+          # Sync to the latest main first, then restore this run's freshly built packages.
+          git fetch origin main
+          git reset --hard origin/main
+          cp "$TMP_DIR/home-page-to-otzaria-$VERSION.otzplugin" dist/
+          cp "$TMP_DIR/home-page-to-otzaria-$VERSION-debug.otzplugin" dist/
+          cp "$TMP_DIR/home-page-to-otzaria-$VERSION-dev-compat.otzplugin" dist/
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" \
-                  "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" \
-                  "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin"
+          git add "dist/home-page-to-otzaria-$VERSION.otzplugin" \
+                  "dist/home-page-to-otzaria-$VERSION-debug.otzplugin" \
+                  "dist/home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
+
           if git diff --cached --quiet; then
             echo "dist already up to date"
           else
-            git commit -m "Package plugin ${{ steps.version.outputs.version }} [skip ci]"
-            git pull --rebase origin main
+            git commit -m "Package plugin $VERSION [skip ci]"
             git push origin HEAD:main
           fi
       - uses: actions/upload-artifact@v4
