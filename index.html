@@ -595,6 +595,49 @@ mark{
 
 /* Four-tab settings navigation after diagnostics screen removal. */
 .settingsTabs .settingsTab{flex:1 1 25%!important}
+
+/* Stable feedback/settings sizing and saved-tabs visibility. */
+#section-saved-tabs{
+  display:block!important;
+  grid-column:1 / -1!important;
+  visibility:visible!important;
+}
+.settingsPane#settingsTab-feedback{
+  align-content:start!important;
+}
+.feedbackSettings{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-content:start!important;
+  gap:14px!important;
+  min-height:0!important;
+}
+.feedbackSettings textarea#feedbackText{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  height:190px!important;
+  min-height:150px!important;
+  max-height:240px!important;
+  box-sizing:border-box!important;
+  resize:vertical!important;
+}
+.feedbackSettings .feedbackActions{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  min-height:44px!important;
+}
+.feedbackSettings .hint{
+  max-width:100%!important;
+}
+.aboutLinks .externalLinkBtn{
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:2!important;
+}
 </style>
 
 </head>
