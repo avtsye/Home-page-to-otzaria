@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.0.10
+
+### Added
+- Manual creation of saved book cards without automatically importing currently open tabs.
+- Empty saved cards can be created and populated later through library search or open tabs.
+
+### Changed
+- Settings panel and controls were realigned to the official Otzaria Material 3 plugin design guide.
+- Settings panel now uses the official overlay-panel proportions, theme surfaces, radii and navigation treatment.
+- Feedback textarea now expands to fill the available settings viewport instead of using a fixed small box.
+- Saved-tab action buttons were rebalanced for clearer proportions.
+
+
 ## 4.0.9
 
 ### Added
