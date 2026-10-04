@@ -63,6 +63,18 @@ jobs:
           node -e "const fs=require('fs'); const p='dev-compat-build/manifest.json'; const m=JSON.parse(fs.readFileSync(p,'utf8')); m.minAppVersion='0.9.97'; fs.writeFileSync(p,JSON.stringify(m,null,2)+'\\n')"
           (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg)
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" build/
+      - name: Verify assets are excluded from packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pkg in build/*.otzplugin; do
+            echo "Checking $pkg"
+            if unzip -l "$pkg" | grep -E '(^|[[:space:]])assets/'; then
+              echo "::error::assets/ must not be included in plugin packages"
+              exit 1
+            fi
+          done
+          echo "assets/ excluded from all packages"
       - name: Commit packaged plugin to dist
         if: github.event_name != 'pull_request'
         shell: bash
@@ -84,3 +96,37 @@ jobs:
           name: home-page-to-otzaria-${{ steps.version.outputs.version }}
           path: build/*.otzplugin
           if-no-files-found: error
+      - name: Publish GitHub Release
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="v$VERSION"
+          TITLE="דף הבית לאוצריא $VERSION"
+          RELEASE_FILE="build/home-page-to-otzaria-$VERSION.otzplugin"
+          DEBUG_FILE="build/home-page-to-otzaria-$VERSION-debug.otzplugin"
+          DEV_FILE="build/home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
+
+          cat > release-notes.md <<EOF
+          ## דף הבית לאוצריא $VERSION
+
+          גרסה יציבה של תוסף דף הבית לאוצריא.
+
+          **להתקנה רגילה:** הורידו את `home-page-to-otzaria-$VERSION.otzplugin`.
+
+          שינויים עיקריים:
+          - אייקונים חדשים וברורים יותר לנכסי הפרויקט.
+          - בדיקת אריזה שמוודאת שתיקיית `assets/` אינה נכנסת לחבילת התוסף.
+          - קישורים חיצוניים במסך אודות נפתחים בדפדפן המערכת.
+
+          נדרשת אוצריא 0.9.98 ומעלה.
+          EOF
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$RELEASE_FILE" "$DEBUG_FILE" "$DEV_FILE" --clobber
+          else
+            gh release create "$TAG"               "$RELEASE_FILE" "$DEBUG_FILE" "$DEV_FILE"               --target main               --title "$TITLE"               --notes-file release-notes.md
+          fi
