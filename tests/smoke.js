@@ -65,3 +65,8 @@ assert(/externalLinksWiredV4/.test(features),'delegated external link wiring mis
 assert(/saved tabs load failed; continuing/.test(features),'saved-tab boot resilience missing');
 assert(/ensureSavedTabsSectionV4\(\);renderSavedTabSetsV4\(\)/.test(features),'saved tabs must be reasserted after layout');
 assert(html.includes('Stable feedback/settings sizing'),'feedback layout stabilization missing');
+
+assert(/isRealBookTabV4/.test(features),'saved-tab book-only filter missing');
+assert(/toolId/.test(features),'saved-tab filter must use Otzaria toolId');
+assert(/isSelf/.test(features),'saved-tab filter must reject plugin self tabs');
+assert(html.includes('Saved-tab toolbar proportions'),'saved-tab toolbar sizing rules missing');
