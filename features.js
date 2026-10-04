@@ -173,8 +173,10 @@ function renderSavedSearchControls(){
 }
 async function saveCurrentSearchProfile(){
   const q=$('q').value.trim();const name=q||'חיפוש '+(featureSettings.savedSearches.length+1);
+  const before=[...featureSettings.savedSearches];
   featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH)});
   featureSettings.savedSearches=featureSettings.savedSearches.slice(0,12);await saveFeatures();renderSavedSearchControls();toast('החיפוש נשמר');
+  window.homePushUndo('החיפוש נשמר',async()=>{featureSettings.savedSearches=before;await saveFeatures();renderSavedSearchControls()});
 }
 async function deleteSavedSearchProfileV4(){
   const sel=$('savedSearchSelect');const idx=Number(sel&&sel.value);
@@ -226,10 +228,11 @@ renderGroups=function(){
       const payload=e.dataTransfer&&e.dataTransfer.getData('application/x-home-book');
       if(!payload)return;
       try{
-        const book=JSON.parse(payload);
+        const book=JSON.parse(payload);const before=clone(groups);
         groups.forEach(x=>x.books=x.books.filter(b=>bookKey(b)!==bookKey(book)));
         g.books.unshift(book);
         await storageSet(GROUPS_KEY,groups);renderGroups();toast('הספר הועבר אל '+g.name);
+        window.homePushUndo('הספר הועבר אל '+g.name,async()=>{groups=normalizeGroups(before);await storageSet(GROUPS_KEY,groups);renderGroups()});
       }catch(_){}
     };
     [...block.querySelectorAll('.row')].forEach((row,ri)=>{
@@ -237,7 +240,7 @@ renderGroups=function(){
       row.draggable=true;
       row.ondragstart=e=>{e.dataTransfer&&e.dataTransfer.setData('application/x-home-book',JSON.stringify(book))};
     });
-    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';setIconButtonV4(pin,'pin','הצמד קבוצה לפעולות מהירות');pin.onclick=async e=>{e.stopPropagation();if(!featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id))featureSettings.quickPins.push({type:'group',groupId:g.id,title:g.name});await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה')};head.appendChild(pin)}
+    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';setIconButtonV4(pin,'pin','הצמד קבוצה לפעולות מהירות');pin.onclick=async e=>{e.stopPropagation();if(featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id)){toast('הקבוצה כבר מוצמדת');return}const item={type:'group',groupId:g.id,title:g.name};featureSettings.quickPins.push(item);await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה');window.homePushUndo('הקבוצה הוצמדה',async()=>{featureSettings.quickPins=featureSettings.quickPins.filter(x=>x!==item);await saveFeatures();renderQuickPins()})};head.appendChild(pin)}
     head&&head.addEventListener('dblclick',()=>{featureSettings.groupScope=g.id;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=g.id;$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)});
   });
 };
