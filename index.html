@@ -1231,6 +1231,30 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
   .tabSetMetaEditorV6 label:first-child{grid-column:1/-1}
   .workspaceGridV6{grid-template-columns:1fr}
 }
+
+/* Unified plus-button settings card. */
+.plusSettingsBlock{
+  display:grid!important;
+  gap:10px!important;
+}
+.plusEnableRow{
+  grid-template-columns:1fr!important;
+}
+.plusTargetSettings{
+  display:grid;
+  gap:10px;
+}
+.plusSettingsDivider{
+  height:1px;
+  margin:2px -2px 2px;
+  background:var(--color-outline-variant,var(--outline));
+}
+.plusTargetSettings>h3{
+  margin:0!important;
+}
+.plusTargetSettings>.hint{
+  margin:0!important;
+}
 </style>
 
 </head>
@@ -1384,19 +1408,24 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
           <section id="settingsTab-general" class="settingsPane settingsGrid active" role="tabpanel">
             <div class="settingsPaneHead"><h3>הגדרות כלליות</h3><p>בחר מה ייפתח, אילו אזורים יוצגו ואיך דף הבית יתנהג.</p></div>
 
-            <section class="settingBlock">
+            <section class="settingBlock plusSettingsBlock">
               <h3>כפתור +</h3>
-              <div class="checkGrid">
+              <div class="checkGrid plusEnableRow">
                 <label class="option"><input id="plusEnabled" type="checkbox"> הצג את לחצן + של אוצריא</label>
               </div>
               <p class="hint">כאשר האפשרות כבויה, התוסף לא נרשם כדף כרטיסייה חדשה.</p>
-            </section>
 
-            <section id="plusTargetSettings" class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid segmentedSetting" role="radiogroup">
-              <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
-              <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
-              <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
-            </div><p class="hint">ברירת המחדל היא דף הבית.</p></section>
+              <div id="plusTargetSettings" class="plusTargetSettings">
+                <div class="plusSettingsDivider"></div>
+                <h3>מה ייפתח בלחיצה על +</h3>
+                <div class="radioGrid segmentedSetting" role="radiogroup">
+                  <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
+                  <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
+                  <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
+                </div>
+                <p class="hint">ברירת המחדל היא דף הבית.</p>
+              </div>
+            </section>
 
             <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
               <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label>
