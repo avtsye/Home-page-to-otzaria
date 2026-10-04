@@ -7,6 +7,8 @@ on:
       - 'index.html'
       - 'main.js'
       - 'features.js'
+      - 'official-otzaria-icons.js'
+      - 'official-fluent-icons.js'
       - 'manifest.json'
       - 'otzaria-icon.png'
       - 'plugin-icon.jpg'
@@ -37,6 +39,8 @@ jobs:
         run: |
           node --check main.js
           node --check features.js
+          node --check official-otzaria-icons.js
+          node --check official-fluent-icons.js
           node --check tests/smoke.js
       - name: Run smoke checks
         run: node tests/smoke.js
@@ -51,17 +55,17 @@ jobs:
         run: |
           mkdir -p dist build debug-build dev-compat-build
           rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin"
-          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg
+          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js features.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
 
           printf "debug" > debug.flag
-          cp manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg debug.flag debug-build/
-          (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg debug.flag)
+          cp manifest.json index.html main.js features.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag debug-build/
+          (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html main.js features.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag)
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" build/
 
-          cp manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg dev-compat-build/
+          cp manifest.json index.html main.js features.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg dev-compat-build/
           node -e "const fs=require('fs'); const p='dev-compat-build/manifest.json'; const m=JSON.parse(fs.readFileSync(p,'utf8')); m.minAppVersion='0.9.97'; fs.writeFileSync(p,JSON.stringify(m,null,2)+'\\n')"
-          (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png plugin-icon.jpg)
+          (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html main.js features.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg)
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" build/
       - name: Verify assets are excluded from packages
         shell: bash
