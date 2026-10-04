@@ -477,7 +477,7 @@ mark{
           <section id="settingsTab-general" class="settingsPane settingsGrid active" role="tabpanel">
             <div class="settingsPaneHead"><h3>הגדרות כלליות</h3><p>בחר מה ייפתח, אילו אזורים יוצגו ואיך דף הבית יתנהג.</p></div>
 
-            <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid">
+            <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid segmentedSetting" role="radiogroup">
               <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
               <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
               <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
@@ -513,11 +513,8 @@ mark{
               <h3>תצוגה</h3>
               <div class="settingRows">
                 <div class="settingRow"><span>צפיפות</span><select id="densitySelect"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></div>
-                <div class="settingRow"><span>רקע</span><select id="backgroundSelect"><option value="aurora">Aurora</option><option value="soft">עדין</option><option value="flat">שטוח</option></select></div>
                 <div class="settingRow"><span>גודל כרטיסים</span><select id="cardSizeSelect"><option value="normal">רגיל</option><option value="large">גדול</option></select></div>
                 <div class="settingRow"><span>עמודות</span><select id="columnsSelect"><option value="1">אחת</option><option value="2">שתיים</option><option value="3">שלוש</option></select></div>
-                <div class="settingRow"><span>צבע הדגשה</span><select id="accentSelect"><option value="host">אוצריא</option><option value="purple">סגול</option><option value="blue">כחול</option><option value="green">ירוק</option><option value="rose">ורוד כהה</option></select></div>
-                <div class="settingRow"><span>פינות</span><select id="radiusSelect"><option value="rounded">עגולות</option><option value="soft">עדינות</option><option value="square">מרובעות</option></select></div>
               </div>
             </section>
 
@@ -529,7 +526,7 @@ mark{
               </div>
             </section>
 
-            <section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn" type="button">📌 הצמד את הספר הפעיל</button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>
+            <section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn iconTextBtn pinnedBookBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 4 6 6-3 2-3 6-2-2-6 3 3-6-2-2z"/><path d="m5 19-2 2"/></svg><span>הצמד את הספר הפעיל</span></button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>
           </section>
 
           <section id="settingsTab-feedback" class="settingsPane settingsGrid" role="tabpanel">
