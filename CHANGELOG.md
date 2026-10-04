@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.0.7
+
+### Added
+- Saved tab sets: save multiple open books as one card and reopen them together.
+- Preview saved tab sets before opening, with indicators for books that are already open.
+- Edit saved tab sets: rename, reorder books, remove books, add currently open tabs, and search the library to add books manually.
+- Choose whether already-open books keep their current position or restore the saved position.
+- General undo support for user changes such as groups, favorites, pins, saved searches, and saved-tab actions.
+- Official OtzariaIcons and FluentUI System Icons rendering for installed plugin cards.
+
+### Changed
+- Reworked the plugin UI to follow Otzaria Material 3 theme roles and UI font.
+- Fixed settings scrolling, footer overlap, control alignment, and feedback layout.
+- Settings download link now points to the GitHub Releases page.
+- Simplified the search field to a single rounded outer border.
+- Removed the obsolete project `assets/` icon directory.
+
+
 ## 4.0.6
 
 ### Changed
