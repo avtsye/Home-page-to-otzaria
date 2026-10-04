@@ -83,3 +83,8 @@ assert(/contextForPluginV5/.test(features),'plugin context menu missing');
 assert(/contextForGroupV5/.test(features),'group context menu missing');
 assert(/contextForQuickPinV5/.test(features),'quick-pin context menu missing');
 assert(html.includes('Unified right-click context menus.'),'context menu CSS missing');
+
+assert(/createEmptyTabSetV4/.test(features),'manual empty saved-tab creation missing');
+assert(/newTabSetBtn/.test(features),'new saved-tab button missing');
+assert(html.includes('Otzaria store visual compliance pass'),'official Otzaria visual compliance CSS missing');
+assert(html.includes('Feedback fills the available settings viewport'),'feedback viewport sizing fix missing');
