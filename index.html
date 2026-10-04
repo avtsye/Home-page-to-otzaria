@@ -392,6 +392,136 @@ mark{
 .pluginControls button,.quickPins button{display:inline-flex;align-items:center;gap:6px}
 .pluginControls button svg,.quickPins button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
 
+
+/* Settings layout finalization — header/tabs/footer stay fixed, body alone scrolls. */
+.settingsDialog{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  overflow:hidden!important;
+}
+.settingsShell{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.settingsTabs{
+  flex:0 0 auto!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none!important;
+}
+.settingsTabs::-webkit-scrollbar{display:none!important}
+.settingsContent{
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.settingsContent>.dialogBody{
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  direction:ltr!important;
+  padding:8px 14px 24px!important;
+  scrollbar-gutter:stable!important;
+  overscroll-behavior:contain!important;
+}
+.settingsContent>.dialogBody>.settingsPane{direction:rtl!important}
+.dialogFoot{
+  position:relative!important;
+  z-index:3!important;
+  min-height:64px!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  padding:10px 14px!important;
+  border-top:1px solid var(--color-outline-variant)!important;
+  background:var(--color-surface-container-high)!important;
+}
+.dialogFoot>.hint{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  text-align:start!important;
+}
+.dialogFoot>div{
+  flex:0 0 auto!important;
+  display:flex!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+.feedbackSettings{gap:14px!important}
+.feedbackActions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+}
+.feedbackActions .primaryBtn,.feedbackActions .secondaryBtn{flex:0 0 auto!important}
+.feedbackActions .hint{flex:1 1 180px!important;min-width:0!important}
+.feedbackLabel{display:block!important;margin-top:2px!important}
+.feedbackSettings textarea{
+  min-height:210px!important;
+  max-height:38vh!important;
+  resize:vertical!important;
+}
+.settingRow{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  column-gap:16px!important;
+}
+.settingRow>span,.settingRow>div{text-align:start!important}
+.settingRow select{min-width:140px!important;max-width:220px!important}
+.checkGrid .option{
+  min-height:56px!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.checkGrid .option input[type=checkbox]{
+  direction:ltr!important;
+  inset-inline-start:auto!important;
+  inset-inline-end:0!important;
+}
+.checkGrid .option input[type=checkbox]::after{
+  inset-inline-start:auto!important;
+  left:3px!important;
+  transform:none!important;
+}
+.checkGrid .option input[type=checkbox]:checked::after{
+  transform:translateX(20px)!important;
+}
+.manageGroup{
+  grid-template-columns:minmax(0,1fr) auto auto auto auto auto!important;
+  gap:6px!important;
+}
+.manageGroup input[type=text]{min-width:0!important}
+.manageGroup input[type=color]{width:38px!important;height:34px!important;padding:2px!important}
+.manageGroup select{max-width:110px!important}
+.newGroup{align-items:center!important}
+.newGroup .secondaryBtn{white-space:nowrap!important}
+.officialPluginSvg{
+  width:28px!important;
+  height:28px!important;
+  display:block!important;
+  color:currentColor!important;
+}
+.officialPluginSvg path,.officialPluginSvg circle,.officialPluginSvg rect,.officialPluginSvg line,.officialPluginSvg polyline,.officialPluginSvg polygon{
+  vector-effect:non-scaling-stroke;
+}
+.pluginIcon .officialPluginSvg{width:30px!important;height:30px!important}
+@media(max-width:520px){
+  .settingsDialog{width:100%!important;height:100%!important;border-radius:0!important}
+  .modal{padding:0!important}
+  .dialogHead{padding:14px 16px 8px!important}
+  .settingsTabs{padding-inline:8px!important}
+  .settingsTab{min-width:68px!important}
+  .settingRow{grid-template-columns:1fr!important;row-gap:8px!important}
+  .settingRow select{width:100%!important;max-width:none!important}
+  .manageGroup{grid-template-columns:minmax(0,1fr) auto auto!important}
+  .dialogFoot{align-items:flex-end!important}
+  .dialogFoot>.hint{display:none!important}
+}
 </style>
 
 </head>
@@ -606,7 +736,7 @@ mark{
               <h3>דף הבית לאוצריא</h3>
               <p>גרסה 4.0.6 · מאת אברהם mch</p>
               <p>דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.</p>
-              <div class="aboutLinks"><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט ↗</button><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria/tree/main/dist">גרסאות להורדה ↗</button></div>
+              <div class="aboutLinks"><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט ↗</button><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria/releases">גרסאות להורדה ↗</button></div>
             </section>
 
             <section class="settingBlock"><h3>קיצורי מקלדת</h3><div class="shortcutList"><span><kbd>Ctrl</kbd> + <kbd>K</kbd><b>מיקוד בחיפוש</b></span><span><kbd>Ctrl</kbd> + <kbd>,</kbd><b>פתיחת הגדרות</b></span><span><kbd>Esc</kbd><b>סגירת חלון</b></span><span><kbd>Alt</kbd> + <kbd>F</kbd><b>Focus Mode</b></span></div></section>
@@ -626,6 +756,8 @@ mark{
 </div>
 
 <div id="toast" class="toast" hidden></div>
+<script src="official-otzaria-icons.js"></script>
+<script src="official-fluent-icons.js"></script>
 <script src="main.js"></script>
 <script src="features.js"></script>
 </body>
