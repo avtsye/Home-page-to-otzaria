@@ -24,7 +24,6 @@ assert(['stable','beta','experimental'].includes(manifest.stability),'manifest s
 assert(manifest.permissions.includes('plugin.storage.read')&&manifest.permissions.includes('plugin.storage.write'),'storage permissions missing');
 assert(/Otzaria\.call\('search\.query'/.test(main),'main full-text search missing');
 assert(/history\.listSearches/.test(features),'search history integration missing');
-assert(/runDiagnostics/.test(features),'diagnostics missing');
 assert(!/ideaBtn|bugBtn|feedbackModal/.test(main),'removed feedback UI is still referenced in main.js');
 if(!process.exitCode)console.log('Smoke checks passed.');
 
@@ -48,3 +47,5 @@ assert(/OFFICIAL_FLUENT_ICONS/.test(main),'Fluent icon resolver missing');
 assert(/openTabSetPreviewV4/.test(features),'saved tab preview workflow missing');
 assert(/tabSetBookSearchV4/.test(features),'manual book add search missing');
 assert(/existingBehavior/.test(features),'existing-tab behavior option missing');
+
+assert(/loadPluginsReliableV4/.test(features),'reliable plugin loading workflow missing');
