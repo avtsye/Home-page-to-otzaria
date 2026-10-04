@@ -82,18 +82,63 @@ function normalizeGroups(raw){
 function applyTheme(t){
   if(!t)return;
   const c=t.colorScheme||{},y=t.typography||{},r=document.documentElement.style;
-  r.setProperty('--bg',c.surfaceContainerLowest||c.surface||'#f7f7fb');
-  r.setProperty('--surface',c.surface||'#fff');
-  r.setProperty('--surface2',c.surfaceContainerHighest||c.secondaryContainer||'#f3f2f8');
-  r.setProperty('--surface3',c.surfaceContainerHigh||c.secondaryContainer||'#ebe9f3');
-  r.setProperty('--text',c.onSurface||'#1d1b20');
-  r.setProperty('--muted',c.outline||'#74717d');
-  r.setProperty('--primary',c.primary||'#6750a4');
-  r.setProperty('--onPrimary',c.onPrimary||'#fff');
-  r.setProperty('--soft',c.secondaryContainer||'#ece5ff');
-  r.setProperty('--outline',c.outlineVariant||c.outline||'#d8d4df');
-  r.setProperty('--error',c.error||'#b3261e');
-  if(y.uiFontFamily)r.setProperty('--ui',JSON.stringify(y.uiFontFamily)+',system-ui,sans-serif');
+
+  // Native Otzaria / Material 3 roles.
+  const roles={
+    '--color-primary':c.primary||'#6750a4',
+    '--color-on-primary':c.onPrimary||'#fff',
+    '--color-primary-container':c.primaryContainer||c.secondaryContainer||'#ece5ff',
+    '--color-on-primary-container':c.onPrimaryContainer||c.onSurface||'#1d1b20',
+    '--color-secondary':c.secondary||c.primary||'#625b71',
+    '--color-on-secondary':c.onSecondary||'#fff',
+    '--color-secondary-container':c.secondaryContainer||'#ece5ff',
+    '--color-on-secondary-container':c.onSecondaryContainer||c.onSurface||'#1d1b20',
+    '--color-tertiary':c.tertiary||c.primary||'#7d5260',
+    '--color-tertiary-container':c.tertiaryContainer||c.secondaryContainer||'#ffd8e4',
+    '--color-on-tertiary-container':c.onTertiaryContainer||c.onSurface||'#1d1b20',
+    '--color-surface':c.surface||'#fff',
+    '--color-on-surface':c.onSurface||'#1d1b20',
+    '--color-on-surface-variant':c.onSurfaceVariant||c.outline||'#49454f',
+    '--color-surface-container-lowest':c.surfaceContainerLowest||c.surface||'#fff',
+    '--color-surface-container-low':c.surfaceContainerLow||c.surface||'#f7f2fa',
+    '--color-surface-container':c.surfaceContainer||c.surfaceContainerLow||'#f3edf7',
+    '--color-surface-container-high':c.surfaceContainerHigh||c.secondaryContainer||'#ece6f0',
+    '--color-surface-container-highest':c.surfaceContainerHighest||c.secondaryContainer||'#e6e0e9',
+    '--color-outline':c.outline||'#79747e',
+    '--color-outline-variant':c.outlineVariant||c.outline||'#cac4d0',
+    '--color-error':c.error||'#b3261e',
+    '--color-on-error':c.onError||'#fff',
+    '--color-error-container':c.errorContainer||'#f9dedc',
+    '--color-on-error-container':c.onErrorContainer||c.error||'#410e0b',
+    '--color-inverse-surface':c.inverseSurface||c.onSurface||'#313033',
+    '--color-on-inverse-surface':c.onInverseSurface||c.surface||'#f4eff4',
+    '--color-shadow':c.shadow||'#000000',
+    '--color-scrim':c.scrim||'#000000',
+    '--color-surface-tint':c.surfaceTint||c.primary||'#6750a4'
+  };
+  for(const [key,value] of Object.entries(roles))r.setProperty(key,value);
+
+  // Compatibility aliases used by the existing feature logic.
+  r.setProperty('--bg',roles['--color-surface-container-lowest']);
+  r.setProperty('--surface',roles['--color-surface']);
+  r.setProperty('--surface2',roles['--color-surface-container']);
+  r.setProperty('--surface3',roles['--color-surface-container-high']);
+  r.setProperty('--text',roles['--color-on-surface']);
+  r.setProperty('--muted',roles['--color-on-surface-variant']);
+  r.setProperty('--primary',roles['--color-primary']);
+  r.setProperty('--onPrimary',roles['--color-on-primary']);
+  r.setProperty('--soft',roles['--color-secondary-container']);
+  r.setProperty('--outline',roles['--color-outline-variant']);
+  r.setProperty('--error',roles['--color-error']);
+  r.setProperty('--success',roles['--color-tertiary']);
+
+  if(y.uiFontFamily)r.setProperty('--font-ui',JSON.stringify(y.uiFontFamily)+',system-ui,sans-serif');
+  r.setProperty('--ui',y.uiFontFamily?JSON.stringify(y.uiFontFamily)+',system-ui,sans-serif':"'Rubik',system-ui,sans-serif");
+  if(y.fontFamily)r.setProperty('--font-main',JSON.stringify(y.fontFamily)+',serif');
+  if(y.fontSize)r.setProperty('--font-size-base',String(y.fontSize)+'px');
+  if(y.lineHeight)r.setProperty('--line-height',String(y.lineHeight));
+
+  document.body.dataset.theme=t.mode||'light';
 }
 
 function identity(b){
