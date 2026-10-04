@@ -365,17 +365,15 @@ mark{
   <section class="heroCard">
     <div class="heroGlow"></div>
     <div class="heroHeader">
-      <img class="heroLogo" src="plugin-icon.jpg" alt="אוצריא">
-      <h1 class="brand">אוצריא</h1>
-      <div class="subtitle">חיפוש חכם, הספרים שלך וכל הכלים — במקום אחד</div>
+      <div class="heroTitleRow"><img class="heroLogo" src="plugin-icon.jpg" alt=""><div><h1 class="brand">דף הבית</h1><div class="subtitle">חיפוש, ספרים אחרונים, סימניות ותוספים במקום אחד</div></div></div>
     </div>
 
     <div class="searchWrap">
       <div class="searchbox">
-        <span class="searchIcon">⌕</span>
+        <span class="searchIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>
         <input id="q" autocomplete="off" placeholder="חפש ספר, ביטוי או תוכן…" aria-label="חיפוש">
         <button id="clear" class="clearBtn" title="נקה">×</button>
-        <button id="advancedToggle" class="filterBtn" title="אפשרויות חיפוש">☷</button>
+        <button id="advancedToggle" class="filterBtn iconOnlyBtn" title="אפשרויות חיפוש" aria-label="אפשרויות חיפוש"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
         <button id="searchGo" class="searchBtn">חפש</button>
       </div>
       <div id="suggestions" class="suggestions" hidden></div>
