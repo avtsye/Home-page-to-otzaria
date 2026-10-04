@@ -343,7 +343,9 @@ loadHome=async function(){
   ]);
   const val=i=>calls[i].status==='fulfilled'?calls[i].value:null;
   renderList('recent',val(0)||[],'אין ספרים אחרונים');renderList('bookmarks',val(1)||[],'אין סימניות');renderList('history',val(2)||[],'אין היסטוריה');
-  renderGroups();applyLayout();refreshDashboard();await loadPluginsReliableV4();
+  renderGroups();applyLayout();
+  try{ensureSavedTabsSectionV4();renderSavedTabSetsV4()}catch(e){fLog('error','saved tabs render after layout failed',e)}
+  refreshDashboard();await loadPluginsReliableV4();
 };
 
 async function smartOpenPinnedBook(book){
@@ -443,19 +445,28 @@ function enhanceFeedbackCategories(){
 async function openExternalBrowserUrl(url){
   if(!/^https?:\/\//i.test(url||'')){
     toast('כתובת חיצונית לא תקינה');
-    return;
+    return false;
   }
   try{
     const r=await Otzaria.call('app.openUrl',{url});
-    if(!r||r.success===false)throw new Error(r&&r.error&&r.error.message||'openUrl failed');
+    if(r&&r.success===false)throw new Error(r.error&&r.error.message||'openUrl failed');
+    return true;
   }catch(err){
     fLog('error','External URL open failed',err);
-    toast('לא ניתן לפתוח את הקישור בדפדפן');
+    toast('לא ניתן לפתוח את הקישור בדפדפן המערכת');
+    return false;
   }
 }
+let externalLinksWiredV4=false;
 function wireExternalLinks(){
-  document.querySelectorAll('[data-external-url]').forEach(btn=>{
-    btn.onclick=()=>openExternalBrowserUrl(btn.dataset.externalUrl);
+  if(externalLinksWiredV4)return;
+  externalLinksWiredV4=true;
+  document.addEventListener('click',e=>{
+    const btn=e.target&&e.target.closest?e.target.closest('[data-external-url]'):null;
+    if(!btn)return;
+    e.preventDefault();
+    e.stopPropagation();
+    openExternalBrowserUrl(btn.dataset.externalUrl);
   });
 }
 function setupKeyboard(){
@@ -600,13 +611,18 @@ function parseTabStorageV4(raw){
   return {schemaVersion:Number(raw.schemaVersion)||1,updatedAt:Number(Date.parse(raw.updatedAt||''))||0,sets:raw.sets};
 }
 async function loadSavedTabSetsV4(){
-  const [primaryRaw,backupRaw]=await Promise.all([fGet(TAB_SETS_KEY,null),fGet(TAB_SETS_BACKUP_KEY,null)]);
-  const candidates=[parseTabStorageV4(primaryRaw),parseTabStorageV4(backupRaw)].filter(Boolean);
-  candidates.sort((a,b)=>b.updatedAt-a.updatedAt);
-  const selected=candidates[0]||{sets:[]};
-  savedTabSets=selected.sets.map(normalizeTabSetV4).filter(Boolean);
-  if(candidates.length<2||candidates.some(c=>JSON.stringify(c.sets)!==JSON.stringify(selected.sets))){
-    await saveSavedTabSetsV4();
+  try{
+    const [primaryRaw,backupRaw]=await Promise.all([fGet(TAB_SETS_KEY,null),fGet(TAB_SETS_BACKUP_KEY,null)]);
+    const candidates=[parseTabStorageV4(primaryRaw),parseTabStorageV4(backupRaw)].filter(Boolean);
+    candidates.sort((a,b)=>b.updatedAt-a.updatedAt);
+    const selected=candidates[0]||{sets:[]};
+    savedTabSets=selected.sets.map(normalizeTabSetV4).filter(Boolean);
+    if(candidates.length<2||candidates.some(c=>JSON.stringify(c.sets)!==JSON.stringify(selected.sets))){
+      try{await saveSavedTabSetsV4()}catch(e){fLog('warn','saved tabs backup repair skipped',e)}
+    }
+  }catch(e){
+    savedTabSets=[];
+    fLog('error','saved tabs load failed; continuing without saved data',e);
   }
 }
 async function saveSavedTabSetsV4(){
@@ -987,7 +1003,28 @@ async function importTabSetsV4(event){
 }
 
 function setupFeatureUi(){
-  styleFeatureLayer();applyFeatureAppearance();ensureUndoBarV4();ensureSavedTabsSectionV4();renderSavedTabSetsV4();addDashboard();addSavedSearchControls();makeSectionsDraggable();addSectionTools();setupPluginControls();injectSettingsTabsV4();enhanceFeedbackCategories();wireExternalLinks();renderQuickPins();setupKeyboard();enhanceAccessibility();compatibilityCleanup();rememberUiState();
+  const steps=[
+    ['styles',()=>styleFeatureLayer()],
+    ['appearance',()=>applyFeatureAppearance()],
+    ['undo',()=>ensureUndoBarV4()],
+    ['saved-tabs-section',()=>{ensureSavedTabsSectionV4();renderSavedTabSetsV4()}],
+    ['dashboard',()=>addDashboard()],
+    ['saved-searches',()=>addSavedSearchControls()],
+    ['drag-drop',()=>makeSectionsDraggable()],
+    ['section-tools',()=>addSectionTools()],
+    ['plugin-controls',()=>setupPluginControls()],
+    ['settings',()=>injectSettingsTabsV4()],
+    ['feedback',()=>enhanceFeedbackCategories()],
+    ['external-links',()=>wireExternalLinks()],
+    ['quick-pins',()=>renderQuickPins()],
+    ['keyboard',()=>setupKeyboard()],
+    ['accessibility',()=>enhanceAccessibility()],
+    ['compatibility',()=>compatibilityCleanup()],
+    ['ui-state',()=>rememberUiState()]
+  ];
+  for(const [name,step] of steps){
+    try{step()}catch(e){fLog('error','Feature setup failed: '+name,e);console.error('Feature setup failed:',name,e)}
+  }
 }
 
 const coreRenderListV4=renderList;
@@ -1000,7 +1037,9 @@ renderList=function(id,items,empty){
 
 Otzaria.on('plugin.boot',async()=>{
   try{
-    featureSettings=mergeFeatureSettings(await fGet(FEATURE_KEY,featureSettings));await loadSavedTabSetsV4();
+    featureSettings=mergeFeatureSettings(await fGet(FEATURE_KEY,featureSettings));
+    wireExternalLinks();
+    try{await loadSavedTabSetsV4()}catch(e){fLog('error','saved tabs boot load failed',e)}
     try{const st=dataOf(await Otzaria.call('reader.getCurrentState'));if(st&&st.currentBookId)currentBookScopeV4={id:st.currentId,type:st.currentType,source:st.currentSource,bookId:st.currentBookId,title:st.currentBook,index:st.currentIndex,ref:st.currentRef}}catch(_){}
     setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();await loadPluginsReliableV4();await refreshDashboard();await detectDebugPackage();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
   }catch(e){fLog('error','Feature layer boot failed',e);console.error('Feature layer boot failed',e)}
