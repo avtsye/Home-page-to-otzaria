@@ -6,8 +6,8 @@
 - Full-text live search alongside book-title suggestions.
 - Search history and saved search profiles.
 - Search scope for current book and custom groups.
-- Drag & Drop homepage sections.
-- Group colors, icons and book movement between groups.
+- Drag & Drop homepage sections and pin-to-top controls.
+- Group colors, icons, nested groups, ordering and book movement between groups.
 - Custom quick pins for books, groups and favorite plugins.
 - Plugin favorites, recent-use sorting, compact list view and lazy loading.
 - Focus mode, density, columns, card size, background, accent and corner settings.
@@ -20,6 +20,7 @@
 - About page and one-time changelog notice.
 - Keyboard shortcuts and accessibility improvements.
 - Automated smoke tests.
+- Separate debug package that opens diagnostics automatically.
 
 ### Fixed
 - Runtime initialization failure caused by using `clone` before its declaration.
