@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.5
+
+### Changed
+- Settings/About links now open in the system default browser through `app.openUrl`.
+- Added the required `app.open_url` permission.
+- Removed direct in-WebView navigation for external project links.
+
+
 ## 4.0.4
 
 ### Changed
