@@ -1,6 +1,6 @@
 /* Home Page to Otzaria 4.0 feature layer */
 const FEATURE_KEY='homeFeaturesV4';
-const FEATURE_VERSION='4.0.2';
+const FEATURE_VERSION='4.0.3';
 const CACHE_TTL=30000;
 const memCache=new Map();
 const debugLog=[];
