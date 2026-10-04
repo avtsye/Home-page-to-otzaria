@@ -401,11 +401,19 @@ mark{
 }
 .settingsShell{
   display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
   grid-template-rows:auto minmax(0,1fr)!important;
+  min-width:0!important;
   min-height:0!important;
   overflow:hidden!important;
 }
 .settingsTabs{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:stretch!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  min-width:0!important;
   flex:0 0 auto!important;
   overflow-x:auto!important;
   overflow-y:hidden!important;
@@ -414,7 +422,10 @@ mark{
 .settingsTabs::-webkit-scrollbar{display:none!important}
 .settingsContent{
   display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
   grid-template-rows:minmax(0,1fr) auto!important;
+  width:100%!important;
+  min-width:0!important;
   min-height:0!important;
   overflow:hidden!important;
 }
@@ -523,6 +534,42 @@ mark{
   .dialogFoot>.hint{display:none!important}
 }
 
+
+.settingsTab{
+  flex:1 1 0!important;
+  min-width:68px!important;
+  max-width:none!important;
+}
+.settingsPane{
+  width:100%!important;
+  min-width:0!important;
+}
+.settingsPane.active{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+}
+.settingBlock{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.checkGrid .option{
+  width:100%!important;
+  box-sizing:border-box!important;
+  padding-inline-end:0!important;
+  padding-inline-start:62px!important;
+}
+.checkGrid .option input[type=checkbox]{
+  inset-inline-start:8px!important;
+  inset-inline-end:auto!important;
+}
+.feedbackTypeRow{
+  width:auto!important;
+}
+@media(max-width:520px){
+  .settingsTabs{justify-content:flex-start!important}
+  .settingsTab{flex:0 0 72px!important;min-width:72px!important}
+}
 /* Search frame cleanup: one outer frame only. */
 .searchbox{
   border:1px solid var(--color-outline)!important;
