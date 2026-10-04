@@ -2,7 +2,7 @@
 
 תוסף דף בית מתקדם לאוצריא, המבוסס על ה־Plugin API הרשמי.
 
-גרסה נוכחית: **4.0.1**
+גרסה נוכחית: **4.0.2**
 
 ## מה יש ב־4.0
 
@@ -116,13 +116,13 @@
 
 חבילת ה־Release דורשת **אוצריא 0.9.98 ומעלה**. הדרישה מכוונת כדי שחנות התוספים לא תציע את התוסף לגרסאות ציבוריות שעדיין אינן כוללות את ה־API שעליו הוא נשען.
 
-לבדיקות מול build פיתוח שמכיל את ה־API אך עדיין מזדהה כ־0.9.97, GitHub Actions מייצר גם חבילת `-dev-compat.otzplugin`. חבילה זו מיועדת לפיתוח בלבד ואינה נשמרת ב־`dist/`.
+לבדיקות מול build פיתוח שמכיל את ה־API אך עדיין מזדהה כ־0.9.97, GitHub Actions מייצר גם חבילת `-dev-compat.otzplugin`. חבילה זו מיועדת לפיתוח בלבד, אך נשמרת גם ב־`dist/` כחלק מארכיון כל הגרסאות של הפרויקט.
 
 ## התקנה
 
 הורידו את הקובץ האחרון מתוך:
 
-`dist/home-page-to-otzaria-4.0.1.otzplugin`
+`dist/home-page-to-otzaria-4.0.2.otzplugin`
 
 או מתוך Artifact של ריצת GitHub Actions האחרונה.
 
@@ -140,7 +140,7 @@
 ├── tests/
 │   └── smoke.js
 ├── dist/
-│   └── home-page-to-otzaria-4.0.1.otzplugin
+│   └── home-page-to-otzaria-4.0.2.otzplugin
 └── .github/
     └── workflows/
         └── package.yml
@@ -192,3 +192,11 @@ https://github.com/avtsye/Home-page-to-otzaria
 - `minAppVersion` הועלה ל־`0.9.98` עבור חבילת ה־Release.
 - החיפוש החי מציג גם תוצאות מתוך תוכן הספרים באמצעות `search.query` במצב מתקדם, עם fallback ל־`search.fullText` אם לא התקבלו תוצאות.
 - Actions מייצר חבילת `dev-compat` נפרדת לבדיקות על build פיתוח שמזדהה עדיין כ־0.9.97.
+
+
+## 4.0.2
+
+- נוסף אייקון ייעודי לתוסף בתיקייה הראשית של הפרויקט.
+- `manifest.json` מפנה כעת ל־`plugin-icon.jpg` כאייקון הרשמי.
+- האייקון נכלל בכל חבילות ה־Release, Debug ו־dev-compat.
+- ממשק התוסף עצמו משתמש כעת באייקון החדש בכותרת, בדף הבית ובמסך אודות.
