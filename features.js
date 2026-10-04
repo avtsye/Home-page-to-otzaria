@@ -1,6 +1,6 @@
 /* Home Page to Otzaria 4.0 feature layer */
 const FEATURE_KEY='homeFeaturesV4';
-const FEATURE_VERSION='4.0.1';
+const FEATURE_VERSION='4.0.2';
 const CACHE_TTL=30000;
 const memCache=new Map();
 const debugLog=[];
@@ -319,7 +319,7 @@ function injectSettingsTabsV4(){
   diag.innerHTML='<section class="settingBlock"><h3>אבחון ותאימות</h3><div id="diagnosticGrid" class="diagnosticGrid"></div><div class="feedbackActions"><button id="runDiagnostics" class="secondaryBtn" type="button">הרץ בדיקה</button><button id="copyDiagnostics" class="secondaryBtn" type="button">העתק דוח</button></div></section><section class="settingBlock"><h3>יומן Debug</h3><pre id="debugOutput" style="white-space:pre-wrap;font-size:9px;max-height:220px;overflow:auto"></pre></section>';
   body.appendChild(diag);
   const about=document.createElement('div');about.id='settingsTab-about';about.className='settingsPane';
-  about.innerHTML='<section class="settingBlock aboutBox"><img src="otzaria-icon.png" alt=""><h3>דף הבית לאוצריא</h3><p>גרסה '+FEATURE_VERSION+' · מאת אברהם mch</p><p>חיפוש, המשך קריאה, תוספים, מועדפים והתאמה אישית במקום אחד.</p><a href="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט</a><p><a href="https://github.com/avtsye/Home-page-to-otzaria/tree/main/dist">בדוק גרסאות חדשות</a></p></section><section class="settingBlock"><h3>קיצורי מקלדת</h3><p class="hint">Ctrl+K — חיפוש · Ctrl+, — הגדרות · Esc — סגירת חלונות · Alt+F — מצב Focus</p></section>';
+  about.innerHTML='<section class="settingBlock aboutBox"><img src="plugin-icon.jpg" alt=""><h3>דף הבית לאוצריא</h3><p>גרסה '+FEATURE_VERSION+' · מאת אברהם mch</p><p>חיפוש, המשך קריאה, תוספים, מועדפים והתאמה אישית במקום אחד.</p><a href="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט</a><p><a href="https://github.com/avtsye/Home-page-to-otzaria/tree/main/dist">בדוק גרסאות חדשות</a></p></section><section class="settingBlock"><h3>קיצורי מקלדת</h3><p class="hint">Ctrl+K — חיפוש · Ctrl+, — הגדרות · Esc — סגירת חלונות · Alt+F — מצב Focus</p></section>';
   body.appendChild(about);
   $('densitySelect').value=featureSettings.density;$('backgroundSelect').value=featureSettings.background;$('cardSizeSelect').value=featureSettings.cardSize||'normal';$('columnsSelect').value=featureSettings.columns||'2';$('accentSelect').value=featureSettings.accent||'host';$('radiusSelect').value=featureSettings.radius||'rounded';$('focusModeSetting').checked=featureSettings.focusMode;$('dashboardSetting').checked=featureSettings.showDashboard;
   $('densitySelect').onchange=async e=>{featureSettings.density=e.target.value;await saveFeatures();applyFeatureAppearance()};
