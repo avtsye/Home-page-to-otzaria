@@ -862,8 +862,33 @@ function toast(msg){
   t._tm=setTimeout(()=>t.hidden=true,2400);
 }
 function setSettingsTab(name){
-  document.querySelectorAll('.settingsTab').forEach(b=>b.classList.toggle('active',b.dataset.settingsTab===name));
-  document.querySelectorAll('.settingsPane').forEach(p=>p.classList.toggle('active',p.id==='settingsTab-'+name));
+  document.querySelectorAll('.settingsTab').forEach(b=>{
+    const active=b.dataset.settingsTab===name;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+    b.tabIndex=active?0:-1;
+  });
+  document.querySelectorAll('.settingsPane').forEach(p=>{
+    const active=p.id==='settingsTab-'+name;
+    p.classList.toggle('active',active);
+    p.hidden=!active;
+  });
+
+  const save=$('saveSettings');
+  const hint=$('settingsFootHint');
+  if(save)save.hidden=name!=='general';
+  if(hint){
+    const hints={
+      general:'שינויים בהגדרות הכלליות נשמרים בלחיצה על “שמור”.',
+      appearance:'שינויי המראה נשמרים ומוחלים מיד.',
+      feedback:'המשוב נשלח רק לאחר לחיצה על “שלח משוב” ואישור אוצריא.',
+      diagnostics:'כלי אבחון בלבד — אינם משנים את הגדרות התוסף.',
+      about:'מידע על התוסף וקיצורי מקלדת.'
+    };
+    hint.textContent=hints[name]||'';
+  }
+  const pane=$('settingsTab-'+name);
+  if(pane&&pane.parentElement)pane.parentElement.scrollTop=0;
 }
 async function sendFeedback(){
   const details=$('feedbackText').value.trim();
