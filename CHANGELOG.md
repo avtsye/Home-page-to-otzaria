@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.1
+
+### Changed
+- Store release now requires Otzaria 0.9.98.
+- Live suggestions use broader full-text search and fall back to `search.fullText` when needed.
+- GitHub Actions builds a separate 0.9.97 `dev-compat` artifact for development builds that already contain the new API.
+
+
 ## 4.0.0
 
 ### Added
