@@ -659,9 +659,10 @@ function ensureSavedTabsSectionV4(){
   let sec=$('section-saved-tabs');
   if(sec)return sec;
   sec=document.createElement('section');sec.id='section-saved-tabs';sec.className='sectionPanel wide savedTabsSection';
-  sec.innerHTML='<div class="sectionHead"><h2>כרטיסיות שמורות</h2><span>פתיחת קבוצת ספרים בלחיצה אחת</span></div><div class="savedTabToolbar"><button id="captureTabsBtn" class="primaryBtn" type="button">'+iconTextV4('bookmark','שמור את הלשוניות הפתוחות')+'</button><button id="exportTabSetsBtn" class="secondaryBtn" type="button">ייצוא</button><button id="importTabSetsBtn" class="secondaryBtn" type="button">ייבוא</button><input id="importTabSetsFile" type="file" accept="application/json,.json" hidden></div><div id="savedTabGrid" class="savedTabGrid"></div>';
+  sec.innerHTML='<div class="sectionHead"><h2>כרטיסיות שמורות</h2><span>פתיחת קבוצת ספרים בלחיצה אחת</span></div><div class="savedTabToolbar"><button id="newTabSetBtn" class="primaryBtn" type="button">'+iconTextV4('bookmark','כרטיס חדש')+'</button><button id="captureTabsBtn" class="secondaryBtn" type="button">שמור לשוניות פתוחות</button><button id="exportTabSetsBtn" class="secondaryBtn" type="button">ייצוא</button><button id="importTabSetsBtn" class="secondaryBtn" type="button">ייבוא</button><input id="importTabSetsFile" type="file" accept="application/json,.json" hidden></div><div id="savedTabGrid" class="savedTabGrid"></div>';
   const host=$('sectionsHost');
   host.insertBefore(sec,host.firstChild);
+  $('newTabSetBtn').onclick=createEmptyTabSetV4;
   $('captureTabsBtn').onclick=captureCurrentTabsV4;
   $('exportTabSetsBtn').onclick=exportTabSetsV4;
   $('importTabSetsBtn').onclick=()=>$('importTabSetsFile').click();
@@ -672,7 +673,7 @@ function renderSavedTabSetsV4(){
   ensureSavedTabsSectionV4();
   const grid=$('savedTabGrid');grid.innerHTML='';
   if(!savedTabSets.length){
-    grid.innerHTML='<div class="savedTabsEmpty">עדיין אין כרטיסיות שמורות. פתח כמה ספרים ולחץ על “שמור את הלשוניות הפתוחות”.</div>';
+    grid.innerHTML='<div class="savedTabsEmpty">עדיין אין כרטיסיות שמורות. אפשר ליצור כרטיס חדש ולהוסיף אליו ספרים ידנית, או לשמור את לשוניות הספרים הפתוחות.</div>';
     return;
   }
   const ordered=[...savedTabSets].sort((a,b)=>(b.lastOpenedAt||0)-(a.lastOpenedAt||0)||(b.updatedAt||0)-(a.updatedAt||0));
@@ -695,6 +696,9 @@ function renderSavedTabSetsV4(){
     grid.appendChild(card);
   });
 }
+function createEmptyTabSetV4(){
+  openTabSetEditorV4({mode:'create',books:[]});
+}
 async function captureCurrentTabsV4(){
   let state;
   try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(e){fLog('error','read open tabs failed',e)}
@@ -713,7 +717,7 @@ function openTabSetEditorV4({mode,set,books}){
   const suggested=source.name||('כרטיסיות '+(savedTabSets.length+1));
 
   dialog.innerHTML='<div class="tabSetDialogCard tabSetEditorCard">'+
-    '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'שמירת הכרטיסיות הפתוחות':'עריכת כרטיס')+'</h2><div class="hint">אפשר לשנות סדר, להסיר ולהוסיף ספרים לפני השמירה.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
+    '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'כרטיס ספרים חדש':'עריכת כרטיס')+'</h2><div class="hint">אפשר לחפש ספרים, להוסיף לשוניות פתוחות, לשנות סדר ולהסיר ספרים לפני השמירה.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
     '<label>שם הכרטיס</label><input id="tabSetNameV4" maxlength="80" value="'+esc(suggested)+'">'+
     '<div class="tabSetEditorSetting"><span>ספר שכבר פתוח</span><select id="tabSetConflictDefaultV4"><option value="ask">שאל בכל פתיחה</option><option value="keep">השאר במיקום הנוכחי</option><option value="restore">שחזר למיקום השמור</option></select></div>'+
     '<div class="tabSetEditorTools"><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button><button id="tabSetRepairV4" class="secondaryBtn" type="button">בדוק ותקן ספרים</button></div>'+
