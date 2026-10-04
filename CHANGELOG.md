@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.0.9
+
+### Added
+- Unified right-click context menus across the home page.
+- Context actions for books, search results, groups, saved tab sets, installed plugins, quick pins, saved searches, home cards and settings.
+- Keyboard navigation and Escape-to-close support for context menus.
+
+### Improved
+- Book context menus now expose group/favorites toggles and home pinning.
+- Saved-tab context menus expose preview/open-all/edit/update/export/delete actions.
+- Plugin context menus expose open and favorite toggles.
+- Group context menus expose scoped search, pinning, group management and deletion.
+- Saved-tab cards continue to exclude plugin/tool tabs using Otzaria's official `toolId` / book-tab state.
+
+
 ## 4.0.8
 
 ### Added
