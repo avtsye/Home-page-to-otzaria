@@ -1093,6 +1093,44 @@ mark{
   .advancedPanel .advancedGrid{grid-template-columns:1fr!important}
   .advancedPanel .field.span2{grid-column:auto!important}
 }
+
+/* Clarify dynamic advanced-search option groups. */
+.advancedOptionGroup{
+  display:grid!important;
+  gap:8px!important;
+  padding:10px!important;
+  border-radius:12px!important;
+  background:var(--color-surface)!important;
+}
+.advancedOptionGroup[hidden]{display:none!important}
+.advancedOptionGroupHead{
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+}
+.advancedOptionGroup .optionGroupTitle{
+  margin:0!important;
+  color:var(--color-on-surface)!important;
+}
+.advancedOptionGroupHint{
+  font-size:9px!important;
+  color:var(--color-on-surface-variant)!important;
+  text-align:end!important;
+}
+.advancedPanel .advancedFooter{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+.advancedPanel .advancedFooter .linkBtn{
+  flex:0 0 auto!important;
+}
+.advancedPanel .advancedFooter .hint{
+  text-align:end!important;
+  font-size:9px!important;
+}
 </style>
 
 </head>
@@ -1147,8 +1185,22 @@ mark{
         <label class="checkline"><input id="baseBooksOnly" type="checkbox"> ספרי יסוד בלבד</label>
       </div>
       <div class="advancedWide">
-        <div><div class="optionGroupTitle">תקופות</div><div id="eraChips" class="chipSet"></div></div>
-        <div id="wordOptionsBlock"><div class="optionGroupTitle">אפשרויות מילים</div><div id="wordOptionChips" class="chipSet"></div></div>
+        <section id="eraOptionsGroup" class="advancedOptionGroup">
+          <div class="advancedOptionGroupHead">
+            <div class="optionGroupTitle">תקופות</div>
+            <div class="advancedOptionGroupHint">הגבל את החיפוש לתקופות מסוימות</div>
+          </div>
+          <div id="eraChips" class="chipSet"></div>
+        </section>
+        <section id="wordOptionsGroup" class="advancedOptionGroup">
+          <div id="wordOptionsBlock">
+            <div class="advancedOptionGroupHead">
+              <div class="optionGroupTitle">אפשרויות מילים</div>
+              <div class="advancedOptionGroupHint">אפשרויות נוספות למצב החיפוש שנבחר</div>
+            </div>
+            <div id="wordOptionChips" class="chipSet"></div>
+          </div>
+        </section>
       </div>
         <div class="advancedFooter">
           <button id="resetSearchOptions" class="linkBtn">איפוס אפשרויות</button>
