@@ -56,9 +56,10 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .list{display:grid;gap:3px}.row{border:0;background:transparent;color:inherit;width:100%;text-align:right;border-radius:11px;padding:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.row:hover{background:var(--surface2)}.row b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .meta{font-size:10px;color:var(--muted);white-space:nowrap}.empty{padding:20px;text-align:center;color:var(--muted);font-size:11px}
 .groupBlock{border-top:1px solid color-mix(in srgb,var(--outline) 65%,transparent);padding-top:10px;margin-top:10px}.groupBlock:first-child{border-top:0;padding-top:0;margin-top:0}.groupBlockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.groupBlockHead small{color:var(--muted)}
 .footer{color:var(--muted);font-size:10px;text-align:center;margin-top:25px}
-.modal{position:fixed;inset:0;background:rgba(16,12,28,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:90}.dialog{width:min(760px,100%);max-height:min(780px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.3)}.dialog.small{width:min(570px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.settingsTabs{display:flex;gap:6px;padding:12px 16px 0;background:var(--surface);position:sticky;top:53px;z-index:2}.settingsTab{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer}.settingsTab.active{background:var(--soft);color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}.dialogBody{padding:17px}.settingsPane{display:none}.settingsPane.active{display:block}.settingsGrid{display:grid;gap:16px}.settingBlock{border:1px solid var(--outline);border-radius:15px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:var(--soft)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary);border-radius:10px;padding:9px 14px;cursor:pointer}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 17px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}
+.modal{position:fixed;inset:0;background:rgba(16,12,28,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:90}.dialog{width:min(760px,100%);max-height:min(780px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.3)}.dialog.small{width:min(570px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.settingsDialog{width:min(980px,96vw);height:min(760px,92vh);overflow:hidden;display:grid;grid-template-rows:auto 1fr}.settingsSubtitle{font-size:10px;color:var(--muted);margin-top:3px}.settingsShell{min-height:0;display:grid;grid-template-columns:190px minmax(0,1fr)}.settingsTabs{display:flex;flex-direction:column;gap:6px;padding:14px;background:var(--surface2);border-inline-end:1px solid var(--outline);overflow:auto}.settingsTab{display:grid!important;grid-template-columns:28px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:right!important;border:1px solid transparent!important;background:transparent!important;border-radius:12px!important;padding:10px!important;cursor:pointer}.settingsTab>span{grid-row:1/3;font-size:17px}.settingsTab>b{font-size:12px}.settingsTab>small{font-size:9px;color:var(--muted);font-weight:400}.settingsTab:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)!important}.settingsTab.active{background:var(--surface)!important;color:var(--primary)!important;border-color:var(--outline)!important;box-shadow:0 5px 18px rgba(20,16,35,.05)}.settingsContent{min-width:0;min-height:0;display:grid;grid-template-rows:1fr auto;background:var(--surface)}.settingsTab{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer}.settingsTab.active{background:var(--soft);color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}.settingsContent>.dialogBody{padding:18px;overflow:auto;min-height:0}.dialogBody{padding:17px}.settingsPane{display:none!important}.settingsPane.active{display:grid!important}.settingsGrid{gap:16px}.settingsPaneHead{padding:2px 2px 4px;border-bottom:1px solid color-mix(in srgb,var(--outline) 65%,transparent)}.settingsPaneHead h3{margin:0;font-size:17px}.settingsPaneHead p{margin:4px 0 0;font-size:10px;color:var(--muted)}.settingRows{display:grid;gap:2px}.debugOutput{white-space:pre-wrap;font-size:9px;max-height:240px;overflow:auto;margin:0;background:var(--surface2);border-radius:10px;padding:10px}.aboutLinks{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.aboutLinks a{border:1px solid var(--outline);border-radius:10px;padding:7px 10px;text-decoration:none;color:var(--primary)}.shortcutList{display:grid;gap:8px}.shortcutList span{display:grid;grid-template-columns:auto auto auto 1fr;gap:5px;align-items:center}.shortcutList b{grid-column:4;font-size:11px}.shortcutList kbd{border:1px solid var(--outline);background:var(--surface2);border-radius:6px;padding:3px 6px;font-size:9px}.settingBlock{border:1px solid var(--outline);border-radius:15px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:var(--soft)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary);border-radius:10px;padding:9px 14px;cursor:pointer}.dialogFoot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 17px;border-top:1px solid var(--outline);background:var(--surface)}.dialogFoot>div{display:flex;gap:8px}
 .feedbackSettings{display:grid;gap:12px}.feedbackTypeRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.feedbackLabel{font-size:11px;font-weight:800;color:var(--muted)}.feedbackActions{display:flex;align-items:center;gap:10px}textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:0}textarea:focus{border-color:var(--primary)}.hint{font-size:10px;color:var(--muted);line-height:1.55}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.groupPicker{position:fixed;width:190px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
 @media(max-width:920px){.advancedGrid{grid-template-columns:repeat(2,1fr)}.resultGrid{grid-template-columns:1fr}.sectionsHost{grid-template-columns:1fr}.sectionPanel.wide{grid-column:auto}}
+@media(max-width:760px){.settingsDialog{width:min(100% - 14px,980px);height:min(94vh,780px)}.settingsShell{grid-template-columns:1fr;grid-template-rows:auto 1fr}.settingsTabs{flex-direction:row;overflow-x:auto;border-inline-end:0;border-bottom:1px solid var(--outline);padding:8px}.settingsTab{min-width:118px}.settingsTab small{display:none}.settingsContent>.dialogBody{padding:12px}.dialogFoot{padding:10px 12px}.dialogFoot>#settingsFootHint{display:none}}
 @media(max-width:620px){.page{width:min(100% - 18px,1180px);padding-top:18px}.heroCard{padding:26px 13px 20px;border-radius:22px}.brand{font-size:34px}.heroLogo{width:58px;height:58px}.searchbox{min-height:58px}.filterBtn{padding:10px}.searchBtn{padding:11px 13px}.advancedGrid{grid-template-columns:1fr}.field.span2{grid-column:auto}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.topActions .txt{display:none}.pluginGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.searchHead{display:block}.searchHeadActions{margin-top:9px}}
 </style>
 </head>
@@ -165,62 +166,135 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 </main>
 
 <div id="settingsModal" class="modal" hidden>
-  <div class="dialog">
-    <div class="dialogHead"><h2>הגדרות דף הבית</h2><button id="closeSettings">✕</button></div>
-    <div class="settingsTabs" role="tablist">
-      <button class="settingsTab active" data-settings-tab="general" type="button">כללי</button>
-      <button class="settingsTab" data-settings-tab="feedback" type="button">משוב</button>
-    </div>
-    <div class="dialogBody">
-      <div id="settingsTab-general" class="settingsPane settingsGrid active">
-
-      <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid">
-        <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
-        <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
-        <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
-      </div><p class="hint">ברירת המחדל היא דף הבית.</p></section>
-
-      <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
-        <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label>
-        <label class="option"><input id="show-plugins" type="checkbox"> תוספים</label>
-        <label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label>
-        <label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label>
-        <label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
-      </div></section>
-
-      <section class="settingBlock"><h3>סדר הכרטיסים</h3><div id="orderList" class="orderList"></div></section>
-
-      <section class="settingBlock"><h3>פעולות מהירות</h3><div class="checkGrid">
-        <label class="option"><input id="quick-library" type="checkbox"> ספרייה</label>
-        <label class="option"><input id="quick-reading" type="checkbox"> עיון</label>
-        <label class="option"><input id="quick-search" type="checkbox"> חיפוש</label>
-        <label class="option"><input id="quick-history" type="checkbox"> היסטוריה</label>
-        <label class="option"><input id="quick-bookmarks" type="checkbox"> סימניות</label>
-      </div></section>
-
-      <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option><option>20</option></select></div></section>
-
-      <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">מוסיפים ספר לקבוצה מתוך תוצאות חיפוש הספרים.</p></section>
-
+  <div class="dialog settingsDialog">
+    <div class="dialogHead">
+      <div>
+        <h2>הגדרות דף הבית</h2>
+        <div class="settingsSubtitle">התאמה אישית, משוב, אבחון ומידע על התוסף</div>
       </div>
-      <div id="settingsTab-feedback" class="settingsPane">
-        <section class="settingBlock feedbackSettings">
-          <h3>משוב למפתח התוסף</h3>
-          <p class="hint">המשוב נשלח דרך מנגנון <code>feedback.report</code> הרשמי של אוצריא. לפני שליחה אוצריא מציגה חלון אישור עם תוכן הדיווח.</p>
-          <div class="feedbackTypeRow">
-            <label class="option"><input type="radio" name="feedbackType" value="bug" checked> דיווח על תקלה</label>
-            <label class="option"><input type="radio" name="feedbackType" value="other"> הצעת רעיון / משוב אחר</label>
+      <button id="closeSettings" aria-label="סגור">✕</button>
+    </div>
+
+    <div class="settingsShell">
+      <nav class="settingsTabs" role="tablist" aria-label="קטגוריות הגדרות">
+        <button class="settingsTab active" data-settings-tab="general" type="button"><span>⚙</span><b>כללי</b><small>התנהגות ותוכן</small></button>
+        <button class="settingsTab" data-settings-tab="appearance" type="button"><span>◐</span><b>מראה</b><small>צבעים ופריסה</small></button>
+        <button class="settingsTab" data-settings-tab="feedback" type="button"><span>💬</span><b>משוב</b><small>תקלה או רעיון</small></button>
+        <button class="settingsTab" data-settings-tab="diagnostics" type="button"><span>🩺</span><b>אבחון</b><small>בדיקות ו־Debug</small></button>
+        <button class="settingsTab" data-settings-tab="about" type="button"><span>ⓘ</span><b>אודות</b><small>גרסה וקיצורים</small></button>
+      </nav>
+
+      <div class="settingsContent">
+        <div class="dialogBody">
+          <section id="settingsTab-general" class="settingsPane settingsGrid active" role="tabpanel">
+            <div class="settingsPaneHead"><h3>הגדרות כלליות</h3><p>בחר מה ייפתח, אילו אזורים יוצגו ואיך דף הבית יתנהג.</p></div>
+
+            <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid">
+              <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
+              <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
+              <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
+            </div><p class="hint">ברירת המחדל היא דף הבית.</p></section>
+
+            <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
+              <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label>
+              <label class="option"><input id="show-plugins" type="checkbox"> תוספים</label>
+              <label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label>
+              <label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label>
+              <label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
+            </div></section>
+
+            <section class="settingBlock"><h3>סדר הכרטיסים</h3><div id="orderList" class="orderList"></div></section>
+
+            <section class="settingBlock"><h3>פעולות מהירות</h3><div class="checkGrid">
+              <label class="option"><input id="quick-library" type="checkbox"> ספרייה</label>
+              <label class="option"><input id="quick-reading" type="checkbox"> עיון</label>
+              <label class="option"><input id="quick-search" type="checkbox"> חיפוש</label>
+              <label class="option"><input id="quick-history" type="checkbox"> היסטוריה</label>
+              <label class="option"><input id="quick-bookmarks" type="checkbox"> סימניות</label>
+            </div></section>
+
+            <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option><option>20</option></select></div></section>
+
+            <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">מוסיפים ספר לקבוצה מתוך תוצאות חיפוש הספרים.</p></section>
+          </section>
+
+          <section id="settingsTab-appearance" class="settingsPane settingsGrid" role="tabpanel">
+            <div class="settingsPaneHead"><h3>מראה ופריסה</h3><p>התאם את דף הבית לסגנון ולעומס התצוגה שנוחים לך.</p></div>
+
+            <section class="settingBlock">
+              <h3>תצוגה</h3>
+              <div class="settingRows">
+                <div class="settingRow"><span>צפיפות</span><select id="densitySelect"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></div>
+                <div class="settingRow"><span>רקע</span><select id="backgroundSelect"><option value="aurora">Aurora</option><option value="soft">עדין</option><option value="flat">שטוח</option></select></div>
+                <div class="settingRow"><span>גודל כרטיסים</span><select id="cardSizeSelect"><option value="normal">רגיל</option><option value="large">גדול</option></select></div>
+                <div class="settingRow"><span>עמודות</span><select id="columnsSelect"><option value="1">אחת</option><option value="2">שתיים</option><option value="3">שלוש</option></select></div>
+                <div class="settingRow"><span>צבע הדגשה</span><select id="accentSelect"><option value="host">אוצריא</option><option value="purple">סגול</option><option value="blue">כחול</option><option value="green">ירוק</option><option value="rose">ורוד כהה</option></select></div>
+                <div class="settingRow"><span>פינות</span><select id="radiusSelect"><option value="rounded">עגולות</option><option value="soft">עדינות</option><option value="square">מרובעות</option></select></div>
+              </div>
+            </section>
+
+            <section class="settingBlock">
+              <h3>מצבי תצוגה</h3>
+              <div class="checkGrid">
+                <label class="option"><input id="focusModeSetting" type="checkbox"> מצב Focus — רק החיפוש</label>
+                <label class="option"><input id="dashboardSetting" type="checkbox"> הצג לוח נתונים קטן</label>
+              </div>
+            </section>
+
+            <section class="settingBlock"><h3>פעולות מהירות אישיות</h3><button id="pinCurrentBook" class="secondaryBtn" type="button">📌 הצמד את הספר הפעיל</button><p class="hint">לחיצה ימנית על קיצור מוצמד מסירה אותו.</p></section>
+          </section>
+
+          <section id="settingsTab-feedback" class="settingsPane settingsGrid" role="tabpanel">
+            <div class="settingsPaneHead"><h3>משוב למפתח</h3><p>דווח על תקלה או שלח רעיון דרך מנגנון המשוב הרשמי של אוצריא.</p></div>
+
+            <section class="settingBlock feedbackSettings">
+              <div class="feedbackTypeRow">
+                <label class="option"><input type="radio" name="feedbackType" value="bug" checked> דיווח על תקלה</label>
+                <label class="option"><input type="radio" name="feedbackType" value="other"> הצעת רעיון / משוב אחר</label>
+              </div>
+              <div class="settingRow"><span>קטגוריה</span><select id="feedbackCategory"><option value="general">כללי</option><option value="search">חיפוש</option><option value="display">תצוגה</option><option value="plus">כפתור +</option><option value="plugins">תוספים</option><option value="performance">ביצועים</option></select></div>
+              <label class="feedbackLabel" for="feedbackText">תוכן ההודעה</label>
+              <textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea>
+              <p class="hint">לפני השליחה אוצריא תציג חלון אישור. לדיווח מצורף מידע טכני בסיסי לצורך אבחון.</p>
+              <div class="feedbackActions"><button id="sendFeedback" class="primaryBtn" type="button">שלח משוב</button><span id="feedbackStatus" class="hint"></span></div>
+            </section>
+          </section>
+
+          <section id="settingsTab-diagnostics" class="settingsPane settingsGrid" role="tabpanel">
+            <div class="settingsPaneHead"><h3>אבחון ותאימות</h3><p>בדוק את ה־API המרכזיים וקבל דוח שאפשר לצרף למשוב.</p></div>
+
+            <section class="settingBlock">
+              <div id="diagnosticGrid" class="diagnosticGrid"><div class="empty">לחץ על “הרץ בדיקה” כדי לבדוק את מצב התוסף.</div></div>
+              <div class="feedbackActions"><button id="runDiagnostics" class="secondaryBtn" type="button">הרץ בדיקה</button><button id="copyDiagnostics" class="secondaryBtn" type="button">העתק דוח</button></div>
+            </section>
+
+            <section class="settingBlock"><h3>יומן Debug</h3><pre id="debugOutput" class="debugOutput">אין אירועי debug.</pre></section>
+          </section>
+
+          <section id="settingsTab-about" class="settingsPane settingsGrid" role="tabpanel">
+            <div class="settingsPaneHead"><h3>אודות התוסף</h3><p>מידע, גרסה וקיצורי דרך שימושיים.</p></div>
+
+            <section class="settingBlock aboutBox">
+              <img src="plugin-icon.jpg" alt="אייקון דף הבית">
+              <h3>דף הבית לאוצריא</h3>
+              <p>גרסה 4.0.4 · מאת אברהם mch</p>
+              <p>דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.</p>
+              <div class="aboutLinks"><a href="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט</a><a href="https://github.com/avtsye/Home-page-to-otzaria/tree/main/dist">גרסאות להורדה</a></div>
+            </section>
+
+            <section class="settingBlock"><h3>קיצורי מקלדת</h3><div class="shortcutList"><span><kbd>Ctrl</kbd> + <kbd>K</kbd><b>מיקוד בחיפוש</b></span><span><kbd>Ctrl</kbd> + <kbd>,</kbd><b>פתיחת הגדרות</b></span><span><kbd>Esc</kbd><b>סגירת חלון</b></span><span><kbd>Alt</kbd> + <kbd>F</kbd><b>Focus Mode</b></span></div></section>
+          </section>
+        </div>
+
+        <div class="dialogFoot">
+          <span id="settingsFootHint" class="hint">שינויים בהגדרות הכלליות נשמרים בלחיצה על “שמור”.</span>
+          <div>
+            <button id="saveSettings" class="primaryBtn">שמור</button>
+            <button id="cancelSettings" class="secondaryBtn">סגור</button>
           </div>
-          <label class="feedbackLabel" for="feedbackText">תוכן ההודעה</label>
-          <textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea>
-          <div class="feedbackActions">
-            <button id="sendFeedback" class="primaryBtn" type="button">שלח משוב</button>
-            <span id="feedbackStatus" class="hint"></span>
-          </div>
-        </section>
+        </div>
       </div>
     </div>
-    <div class="dialogFoot"><button id="saveSettings" class="primaryBtn">שמור</button><button id="cancelSettings" class="secondaryBtn">סגור</button></div>
   </div>
 </div>
 
