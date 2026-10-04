@@ -30,12 +30,12 @@ jobs:
           from pathlib import Path
           from PIL import Image
 
-          src = Path('assets/home-page-icon-256.png')
+          src = Path('plugin-icon.jpg')
           if not src.exists():
               raise SystemExit('Missing '+str(src))
 
           image = Image.open(src).convert('RGBA')
-          for size in (512, 1024, 2048):
+          for size in (256, 512, 1024, 2048):
               out = Path(f'assets/home-page-icon-{size}.png')
               resized = image.resize((size, size), Image.Resampling.LANCZOS)
               resized.save(out, 'PNG', optimize=True)
@@ -46,7 +46,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/home-page-icon-512.png assets/home-page-icon-1024.png assets/home-page-icon-2048.png
+          git add assets/home-page-icon-256.png assets/home-page-icon-512.png assets/home-page-icon-1024.png assets/home-page-icon-2048.png
           if git diff --cached --quiet; then
             echo "No asset changes."
             exit 0
