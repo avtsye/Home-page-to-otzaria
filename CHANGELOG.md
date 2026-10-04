@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.0.4
+
+### Changed
+- Rebuilt the Settings screen with five fully separated tabs: General, Appearance, Feedback, Diagnostics and About.
+- Moved all settings panes into static HTML instead of creating some of them dynamically at runtime.
+- Added a dedicated settings sidebar, contextual footer text and tab-specific save behavior.
+- Improved mobile settings layout and reduced visual clutter before store upload.
+
+
 ## 4.0.3
 
 ### Changed
