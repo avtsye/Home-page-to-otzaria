@@ -4,6 +4,10 @@ const SETTINGS_KEY='homeSettingsV1';
 const GROUPS_KEY='bookGroupsV1';
 const SEARCH_LIMIT=40;
 
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=x=>JSON.parse(JSON.stringify(x));
+const dataOf=r=>r&&r.success?r.data:null;
+
 const DEFAULT_SEARCH={
   mode:'advanced',
   order:'relevance',
@@ -39,10 +43,6 @@ let currentBookCounts=[];
 let selectedScopeBook=null;
 let allPlugins=[];
 let lastBatchSize=0;
-
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const clone=x=>JSON.parse(JSON.stringify(x));
-const dataOf=r=>r&&r.success?r.data:null;
 
 async function storageGet(key,fallback){
   try{
@@ -942,7 +942,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else startUi();
 
 Otzaria.on('plugin.boot',async p=>{
-  settings=normalizeSettings(await storageGet(SETTINGS_KEY,DEFAULT_SETTINGS));
+  try{
+    settings=normalizeSettings(await storageGet(SETTINGS_KEY,DEFAULT_SETTINGS));
   groups=normalizeGroups(await storageGet(GROUPS_KEY,groups));
   applyTheme(p&&p.theme);
   await syncPlusRegistration();
@@ -950,9 +951,13 @@ Otzaria.on('plugin.boot',async p=>{
     await Otzaria.call('plugin.backgroundDone');
     return;
   }
-  await loadSearchOptions();
-  await loadHome();
-  $('q').focus();
+    await loadSearchOptions();
+    await loadHome();
+    $('q').focus();
+  }catch(err){
+    console.error('Homepage boot failed',err);
+    toast('שגיאה בטעינת דף הבית: '+(err&&err.message?err.message:String(err)));
+  }
 });
 Otzaria.on('theme.changed',p=>applyTheme((p&&p.theme)||p));
 Otzaria.on('plugin.page_opened',async p=>{
