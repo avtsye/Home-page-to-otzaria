@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.3
+
+### Changed
+- Updated the store description to: "דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה."
+- Release package includes and uses the custom plugin icon.
+- Store release remains stable and requires Otzaria 0.9.98 or newer.
+
+
 ## 4.0.2
 
 ### Changed
