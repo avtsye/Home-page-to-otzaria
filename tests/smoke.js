@@ -141,3 +141,7 @@ assert(/improveGroupEmptyState/.test(enhancements),'group empty state missing');
 assert(/baseRunSearchV6/.test(enhancements)&&/search:completed/.test(enhancements),'search empty/event enhancement missing');
 assert(/groups:rendered/.test(enhancements)&&/plugins:rendered/.test(enhancements),'event-backed render signals missing');
 assert(/plugins:changed/.test(enhancements),'plugin data event missing');
+
+assert(html.includes('plusSettingsBlock'),'plus button settings must use one unified card');
+assert(html.includes('plusSettingsDivider'),'plus target section divider missing');
+assert(!/id="plusTargetSettings" class="settingBlock"/.test(html),'plus target must not be a separate settings card');
