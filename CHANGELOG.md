@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.2
+
+### Changed
+- Added a dedicated plugin icon and made it the official manifest icon.
+- Included the custom icon in Release, Debug and dev-compat packages.
+- Updated the homepage and About UI to display the new plugin icon.
+
+
 ## 4.0.1
 
 ### Changed
