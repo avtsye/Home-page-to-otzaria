@@ -50,7 +50,7 @@ async function saveFeatures(){await fSet(FEATURE_KEY,featureSettings)}
 function styleFeatureLayer(){
   const st=document.createElement('style');
   st.id='featureStylesV4';
-  st.textContent=\`
+  st.textContent=`
   :focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 46%,transparent)!important;outline-offset:2px}
   body.density-compact .sectionPanel{padding:10px;border-radius:15px}body.density-compact .row{padding:7px}body.density-compact .pluginCard{min-height:86px;padding:9px}
   body.focus-mode .sectionsHost,body.focus-mode .quick,body.focus-mode .homeDashboard,body.focus-mode .quickPins{display:none!important}
@@ -70,7 +70,7 @@ function styleFeatureLayer(){
   .skeleton{height:34px;border-radius:9px;background:linear-gradient(90deg,var(--surface2),var(--surface3),var(--surface2));background-size:200% 100%;animation:sk 1.2s infinite}@keyframes sk{to{background-position:-200% 0}}
   .updatedStamp{font-size:9px;color:var(--muted);margin-top:7px;text-align:left}
   @media(max-width:700px){.homeDashboard{grid-template-columns:1fr 1fr}.diagnosticGrid{grid-template-columns:1fr}}
-  \`;
+  `;
   document.head.appendChild(st);
 }
 const coreApplyThemeV4=applyTheme;
