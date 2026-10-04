@@ -48,10 +48,13 @@ jobs:
       - name: Build package into dist
         shell: bash
         run: |
-          mkdir -p dist build
+          mkdir -p dist build debug-build
           rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
           zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
+          printf "debug" > debug.flag
+          cp manifest.json index.html main.js features.js otzaria-icon.png debug.flag debug-build/
+          (cd debug-build && zip -9 "../build/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png debug.flag)
       - name: Commit packaged plugin to dist
         if: github.event_name != 'pull_request'
         shell: bash
