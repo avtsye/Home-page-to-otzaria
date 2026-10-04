@@ -97,7 +97,6 @@ function styleFeatureLayer(){
   .pluginGrid.listView{display:grid;grid-template-columns:1fr}.pluginGrid.listView .pluginCard{min-height:58px;display:grid;grid-template-columns:42px minmax(0,1fr) auto;text-align:right;align-items:center;gap:10px}.pluginGrid.listView .pluginIcon{margin:0;width:38px;height:38px}.pluginGrid.listView .pluginCard b{grid-column:2}.pluginGrid.listView .pluginCard small{grid-column:3;grid-row:1}
   .pluginFav{position:absolute;top:7px;right:8px;border:0!important;background:transparent!important;font-size:16px;padding:3px!important;z-index:2;color:var(--color-on-surface-variant,var(--muted))}.pluginFav.on{color:var(--color-tertiary,var(--primary))}
   .savedSearchBar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}.savedSearchBar select,.savedSearchBar button{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:7px 9px}
-  .diagnosticGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.diagItem{border:1px solid var(--outline);border-radius:11px;padding:9px}.diagItem b{font-size:11px}.diagItem div{font-size:10px;color:var(--muted);margin-top:3px}.diag-ok{color:var(--success)}.diag-bad{color:var(--error)}
   .aboutBox{text-align:center}.aboutBox img{width:70px;height:70px;border-radius:18px}.aboutBox h3{margin:8px 0 4px}.aboutBox p{font-size:11px;color:var(--muted)}
   .quickPins{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:8px}.quickPins button{border:1px solid var(--outline);background:var(--surface);border-radius:11px;padding:7px 10px;cursor:pointer}.quickPinWrap{display:inline-flex;align-items:center}.quickPinWrap>.nativeIconButton{margin-inline-start:-6px;border:1px solid var(--outline)!important;background:var(--surface)!important}
   .changelogBox{position:fixed;inset:auto 18px 18px 18px;max-width:520px;margin:auto;background:var(--color-surface-container-highest,var(--surface));border:1px solid var(--color-outline-variant,var(--outline));border-radius:16px;padding:16px;box-shadow:0 6px 18px color-mix(in srgb,var(--color-shadow,#000) 16%,transparent);z-index:150}.changelogBox h3{margin:0 0 8px}.changelogBox ul{margin:0;padding-inline-start:18px;font-size:11px;line-height:1.7}.changelogBox button{margin-top:10px}
@@ -320,12 +319,19 @@ function renderPluginsV4(favOnly){
   });
   allPlugins=original;
 }
-function lazyLoadPlugins(){
-  const sec=$('section-plugins');if(!sec)return;
-  if(!('IntersectionObserver'in window)){loadPlugins();pluginsLoaded=true;return}
-  pluginObserver=new IntersectionObserver(async entries=>{if(entries.some(x=>x.isIntersecting)&&!pluginsLoaded){pluginsLoaded=true;await loadPlugins();pluginObserver.disconnect()}},{rootMargin:'250px'});
-  pluginObserver.observe(sec);
+async function loadPluginsReliableV4(){
+  pluginsLoaded=true;
+  try{
+    await loadPlugins();
+    fLog('info','Installed plugins loaded',allPlugins.length);
+  }catch(e){
+    pluginsLoaded=false;
+    fLog('error','Installed plugins load failed',e);
+    const box=$('plugins');
+    if(box)box.innerHTML='<div class="empty">לא ניתן לטעון כרגע את רשימת התוספים.</div>';
+  }
 }
+
 const coreLoadHome=loadHome;
 loadHome=async function(){
   const calls=await Promise.allSettled([
@@ -335,7 +341,7 @@ loadHome=async function(){
   ]);
   const val=i=>calls[i].status==='fulfilled'?calls[i].value:null;
   renderList('recent',val(0)||[],'אין ספרים אחרונים');renderList('bookmarks',val(1)||[],'אין סימניות');renderList('history',val(2)||[],'אין היסטוריה');
-  renderGroups();applyLayout();refreshDashboard();if(pluginsLoaded)await loadPlugins();
+  renderGroups();applyLayout();refreshDashboard();await loadPluginsReliableV4();
 };
 
 async function smartOpenPinnedBook(book){
@@ -361,7 +367,7 @@ async function pinCurrentBook(){
   }catch(e){toast('לא ניתן להצמיד את הספר הנוכחי')}
 }
 function injectSettingsTabsV4(){
-  const required=['densitySelect','cardSizeSelect','columnsSelect','focusModeSetting','dashboardSetting','pinCurrentBook','runDiagnostics','copyDiagnostics'];
+  const required=['densitySelect','cardSizeSelect','columnsSelect','focusModeSetting','dashboardSetting','pinCurrentBook'];
   if(required.some(id=>!$(id))){
     fLog('error','Settings markup is incomplete',required.filter(id=>!$(id)).join(', '));
     return;
@@ -379,8 +385,6 @@ function injectSettingsTabsV4(){
   $('focusModeSetting').onchange=async e=>{featureSettings.focusMode=e.target.checked;await saveFeatures();applyFeatureAppearance()};
   $('dashboardSetting').onchange=async e=>{featureSettings.showDashboard=e.target.checked;await saveFeatures();if($('homeDashboard'))$('homeDashboard').hidden=!e.target.checked};
   $('pinCurrentBook').onclick=pinCurrentBook;
-  $('runDiagnostics').onclick=runDiagnostics;
-  $('copyDiagnostics').onclick=copyDiagnostics;
 
   document.querySelectorAll('.settingsTab').forEach(b=>{
     b.onclick=()=>setSettingsTab(b.dataset.settingsTab);
@@ -467,14 +471,14 @@ async function detectDebugPackage(){
     const v=(await r.text()).trim();
     if(v!=='debug')return false;
     document.body.dataset.debugPackage='true';
-    setTimeout(async()=>{openSettings();setSettingsTab('diagnostics');await runDiagnostics();toast('גרסת Debug פעילה')},120);
+    setTimeout(()=>{openSettings();setSettingsTab('feedback');toast('גרסת Debug פעילה')},120);
     return true;
   }catch(_){return false}
 }
 function showChangelog(){
   if(featureSettings.lastSeenVersion===FEATURE_VERSION)return;
   const box=document.createElement('div');box.className='changelogBox';
-  box.innerHTML='<h3>מה חדש ב־'+FEATURE_VERSION+'</h3><ul><li>Drag & Drop לכרטיסי דף הבית</li><li>היסטוריית חיפוש וחיפושים שמורים</li><li>מועדפי תוספים ותצוגה קומפקטית</li><li>מצב Focus וקיצורי מקלדת</li><li>אבחון, Debug ומשוב עם מידע טכני</li><li>טעינה עצלה ו־cache בזיכרון</li></ul><button class="primaryBtn">הבנתי</button>';
+  box.innerHTML='<h3>מה חדש ב־'+FEATURE_VERSION+'</h3><ul><li>Drag & Drop לכרטיסי דף הבית</li><li>היסטוריית חיפוש וחיפושים שמורים</li><li>מועדפי תוספים ותצוגה קומפקטית</li><li>מצב Focus וקיצורי מקלדת</li><li>משוב מובנה וכלי Debug פנימיים</li><li>טעינה עצלה ו־cache בזיכרון</li></ul><button class="primaryBtn">הבנתי</button>';
   box.querySelector('button').onclick=async()=>{featureSettings.lastSeenVersion=FEATURE_VERSION;await saveFeatures();box.remove()};document.body.appendChild(box);
 }
 function enhanceAccessibility(){
@@ -805,7 +809,7 @@ Otzaria.on('plugin.boot',async()=>{
   try{
     featureSettings=mergeFeatureSettings(await fGet(FEATURE_KEY,featureSettings));await loadSavedTabSetsV4();
     try{const st=dataOf(await Otzaria.call('reader.getCurrentState'));if(st&&st.currentBookId)currentBookScopeV4={id:st.currentId,type:st.currentType,source:st.currentSource,bookId:st.currentBookId,title:st.currentBook,index:st.currentIndex,ref:st.currentRef}}catch(_){}
-    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();lazyLoadPlugins();await refreshDashboard();await detectDebugPackage();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
+    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();await loadPluginsReliableV4();await refreshDashboard();await detectDebugPackage();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
   }catch(e){fLog('error','Feature layer boot failed',e);console.error('Feature layer boot failed',e)}
 });
 Otzaria.on('theme.changed',()=>applyFeatureAppearance());
