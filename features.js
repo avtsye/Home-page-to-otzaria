@@ -685,6 +685,11 @@ function renderSavedTabSetsV4(){
     card.innerHTML='<h3>'+esc(set.name)+'</h3><div class="savedTabMeta">'+set.books.length+' ספרים</div><div class="savedTabBooks">'+preview+(set.books.length>4?'<div class="savedTabMore">ועוד '+(set.books.length-4)+'…</div>':'')+'</div>';
     card.appendChild(actions);
     card.onclick=()=>openTabSetPreviewV4(set);
+    card.oncontextmenu=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openTabSetActionsV4(set,{clientX:e.clientX,clientY:e.clientY});
+    };
     card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTabSetPreviewV4(set)}};
     grid.appendChild(card);
   });
@@ -954,19 +959,42 @@ function downloadTabSetsV4(sets,filename){
 function exportSingleTabSetV4(set){
   downloadTabSetsV4([set],'otzaria-home-'+String(set.name||'saved-tabs').replace(/[\\/:*?"<>|]+/g,'-')+'.json');
 }
-function openTabSetActionsV4(set,anchor){
+function openTabSetActionsV4(set,anchorOrPoint){
   const old=document.querySelector('.tabSetActionMenu');if(old)old.remove();
   const menu=document.createElement('div');menu.className='groupPicker tabSetActionMenu';
+  menu.setAttribute('role','menu');
   const actions=[
     ['פתח / בחר ספרים',()=>openTabSetPreviewV4(set)],
     ['עדכן מיקומים מהלשוניות הפתוחות',()=>updateTabSetPositionsV4(set)],
     ['ייצא כרטיס',()=>exportSingleTabSetV4(set)],
     ['ערוך כרטיס',()=>openTabSetEditorV4({mode:'edit',set})],
-    ['מחק',()=>deleteTabSetV4(set)]
+    ['מחק',()=>deleteTabSetV4(set),'danger']
   ];
-  actions.forEach(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=e=>{e.stopPropagation();menu.remove();fn()};menu.appendChild(b)});
-  const r=anchor.getBoundingClientRect();menu.style.top=Math.min(innerHeight-270,r.bottom+6)+'px';menu.style.left=Math.max(8,Math.min(innerWidth-240,r.left))+'px';document.body.appendChild(menu);
-  setTimeout(()=>document.addEventListener('click',()=>menu.remove(),{once:true}),0);
+  actions.forEach(([label,fn,kind])=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.setAttribute('role','menuitem');
+    b.textContent=label;
+    if(kind)b.classList.add('dangerAction');
+    b.onclick=e=>{e.stopPropagation();menu.remove();fn()};
+    menu.appendChild(b);
+  });
+
+  let x=8,y=8;
+  if(anchorOrPoint&&Number.isFinite(anchorOrPoint.clientX)&&Number.isFinite(anchorOrPoint.clientY)){
+    x=anchorOrPoint.clientX;y=anchorOrPoint.clientY;
+  }else if(anchorOrPoint&&anchorOrPoint.getBoundingClientRect){
+    const r=anchorOrPoint.getBoundingClientRect();x=r.left;y=r.bottom+6;
+  }
+  document.body.appendChild(menu);
+  const mr=menu.getBoundingClientRect();
+  menu.style.left=Math.max(8,Math.min(innerWidth-mr.width-8,x))+'px';
+  menu.style.top=Math.max(8,Math.min(innerHeight-mr.height-8,y))+'px';
+
+  const close=()=>menu.remove();
+  const onKey=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',onKey)}};
+  document.addEventListener('keydown',onKey);
+  setTimeout(()=>document.addEventListener('click',close,{once:true}),0);
 }
 async function updateTabSetPositionsV4(set){
   let current=[];try{current=readerTabsV4(dataOf(await Otzaria.call('reader.getCurrentState')))}catch(_){}
