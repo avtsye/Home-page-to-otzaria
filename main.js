@@ -411,6 +411,57 @@ function fillSelect(id,values,map){
     el.appendChild(o);
   }
 }
+function renderSearchModeSegments(){
+  const box=$('searchModeSegments');
+  const select=$('searchMode');
+  if(!box||!select)return;
+  const active=select.value||((settings.searchConfig||DEFAULT_SEARCH).mode);
+  box.innerHTML='';
+  [...select.options].forEach(option=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.dataset.value=option.value;
+    b.textContent=option.textContent;
+    b.className=option.value===active?'active':'';
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected',option.value===active?'true':'false');
+    b.onclick=()=>{
+      if(select.value===option.value)return;
+      select.value=option.value;
+      searchChanged(true);
+      renderSearchModeSegments();
+    };
+    box.appendChild(b);
+  });
+  updateSearchModeHelp();
+}
+function updateSearchModeHelp(){
+  const el=$('searchModeHelp');if(!el)return;
+  const mode=$('searchMode').value||'advanced';
+  const text={
+    exact:'חיפוש מדויק לפי המילים והאפשרויות שהוגדרו.',
+    advanced:'חיפוש מתקדם עם התאמת מילים, קירבה, שלילה ואפשרויות נוספות.',
+    fuzzy:'חיפוש מקורב למציאת מילים גם כאשר יש שגיאות או הבדלים בכתיב.'
+  };
+  el.textContent=text[mode]||'בחר את סוג החיפוש והאפשרויות המתאימות לו.';
+}
+function openAdvancedSearch(){
+  const panel=$('advancedPanel');
+  panel.hidden=false;
+  $('advancedToggle').classList.add('active');
+  $('advancedToggle').setAttribute('aria-expanded','true');
+  $('suggestions').hidden=true;
+  renderSearchModeSegments();
+}
+function closeAdvancedSearch(){
+  const panel=$('advancedPanel');
+  panel.hidden=true;
+  $('advancedToggle').classList.remove('active');
+  $('advancedToggle').setAttribute('aria-expanded','false');
+}
+function toggleAdvancedSearch(){
+  if($('advancedPanel').hidden)openAdvancedSearch();else closeAdvancedSearch();
+}
 async function loadSearchOptions(){
   const fallback={
     modes:['exact','advanced','fuzzy'],
@@ -434,6 +485,7 @@ async function loadSearchOptions(){
   fillSelect('searchWordMatch',searchOptions.wordMatchModes,LABELS.wordMatch);
   applySearchSettingsToUi();
   renderDynamicSearchControls();
+  renderSearchModeSegments();
 }
 function applySearchSettingsToUi(){
   const s=settings.searchConfig||DEFAULT_SEARCH;
@@ -446,6 +498,7 @@ function applySearchSettingsToUi(){
   $('searchDistance').value=String(s.distance||0);
   $('negativeQuery').value=s.negativeQuery||'';
   $('baseBooksOnly').checked=!!s.baseBooksOnly;
+  renderSearchModeSegments();
 }
 function readSearchUi(){
   const mode=$('searchMode').value||'advanced';
@@ -538,6 +591,7 @@ function renderSearchSummary(){
 function searchChanged(run){
   readSearchUi();
   renderDynamicSearchControls();
+  renderSearchModeSegments();
   clearTimeout(searchTimer);
   if(run&&$('q').value.trim().length>=2){
     searchTimer=setTimeout(()=>runSearch(false),220);
@@ -1027,6 +1081,7 @@ function resetSearchOptions(){
   selectedScopeBook=null;
   applySearchSettingsToUi();
   renderDynamicSearchControls();
+  renderSearchModeSegments();
   searchChanged(true);
 }
 function wire(){
@@ -1054,6 +1109,7 @@ function wire(){
       runSearch(false);
     }else if(e.key==='Escape'){
       $('suggestions').hidden=true;
+      closeAdvancedSearch();
     }
   });
   $('clear').onclick=()=>{
@@ -1065,10 +1121,9 @@ function wire(){
     $('q').focus();
   };
   $('searchGo').onclick=()=>runSearch(false);
-  $('advancedToggle').onclick=()=>{
-    $('advancedPanel').hidden=!$('advancedPanel').hidden;
-    $('advancedToggle').classList.toggle('active',!$('advancedPanel').hidden);
-  };
+  $('advancedToggle').setAttribute('aria-expanded','false');
+  $('advancedToggle').onclick=toggleAdvancedSearch;
+  $('closeAdvancedSearch').onclick=closeAdvancedSearch;
   $('resetSearchOptions').onclick=resetSearchOptions;
 
   for(const id of ['searchMode','searchOrder','searchGrouping','searchProximity','searchWordMatch','searchDistance','searchWordCount','negativeQuery','baseBooksOnly']){
@@ -1127,7 +1182,13 @@ function wire(){
   $('sendFeedback').onclick=sendFeedback;
 
   document.addEventListener('click',e=>{
-    if(!e.target.closest('.searchWrap'))$('suggestions').hidden=true;
+    if(!e.target.closest('.searchWrap')){
+      $('suggestions').hidden=true;
+      closeAdvancedSearch();
+    }
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!$('advancedPanel').hidden)closeAdvancedSearch();
   });
 }
 
