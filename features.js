@@ -3,6 +3,8 @@ const FEATURE_KEY='homeFeaturesV4';
 const FEATURE_VERSION='4.0.7';
 const CACHE_TTL=30000;
 const TAB_SETS_KEY='savedTabSetsV1';
+const TAB_SETS_BACKUP_KEY='savedTabSetsBackupV1';
+const TAB_SETS_SCHEMA=2;
 const UNDO_WINDOW_MS=10000;
 const memCache=new Map();
 const debugLog=[];
@@ -530,41 +532,97 @@ function firstValueV4(values){
 function normalizeOpenTabV4(raw){
   const {r,book,loc}=rawTabCandidatesV4(raw);
   const id=firstValueV4([book.id,book.bookDbId,book.databaseId,r.currentId,r.bookDbId,r.databaseId,r.id]);
-  const bookUid=firstValueV4([book.bookUid,book.uid,r.bookUid,r.uid]);
-  const title=firstValueV4([book.title,book.name,r.currentBook,r.title,r.name,r.book,r.bookId])||'ספר';
+  const bookUid=String(firstValueV4([book.bookUid,book.uid,r.bookUid,r.currentBookUid,r.uid])||'').trim();
+  const title=firstValueV4([book.title,book.name,book.fileName,r.currentBook,r.title,r.name,r.book,r.bookId])||'ספר';
   const bookId=firstValueV4([book.bookId,book.title,book.name,r.currentBookId,r.bookId,r.book,r.title])||title;
-  const type=firstValueV4([book.type,book.bookType,r.currentType,r.type,r.bookType])||'text';
+  const type=firstValueV4([book.type,book.bookType,book.format,r.currentType,r.type,r.bookType,r.format])||'text';
   const source=firstValueV4([book.source,r.currentSource,r.source])||'library';
-  const indexRaw=firstValueV4([r.currentIndex,r.index,r.pageIndex,loc.currentIndex,loc.index,loc.pageIndex,0]);
-  const ref=String(firstValueV4([r.currentRef,r.ref,r.reference,loc.ref,loc.reference,''])||'');
+  const path=String(firstValueV4([book.path,book.sourcePath,book.filePath,r.path,r.sourcePath,r.filePath,''])||'');
+  const indexRaw=firstValueV4([r.currentIndex,r.index,r.pageIndex,r.pageNumber,loc.currentIndex,loc.index,loc.pageIndex,loc.pageNumber,0]);
+  const ref=String(firstValueV4([r.currentRef,r.ref,r.reference,loc.currentRef,loc.ref,loc.reference,''])||'');
+  const external=(book.external&&typeof book.external==='object')?cloneSafeV4(book.external):((r.external&&typeof r.external==='object')?cloneSafeV4(r.external):null);
   const index=Number.isFinite(Number(indexRaw))?Number(indexRaw):0;
-  if(id==null&&!bookUid&&!bookId)return null;
-  return {bookUid,id,bookId,type,source,title:String(title),index,ref};
+  const positionMode=['fixed','last'].includes(raw&&raw.positionMode)?raw.positionMode:'fixed';
+  if(id==null&&!bookUid&&!bookId&&!path)return null;
+  return {bookUid,id,bookId,type,source,title:String(title),path,index,ref,...(external?{external}:{}),positionMode};
 }
 function readerTabsV4(state){
   const s=state&&typeof state==='object'?state:{};
   const tabs=Array.isArray(s.openTabs)?s.openTabs:Array.isArray(s.tabs)?s.tabs:Array.isArray(s.readerTabs)?s.readerTabs:[];
   return tabs.map(normalizeOpenTabV4).filter(Boolean);
 }
+function normalizedTextV4(v){return String(v||'').trim().toLocaleLowerCase('he').replace(/\s+/g,' ')}
+function tabIdentityScoreV4(tab,book){
+  const tu=String(tab&&tab.bookUid||'').trim(),bu=String(book&&book.bookUid||'').trim();
+  if(tu&&bu)return tu===bu?400:-1;
+  const tid=tab&&tab.id!=null?String(tab.id):'',bid=book&&book.id!=null?String(book.id):'';
+  const tt=normalizedTextV4(tab&&tab.type),bt=normalizedTextV4(book&&book.type);
+  if(tt&&bt&&tt!==bt)return -1;
+  const ts=normalizedTextV4(tab&&tab.source),bs=normalizedTextV4(book&&book.source);
+  if(ts&&bs&&ts!==bs)return -1;
+  const tp=normalizedTextV4(tab&&tab.path),bp=normalizedTextV4(book&&book.path);
+  if(tid&&bid&&tid===bid)return tp&&bp&&tp===bp?330:300;
+  if(tp&&bp&&tp===bp)return 260;
+  const names=[tab&&tab.bookId,tab&&tab.title].map(normalizedTextV4).filter(Boolean);
+  const wanted=new Set([book&&book.bookId,book&&book.title].map(normalizedTextV4).filter(Boolean));
+  if(names.some(n=>wanted.has(n)))return 180;
+  return -1;
+}
+function findMatchingOpenTabV4(openTabs,book){
+  let best=null,bestScore=-1;
+  for(const tab of openTabs||[]){const score=tabIdentityScoreV4(tab,book);if(score>bestScore){best=tab;bestScore=score}}
+  return bestScore>=0?best:null;
+}
+
 function tabKeyV4(book){return bookKey(book)}
 function normalizeTabSetV4(raw){
   if(!raw||typeof raw!=='object')return null;
   const books=Array.isArray(raw.books)?raw.books.map(normalizeOpenTabV4).filter(Boolean):[];
+  const oldBehavior=raw.existingBehavior;
+  const conflictDefault=['ask','keep','restore'].includes(raw.conflictDefault)?raw.conflictDefault:
+    oldBehavior==='restore'?'restore':oldBehavior==='keep'?'keep':'ask';
   return {
     id:String(raw.id||makeFeatureIdV4('tabs')),
     name:String(raw.name||'כרטיסיות שמורות').trim().slice(0,80)||'כרטיסיות שמורות',
     books:books.slice(0,100),
-    existingBehavior:['keep','restore'].includes(raw.existingBehavior)?raw.existingBehavior:'keep',
+    conflictDefault,
     createdAt:Number(raw.createdAt)||Date.now(),
     updatedAt:Number(raw.updatedAt)||Date.now(),
     lastOpenedAt:Number(raw.lastOpenedAt)||0
   };
 }
-async function loadSavedTabSetsV4(){
-  const raw=await fGet(TAB_SETS_KEY,[]);
-  savedTabSets=(Array.isArray(raw)?raw:[]).map(normalizeTabSetV4).filter(Boolean);
+function tabStorageEnvelopeV4(items=savedTabSets){
+  return {schemaVersion:TAB_SETS_SCHEMA,updatedAt:new Date().toISOString(),sets:cloneSafeV4(items)};
 }
-async function saveSavedTabSetsV4(){await fSet(TAB_SETS_KEY,savedTabSets)}
+function parseTabStorageV4(raw){
+  if(Array.isArray(raw))return {schemaVersion:1,updatedAt:0,sets:raw};
+  if(!raw||typeof raw!=='object'||!Array.isArray(raw.sets))return null;
+  return {schemaVersion:Number(raw.schemaVersion)||1,updatedAt:Number(Date.parse(raw.updatedAt||''))||0,sets:raw.sets};
+}
+async function loadSavedTabSetsV4(){
+  const [primaryRaw,backupRaw]=await Promise.all([fGet(TAB_SETS_KEY,null),fGet(TAB_SETS_BACKUP_KEY,null)]);
+  const candidates=[parseTabStorageV4(primaryRaw),parseTabStorageV4(backupRaw)].filter(Boolean);
+  candidates.sort((a,b)=>b.updatedAt-a.updatedAt);
+  const selected=candidates[0]||{sets:[]};
+  savedTabSets=selected.sets.map(normalizeTabSetV4).filter(Boolean);
+  if(candidates.length<2||candidates.some(c=>JSON.stringify(c.sets)!==JSON.stringify(selected.sets))){
+    await saveSavedTabSetsV4();
+  }
+}
+async function saveSavedTabSetsV4(){
+  const envelope=tabStorageEnvelopeV4();
+  const [a,b]=await Promise.all([fSet(TAB_SETS_KEY,envelope),fSet(TAB_SETS_BACKUP_KEY,envelope)]);
+  if(!a&&!b)throw new Error('saved tabs storage failed');
+  return !!(a||b);
+}
+function uniqueTabSetNameV4(name,collection=savedTabSets){
+  const base=String(name||'כרטיסיות').trim()||'כרטיסיות';
+  const used=new Set(collection.map(x=>normalizedTextV4(x.name)));
+  if(!used.has(normalizedTextV4(base)))return base;
+  let n=2,candidate='';
+  do{candidate=base+' ('+n+++')'}while(used.has(normalizedTextV4(candidate)));
+  return candidate;
+}
 
 function ensureSavedTabsSectionV4(){
   let sec=$('section-saved-tabs');
