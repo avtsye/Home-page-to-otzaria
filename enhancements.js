@@ -388,9 +388,38 @@
   }
   Core.on('tabs:changed',()=>setTimeout(addVisibleOverflowMenus,0));
   const baseRenderGroupsV6=renderGroups;
-  renderGroups=function(){const r=baseRenderGroupsV6();setTimeout(addVisibleOverflowMenus,0);return r};
+  renderGroups=function(){
+    const r=baseRenderGroupsV6();
+    emit('groups:rendered',clone(groups));
+    return r;
+  };
   const baseRenderPluginsV6=renderPlugins;
-  renderPlugins=function(){const r=baseRenderPluginsV6();setTimeout(()=>{ensurePluginFilters();addVisibleOverflowMenus()},0);return r};
+  renderPlugins=function(){
+    const r=baseRenderPluginsV6();
+    emit('plugins:rendered',clone(allPlugins));
+    return r;
+  };
+  Core.on('groups:rendered',()=>setTimeout(()=>{addVisibleOverflowMenus();improveGroupEmptyState()},0));
+  Core.on('plugins:rendered',()=>setTimeout(()=>{ensurePluginFilters();addVisibleOverflowMenus()},0));
+
+  function improveGroupEmptyState(){
+    const box=$('groups');if(!box)return;
+    const totalBooks=groups.reduce((n,g)=>n+(Array.isArray(g.books)?g.books.length:0),0);
+    const customGroups=groups.filter(g=>g.id!=='favorites').length;
+    if(totalBooks||customGroups)return;
+    box.innerHTML='';
+    const state=Core.makeEmptyState({
+      title:'אין עדיין קבוצות או מועדפים',
+      text:'צור קבוצה ראשונה או הוסף ספר למועדפים כדי להגיע אליו במהירות.',
+      action:'צור קבוצה',
+      actionId:'emptyCreateGroupV6'
+    });
+    box.appendChild(state);
+    state.querySelector('#emptyCreateGroupV6').onclick=()=>{
+      openSettings();setSettingsTab('general');
+      setTimeout(()=>$('newGroupName')?.focus(),80);
+    };
+  }
 
   // ---------- Full backup / restore ----------
   async function makeFullBackup(){
@@ -429,6 +458,14 @@
     };
   }
 
+  const baseLoadPluginsReliableV6=loadPluginsReliableV4;
+  loadPluginsReliableV4=async function(){
+    const result=await baseLoadPluginsReliableV6();
+    emit('plugins:changed',clone(allPlugins));
+    return result;
+  };
+  Core.on('plugins:changed',()=>{ensurePluginFilters();addVisibleOverflowMenus()});
+
   // ---------- True launcher / compact mode ----------
   function ensureLauncherSetting(){
     if($('launcherModeSettingV6'))return;
@@ -463,6 +500,7 @@
         box.innerHTML='';const state=Core.makeEmptyState({title:cfg[0],text:cfg[1],action:cfg[2]});box.appendChild(state);state.querySelector('button')?.addEventListener('click',cfg[3]);
       }
     });
+    improveGroupEmptyState();
     const plugins=$('plugins');
     if(plugins&&(plugins.querySelector('.empty')||/אין תוספים|לא ניתן לטעון/.test(plugins.textContent))){
       const failed=/לא ניתן/.test(plugins.textContent);
@@ -476,6 +514,27 @@
     showLoadingSkeletons();
     try{return await baseLoadHomeV6()}
     finally{improveEmptyStates();renderWorkspaces();ensurePluginFilters();addVisibleOverflowMenus();emit('home:rendered')}
+  };
+
+  const baseRunSearchV6=runSearch;
+  runSearch=async function(append){
+    const result=await baseRunSearchV6(append);
+    if(!append&&$('q')?.value.trim().length>=2&&!currentResults.length){
+      const empty=$('searchEmpty');
+      if(empty){
+        empty.hidden=false;empty.innerHTML='';
+        const state=Core.makeEmptyState({
+          title:'לא נמצאו תוצאות',
+          text:'אפשר לשנות את אפשרויות החיפוש או לפתוח את אותו חיפוש במנוע המובנה של אוצריא.',
+          action:'פתח בחיפוש המובנה',
+          actionId:'emptyBuiltInSearchV6'
+        });
+        empty.appendChild(state);
+        state.querySelector('#emptyBuiltInSearchV6').onclick=openBuiltInSearch;
+      }
+    }
+    emit('search:completed',{query:$('q')?.value||'',count:currentResults.length,append:!!append});
+    return result;
   };
 
   // ---------- UX audit helpers ----------
