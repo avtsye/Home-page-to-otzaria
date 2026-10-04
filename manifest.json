@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "new-tab-home",
   "name": "דף הבית",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "דף בית מודרני לאוצריא עם חיפוש מתקדם, המשך קריאה, מועדפים, סימניות ותוספים.",
   "author": "אברהם mch",
   "homepage": "https://github.com/avtsye/Home-page-to-otzaria",
@@ -32,7 +32,9 @@
       "defaultPinned": true
     },
     "startup": {
-      "activationEvents": ["app.startup"],
+      "activationEvents": [
+        "app.startup"
+      ],
       "keepAlive": false
     }
   }
