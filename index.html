@@ -702,6 +702,88 @@ mark{
   color:var(--color-error,var(--error))!important;
 }
 .savedTabCard{user-select:none}
+
+/* Unified right-click context menus. */
+.homeContextMenu{
+  position:fixed;
+  z-index:260;
+  width:min(286px,calc(100vw - 16px));
+  max-height:min(70vh,520px);
+  overflow:auto;
+  direction:rtl;
+  padding:6px;
+  background:var(--color-surface-container-high,var(--surface3));
+  color:var(--color-on-surface,var(--text));
+  border:1px solid var(--color-outline-variant,var(--outline));
+  border-radius:12px;
+  box-shadow:0 8px 28px color-mix(in srgb,var(--color-shadow,#000) 20%,transparent);
+  font-family:var(--font-ui,var(--ui));
+}
+.homeContextTitle{
+  padding:8px 10px 7px;
+  color:var(--color-on-surface-variant,var(--muted));
+  font-size:11px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.homeContextItem{
+  width:100%;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border:0;
+  border-radius:8px;
+  padding:8px 10px;
+  background:transparent;
+  color:inherit;
+  text-align:right;
+  cursor:pointer;
+  font:inherit;
+}
+.homeContextItem:hover,.homeContextItem:focus-visible{
+  outline:0;
+  background:var(--color-surface-container-highest,var(--surface2));
+}
+.homeContextItem.checked{
+  color:var(--color-primary,var(--primary));
+}
+.homeContextItem.checked::after{
+  content:'✓';
+  margin-inline-start:auto;
+  font-weight:700;
+}
+.homeContextItem.danger{
+  color:var(--color-error,var(--error));
+}
+.homeContextItem:disabled{
+  opacity:.45;
+  cursor:default;
+}
+.homeContextItem:disabled:hover{background:transparent}
+.homeContextIcon{
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  flex:0 0 20px;
+}
+.homeContextIcon svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.homeContextSeparator{
+  height:1px;
+  margin:5px 6px;
+  background:var(--color-outline-variant,var(--outline));
+}
 </style>
 
 </head>
