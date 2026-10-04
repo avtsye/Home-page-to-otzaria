@@ -88,3 +88,9 @@ assert(/createEmptyTabSetV4/.test(features),'manual empty saved-tab creation mis
 assert(/newTabSetBtn/.test(features),'new saved-tab button missing');
 assert(html.includes('Otzaria store visual compliance pass'),'official Otzaria visual compliance CSS missing');
 assert(html.includes('Feedback fills the available settings viewport'),'feedback viewport sizing fix missing');
+
+assert(html.includes('id="searchModeSegments"'),'floating search mode segmented control missing');
+assert(html.includes('Floating search settings popover'),'floating search settings CSS missing');
+assert(/openAdvancedSearch/.test(main),'floating search settings open behavior missing');
+assert(/closeAdvancedSearch/.test(main),'floating search settings close behavior missing');
+assert(/renderSearchModeSegments/.test(main),'search mode segmented sync missing');
