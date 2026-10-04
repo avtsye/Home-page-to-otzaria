@@ -14,8 +14,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.0.7','manifest version must be 4.0.7');
-assert(html.includes('4.0.7'),'UI must show current version');
+assert(manifest.version==='4.0.8','manifest version must be 4.0.8');
+assert(html.includes('4.0.8'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
@@ -70,3 +70,7 @@ assert(/isRealBookTabV4/.test(features),'saved-tab book-only filter missing');
 assert(/toolId/.test(features),'saved-tab filter must use Otzaria toolId');
 assert(/isSelf/.test(features),'saved-tab filter must reject plugin self tabs');
 assert(html.includes('Saved-tab toolbar proportions'),'saved-tab toolbar sizing rules missing');
+
+assert(/oncontextmenu/.test(features),'saved-set right-click menu missing');
+assert(/openTabSetActionsV4/.test(features),'saved-set context actions missing');
+assert(html.includes('Saved-set context menu polish'),'saved-set context menu styling missing');
