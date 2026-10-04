@@ -28,7 +28,9 @@ jobs:
       - name: Read version
         id: version
         shell: bash
-        run: echo "version=$(node -p \"require('./manifest.json').version\")" >> "$GITHUB_OUTPUT"
+        run: |
+          VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build package
         shell: bash
         run: |
