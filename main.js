@@ -1110,11 +1110,21 @@ function wire(){
   $('addGroup').onclick=async()=>{
     const name=$('newGroupName').value.trim();
     if(!name)return;
-    groups.push({id:'g'+Date.now(),name:name.slice(0,40),books:[]});
+    const group={id:'g'+Date.now(),name:name.slice(0,40),books:[]};
+    groups.push(group);
     $('newGroupName').value='';
     await storageSet(GROUPS_KEY,groups);
     renderGroupSettings();
     renderGroups();
+    toast('הקבוצה נוספה');
+    if(window.homePushUndo){
+      window.homePushUndo('הקבוצה “'+group.name+'” נוספה',async()=>{
+        groups=groups.filter(x=>x.id!==group.id);
+        await storageSet(GROUPS_KEY,groups);
+        renderGroupSettings();
+        renderGroups();
+      });
+    }
   };
 
   document.querySelectorAll('.settingsTab').forEach(b=>{
