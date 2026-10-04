@@ -106,3 +106,9 @@ assert(/plugin\.setNewTabPage/.test(main)&&/enabled:settings\.plusEnabled!==fals
 assert(html.includes('id="plusEnabled"'),'plus button toggle missing from settings');
 assert(html.includes('id="plusTargetSettings"'),'plus target settings wrapper missing');
 assert(/plusTargetSettings.*hidden/.test(main),'plus destination settings must hide when plus button is disabled');
+
+assert(/function visibleInstalledPlugins/.test(main),'self-plugin filtering helper missing');
+assert(/pluginId!==SELF/.test(main),'homepage plugin must be excluded from installed plugin lists');
+assert(/visibleInstalledPlugins\(dataOf\(r\)\)/.test(main),'plugin loader must filter self');
+assert(/visibleInstalledPlugins\(plugins\)/.test(features),'dashboard plugin count must exclude self');
+assert(/pluginFavorites\.filter\(id=>id!==SELF\)/.test(features),'stale self favorite must be removed');
