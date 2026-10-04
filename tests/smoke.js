@@ -60,3 +60,8 @@ assert(/exportSingleTabSetV4/.test(features),'single saved-tab export missing');
 assert(/confirmImportTabSetsV4/.test(features),'saved-tab import preview missing');
 assert(/uniqueTabSetNameV4/.test(features),'saved-tab import name conflict handling missing');
 assert(/tabSetRepairV4/.test(features),'saved-tab repair workflow missing');
+
+assert(/externalLinksWiredV4/.test(features),'delegated external link wiring missing');
+assert(/saved tabs load failed; continuing/.test(features),'saved-tab boot resilience missing');
+assert(/ensureSavedTabsSectionV4\(\);renderSavedTabSetsV4\(\)/.test(features),'saved tabs must be reasserted after layout');
+assert(html.includes('Stable feedback/settings sizing'),'feedback layout stabilization missing');
