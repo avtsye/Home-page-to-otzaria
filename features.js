@@ -392,6 +392,17 @@ function setupKeyboard(){
     else if(e.key==='Escape'){if(!$('settingsModal').hidden)closeSettings();$('suggestions').hidden=true}
   });
 }
+async function detectDebugPackage(){
+  try{
+    const r=await fetch('debug.flag',{cache:'no-store'});
+    if(!r.ok)return false;
+    const v=(await r.text()).trim();
+    if(v!=='debug')return false;
+    document.body.dataset.debugPackage='true';
+    setTimeout(async()=>{openSettings();setSettingsTab('diagnostics');await runDiagnostics();toast('גרסת Debug פעילה')},120);
+    return true;
+  }catch(_){return false}
+}
 function showChangelog(){
   if(featureSettings.lastSeenVersion===FEATURE_VERSION)return;
   const box=document.createElement('div');box.className='changelogBox';
@@ -425,7 +436,7 @@ Otzaria.on('plugin.boot',async()=>{
   try{
     featureSettings=mergeFeatureSettings(await fGet(FEATURE_KEY,featureSettings));
     try{const st=dataOf(await Otzaria.call('reader.getCurrentState'));if(st&&st.currentBookId)currentBookScopeV4={id:st.currentId,type:st.currentType,source:st.currentSource,bookId:st.currentBookId,title:st.currentBook,index:st.currentIndex,ref:st.currentRef}}catch(_){}
-    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();lazyLoadPlugins();await refreshDashboard();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
+    setupFeatureUi();await loadSearchHistoryV4();renderSavedSearchControls();lazyLoadPlugins();await refreshDashboard();await detectDebugPackage();showChangelog();setTimeout(()=>{if(!$('settingsModal').hidden)setSettingsTab(featureSettings.lastSettingsTab||'general')},0);fLog('info','Feature layer booted',FEATURE_VERSION);
   }catch(e){fLog('error','Feature layer boot failed',e);console.error('Feature layer boot failed',e)}
 });
 Otzaria.on('theme.changed',()=>applyFeatureAppearance());
