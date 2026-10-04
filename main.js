@@ -630,10 +630,16 @@ async function fetchSuggestions(q,mySeq){
   let content=[];
   try{
     const booksPromise=Otzaria.call('library.findBooks',{query:q,limit:6});
+
+    // Live suggestions should be broader than an exact phrase search.
+    // Require all words in the same paragraph so natural queries such as
+    // "יש מסגרת סביב התוכן" can still surface relevant text snippets.
     try{
       const stream=Otzaria.call('search.query',{
         query:q,
-        mode:'exact',
+        mode:'advanced',
+        proximityScope:'sameParagraph',
+        wordMatchMode:'all',
         order:'relevance',
         grouping:'none',
         limit:8,
@@ -645,8 +651,26 @@ async function fetchSuggestions(q,mySeq){
         if(content.length>=8)break;
       }
     }catch(err){
-      console.warn('Live content suggestions failed',err);
+      console.warn('Live search.query suggestions failed',err);
     }
+
+    // Compatibility fallback: search.fullText is simpler and has existed
+    // longer. Use it only when search.query returned no live content.
+    if(!content.length){
+      try{
+        const fallback=await Otzaria.call('search.fullText',{query:q,limit:8});
+        if(mySeq!==searchSeq)return;
+        const rows=dataOf(fallback);
+        if(Array.isArray(rows))content=rows.map(item=>({
+          ...item,
+          bookId:item.bookId||item.book,
+          source:item.source||'library'
+        }));
+      }catch(err){
+        console.warn('Live search.fullText fallback failed',err);
+      }
+    }
+
     const r=await booksPromise;
     books=dataOf(r)||[];
     if(mySeq!==searchSeq)return;
