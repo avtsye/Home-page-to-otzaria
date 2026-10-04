@@ -6,10 +6,16 @@ on:
     paths:
       - 'index.html'
       - 'main.js'
+      - 'features.js'
       - 'manifest.json'
       - 'otzaria-icon.png'
+      - 'tests/**'
       - '.github/workflows/package.yml'
   workflow_dispatch:
+
+concurrency:
+  group: home-page-package-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -26,8 +32,13 @@ jobs:
           node-version: '24'
       - name: Validate manifest
         run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest OK')"
-      - name: Check JavaScript
-        run: node --check main.js
+      - name: Check JavaScript syntax
+        run: |
+          node --check main.js
+          node --check features.js
+          node --check tests/smoke.js
+      - name: Run smoke checks
+        run: node tests/smoke.js
       - name: Read version
         id: version
         shell: bash
@@ -39,7 +50,7 @@ jobs:
         run: |
           mkdir -p dist build
           rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin"
-          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js otzaria-icon.png
+          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js features.js otzaria-icon.png
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
       - name: Commit packaged plugin to dist
         if: github.event_name != 'pull_request'
@@ -52,7 +63,8 @@ jobs:
             echo "dist already up to date"
           else
             git commit -m "Package plugin ${{ steps.version.outputs.version }} [skip ci]"
-            git push
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
       - uses: actions/upload-artifact@v4
         with:
