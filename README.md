@@ -2,7 +2,7 @@
 
 תוסף דף בית מתקדם לאוצריא, המבוסס על ה־Plugin API הרשמי ומשתלב בעיצוב ובערכת הנושא של אוצריא.
 
-גרסה נוכחית: **4.0.9**
+גרסה נוכחית: **4.0.10**
 
 **תיאור קצר לחנות:**  
 דף בית מתקדם לאוצריא עם חיפוש בתוכן, מקבצי ספרים, המשך קריאה, סימניות, קבוצות, מועדפים, תוספים והתאמה אישית.
@@ -84,7 +84,7 @@
 
 ## תפריטי מקש ימני
 
-בגרסה 4.0.9 נוסף מנגנון מקש ימני אחיד כמעט לכל דף הבית.
+בגרסה 4.0.10 נוסף מנגנון מקש ימני אחיד כמעט לכל דף הבית.
 
 בהתאם למקום שעליו לוחצים ניתן לקבל פעולות כמו:
 
@@ -182,7 +182,7 @@ https://github.com/avtsye/Home-page-to-otzaria/releases
 
 קובץ הגרסה הנוכחית:
 
-`home-page-to-otzaria-4.0.9.otzplugin`
+`home-page-to-otzaria-4.0.10.otzplugin`
 
 גרסאות בדיקה `debug` ו־`dev-compat` נשמרות ב־`dist/` לצורכי פיתוח ובדיקה, אך אינן מפורסמות כקבצי Release רגילים.
 
@@ -203,9 +203,9 @@ https://github.com/avtsye/Home-page-to-otzaria/releases
 ├── tests/
 │   └── smoke.js
 ├── dist/
-│   ├── home-page-to-otzaria-4.0.9.otzplugin
-│   ├── home-page-to-otzaria-4.0.9-debug.otzplugin
-│   └── home-page-to-otzaria-4.0.9-dev-compat.otzplugin
+│   ├── home-page-to-otzaria-4.0.10.otzplugin
+│   ├── home-page-to-otzaria-4.0.10-debug.otzplugin
+│   └── home-page-to-otzaria-4.0.10-dev-compat.otzplugin
 └── .github/
     └── workflows/
         └── package.yml
