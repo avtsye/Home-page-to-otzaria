@@ -638,6 +638,40 @@ mark{
   position:relative!important;
   z-index:2!important;
 }
+
+/* Saved-tab toolbar proportions. */
+.savedTabToolbar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+}
+.savedTabToolbar button{
+  width:auto!important;
+  min-height:42px!important;
+  height:42px!important;
+  padding:0 14px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  flex:0 0 auto!important;
+  border-radius:10px!important;
+}
+#captureTabsBtn{
+  min-width:190px!important;
+  max-width:250px!important;
+  justify-content:center!important;
+}
+#exportTabSetsBtn,#importTabSetsBtn{
+  min-width:78px!important;
+  max-width:100px!important;
+  justify-content:center!important;
+}
+@media(max-width:560px){
+  .savedTabToolbar{gap:7px!important}
+  #captureTabsBtn{min-width:0!important;max-width:none!important;flex:1 1 100%!important}
+  #exportTabSetsBtn,#importTabSetsBtn{flex:1 1 calc(50% - 4px)!important;max-width:none!important}
+}
 </style>
 
 </head>
