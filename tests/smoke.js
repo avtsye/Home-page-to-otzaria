@@ -29,3 +29,12 @@ assert(!/ideaBtn|bugBtn|feedbackModal/.test(main),'removed feedback UI is still 
 if(!process.exitCode)console.log('Smoke checks passed.');
 
 assert(manifest.icon==='plugin-icon.jpg','manifest must use custom plugin icon');
+
+
+assert(/savedTabSetsV1/.test(features),'saved tab sets storage key missing');
+assert(/reader\.getCurrentState/.test(features),'saved tab sets must read current reader tabs');
+assert(/openTabSetV4/.test(features),'saved tab set open-all workflow missing');
+assert(/Promise\.allSettled/.test(features),'saved tab open-all queue handling missing');
+assert(/homePushUndo/.test(features),'global undo workflow missing');
+assert(/deleteSavedSearchProfileV4/.test(features),'saved search delete workflow missing');
+assert(/groupBookRemove/.test(html)||/groupBookRemove/.test(main),'book group removal UI missing');
