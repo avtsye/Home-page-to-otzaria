@@ -94,3 +94,9 @@ assert(html.includes('Floating search settings popover'),'floating search settin
 assert(/openAdvancedSearch/.test(main),'floating search settings open behavior missing');
 assert(/closeAdvancedSearch/.test(main),'floating search settings close behavior missing');
 assert(/renderSearchModeSegments/.test(main),'search mode segmented sync missing');
+
+assert(/advancedPanel.*stopPropagation/.test(main),'floating search panel must stop internal click propagation');
+assert(/composedPath/.test(main),'outside-click detection must survive rerendered search controls');
+assert(html.includes('id="eraOptionsGroup"'),'era options group missing');
+assert(html.includes('id="wordOptionsGroup"'),'word options group missing');
+assert(html.includes('Clarify dynamic advanced-search option groups.'),'advanced option group styling missing');
