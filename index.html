@@ -40,7 +40,7 @@ button{user-select:none}
 .optionGroupTitle{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:7px}.chipSet{display:flex;flex-wrap:wrap;gap:7px}.toggleChip{border:1px solid var(--outline);background:var(--surface);padding:7px 10px;border-radius:999px;cursor:pointer;font-size:11px}.toggleChip.on{border-color:color-mix(in srgb,var(--primary) 45%,var(--outline));background:var(--soft);color:var(--primary)}
 .advancedFooter{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--outline) 70%,transparent)}.linkBtn{border:0;background:transparent;color:var(--primary);cursor:pointer;padding:7px 9px;border-radius:9px}.linkBtn:hover{background:var(--soft)}
 .suggestions{position:absolute;top:72px;inset-inline:0;background:var(--surface);border:1px solid var(--outline);border-radius:17px;padding:7px;box-shadow:0 18px 50px rgba(20,16,35,.18);z-index:45;max-height:340px;overflow:auto}
-.suggestion{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;text-align:right;border:0;background:transparent;border-radius:11px;padding:10px 12px;cursor:pointer}.suggestion:hover{background:var(--surface2)}.suggestion b{font-size:12px}.suggestion small{color:var(--muted);font-size:10px}
+.suggestionsGroupTitle{font-size:10px;font-weight:800;color:var(--muted);padding:8px 10px 4px}.suggestion{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;text-align:right;border:0;background:transparent;border-radius:11px;padding:10px 12px;cursor:pointer}.suggestion:hover{background:var(--surface2)}.suggestion b{font-size:12px}.suggestion small{color:var(--muted);font-size:10px}.suggestionText{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.suggestionTag{font-size:9px;padding:4px 7px;border-radius:999px;background:var(--soft);color:var(--primary);align-self:start}
 .quick{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:22px 0 0}.quick button{border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 90%,transparent);border-radius:13px;padding:9px 13px;cursor:pointer}.quick button:hover{background:var(--soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}
 .searchSection{margin:18px 0 0;border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 91%,transparent);border-radius:22px;padding:17px;box-shadow:0 12px 36px rgba(20,16,35,.06)}
 .searchHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.searchHead h2{margin:0;font-size:18px}.searchHead p{margin:4px 0 0;color:var(--muted);font-size:11px}.searchHeadActions{display:flex;gap:7px}.secondaryBtn{border:1px solid var(--outline);background:var(--surface);border-radius:11px;padding:8px 11px;cursor:pointer}.secondaryBtn:hover{background:var(--soft)}
@@ -56,19 +56,17 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .list{display:grid;gap:3px}.row{border:0;background:transparent;color:inherit;width:100%;text-align:right;border-radius:11px;padding:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.row:hover{background:var(--surface2)}.row b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .meta{font-size:10px;color:var(--muted);white-space:nowrap}.empty{padding:20px;text-align:center;color:var(--muted);font-size:11px}
 .groupBlock{border-top:1px solid color-mix(in srgb,var(--outline) 65%,transparent);padding-top:10px;margin-top:10px}.groupBlock:first-child{border-top:0;padding-top:0;margin-top:0}.groupBlockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.groupBlockHead small{color:var(--muted)}
 .footer{color:var(--muted);font-size:10px;text-align:center;margin-top:25px}
-.modal{position:fixed;inset:0;background:rgba(16,12,28,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:90}.dialog{width:min(760px,100%);max-height:min(780px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.3)}.dialog.small{width:min(570px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.dialogBody{padding:17px}.settingsGrid{display:grid;gap:16px}.settingBlock{border:1px solid var(--outline);border-radius:15px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:var(--soft)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary);border-radius:10px;padding:9px 14px;cursor:pointer}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 17px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}
-textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:0}textarea:focus{border-color:var(--primary)}.hint{font-size:10px;color:var(--muted);line-height:1.55}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.groupPicker{position:fixed;width:190px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
+.modal{position:fixed;inset:0;background:rgba(16,12,28,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:90}.dialog{width:min(760px,100%);max-height:min(780px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.3)}.dialog.small{width:min(570px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.settingsTabs{display:flex;gap:6px;padding:12px 16px 0;background:var(--surface);position:sticky;top:53px;z-index:2}.settingsTab{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer}.settingsTab.active{background:var(--soft);color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}.dialogBody{padding:17px}.settingsPane{display:none}.settingsPane.active{display:block}.settingsGrid{display:grid;gap:16px}.settingBlock{border:1px solid var(--outline);border-radius:15px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:var(--soft)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary);border-radius:10px;padding:9px 14px;cursor:pointer}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 17px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}
+.feedbackSettings{display:grid;gap:12px}.feedbackTypeRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.feedbackLabel{font-size:11px;font-weight:800;color:var(--muted)}.feedbackActions{display:flex;align-items:center;gap:10px}textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:0}textarea:focus{border-color:var(--primary)}.hint{font-size:10px;color:var(--muted);line-height:1.55}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.groupPicker{position:fixed;width:190px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
 @media(max-width:920px){.advancedGrid{grid-template-columns:repeat(2,1fr)}.resultGrid{grid-template-columns:1fr}.sectionsHost{grid-template-columns:1fr}.sectionPanel.wide{grid-column:auto}}
 @media(max-width:620px){.page{width:min(100% - 18px,1180px);padding-top:18px}.heroCard{padding:26px 13px 20px;border-radius:22px}.brand{font-size:34px}.heroLogo{width:58px;height:58px}.searchbox{min-height:58px}.filterBtn{padding:10px}.searchBtn{padding:11px 13px}.advancedGrid{grid-template-columns:1fr}.field.span2{grid-column:auto}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.topActions .txt{display:none}.pluginGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.searchHead{display:block}.searchHeadActions{margin-top:9px}}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="brandMini"><img src="otzaria-icon.png" alt=""><span>דף הבית</span><small>3.2.2</small></div>
+  <div class="brandMini"><img src="otzaria-icon.png" alt=""><span>דף הבית</span><small>3.3.0</small></div>
   <div class="topActions">
-    <button id="ideaBtn" title="הצעת רעיון">💡 <span class="txt">רעיון</span></button>
-    <button id="bugBtn" title="דיווח על תקלה">⚠ <span class="txt">תקלה</span></button>
-    <button id="settingsBtn" title="הגדרות">⚙</button>
+    <button id="settingsBtn" title="הגדרות">⚙ <span class="txt">הגדרות</span></button>
   </div>
 </header>
 
@@ -163,13 +161,19 @@ textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outl
     </section>
   </div>
 
-  <div class="footer">דף הבית לאוצריא · גרסה 3.2.2 · מאת אברהם mch</div>
+  <div class="footer">דף הבית לאוצריא · גרסה 3.3.0 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
   <div class="dialog">
     <div class="dialogHead"><h2>הגדרות דף הבית</h2><button id="closeSettings">✕</button></div>
-    <div class="dialogBody settingsGrid">
+    <div class="settingsTabs" role="tablist">
+      <button class="settingsTab active" data-settings-tab="general" type="button">כללי</button>
+      <button class="settingsTab" data-settings-tab="feedback" type="button">משוב</button>
+    </div>
+    <div class="dialogBody">
+      <div id="settingsTab-general" class="settingsPane settingsGrid active">
+
       <section class="settingBlock"><h3>מה ייפתח בלחיצה על +</h3><div class="radioGrid">
         <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
         <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
@@ -197,16 +201,26 @@ textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outl
       <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option><option>20</option></select></div></section>
 
       <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">מוסיפים ספר לקבוצה מתוך תוצאות חיפוש הספרים.</p></section>
-    </div>
-    <div class="dialogFoot"><button id="saveSettings" class="primaryBtn">שמור</button><button id="cancelSettings" class="secondaryBtn">ביטול</button></div>
-  </div>
-</div>
 
-<div id="feedbackModal" class="modal" hidden>
-  <div class="dialog small">
-    <div class="dialogHead"><h2 id="feedbackTitle">דיווח</h2><button id="closeFeedback">✕</button></div>
-    <div class="dialogBody"><textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את הפרטים…"></textarea><p class="hint">הדיווח יישלח דרך מנגנון feedback.report הרשמי של אוצריא. אוצריא תציג דיאלוג אישור לפני השליחה.</p></div>
-    <div class="dialogFoot"><button id="sendFeedback" class="primaryBtn">שלח</button><button id="cancelFeedback" class="secondaryBtn">ביטול</button></div>
+      </div>
+      <div id="settingsTab-feedback" class="settingsPane">
+        <section class="settingBlock feedbackSettings">
+          <h3>משוב למפתח התוסף</h3>
+          <p class="hint">המשוב נשלח דרך מנגנון <code>feedback.report</code> הרשמי של אוצריא. לפני שליחה אוצריא מציגה חלון אישור עם תוכן הדיווח.</p>
+          <div class="feedbackTypeRow">
+            <label class="option"><input type="radio" name="feedbackType" value="bug" checked> דיווח על תקלה</label>
+            <label class="option"><input type="radio" name="feedbackType" value="other"> הצעת רעיון / משוב אחר</label>
+          </div>
+          <label class="feedbackLabel" for="feedbackText">תוכן ההודעה</label>
+          <textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea>
+          <div class="feedbackActions">
+            <button id="sendFeedback" class="primaryBtn" type="button">שלח משוב</button>
+            <span id="feedbackStatus" class="hint"></span>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="dialogFoot"><button id="saveSettings" class="primaryBtn">שמור</button><button id="cancelSettings" class="secondaryBtn">סגור</button></div>
   </div>
 </div>
 
