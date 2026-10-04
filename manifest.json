@@ -37,5 +37,6 @@
       ],
       "keepAlive": false
     }
-  }
+  },
+  "stability": "stable"
 }
