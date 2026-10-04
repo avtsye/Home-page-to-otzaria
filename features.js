@@ -44,6 +44,9 @@ function invalidate(prefix){
 function mergeFeatureSettings(raw){
   const f=Object.assign({},featureSettings,raw||{});
   for(const k of ['pluginFavorites','savedSearches','quickPins'])if(!Array.isArray(f[k]))f[k]=[];
+  f.background='flat';
+  f.accent='host';
+  f.radius='rounded';
   return f;
 }
 async function saveFeatures(){await fSet(FEATURE_KEY,featureSettings)}
@@ -80,21 +83,15 @@ applyTheme=function(t){coreApplyThemeV4(t);hostPrimaryV4=getComputedStyle(docume
 function applyFeatureAppearance(){
   document.body.classList.toggle('density-compact',featureSettings.density==='compact');
   document.body.classList.toggle('focus-mode',!!featureSettings.focusMode);
-  document.body.classList.toggle('bg-flat',featureSettings.background==='flat');
-  document.body.classList.toggle('bg-soft',featureSettings.background==='soft');
   document.body.classList.toggle('card-large',featureSettings.cardSize==='large');
   document.body.classList.toggle('columns-1',featureSettings.columns==='1');
   document.body.classList.toggle('columns-3',featureSettings.columns==='3');
-  document.body.classList.toggle('radius-soft',featureSettings.radius==='soft');
-  document.body.classList.toggle('radius-square',featureSettings.radius==='square');
+
+  // Appearance follows the Otzaria host theme. Legacy visual overrides are intentionally ignored.
+  document.body.classList.remove('bg-soft','radius-soft','radius-square');
+  document.body.classList.add('bg-flat');
   const host=hostPrimaryV4||getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()||'#6750a4';
-  const accents={
-    purple:'color-mix(in srgb,'+host+' 82%, #6f4ea1)',
-    blue:'color-mix(in srgb,'+host+' 72%, #3567c8)',
-    green:'color-mix(in srgb,'+host+' 68%, #2f7d6d)',
-    rose:'color-mix(in srgb,'+host+' 70%, #a64f70)'
-  };
-  document.documentElement.style.setProperty('--primary',featureSettings.accent==='host'?host:(accents[featureSettings.accent]||host));
+  document.documentElement.style.setProperty('--primary',host);
 }
 function addDashboard(){
   if($('homeDashboard'))return;
@@ -315,27 +312,21 @@ async function pinCurrentBook(){
   }catch(e){toast('לא ניתן להצמיד את הספר הנוכחי')}
 }
 function injectSettingsTabsV4(){
-  const required=['densitySelect','backgroundSelect','cardSizeSelect','columnsSelect','accentSelect','radiusSelect','focusModeSetting','dashboardSetting','pinCurrentBook','runDiagnostics','copyDiagnostics'];
+  const required=['densitySelect','cardSizeSelect','columnsSelect','focusModeSetting','dashboardSetting','pinCurrentBook','runDiagnostics','copyDiagnostics'];
   if(required.some(id=>!$(id))){
     fLog('error','Settings markup is incomplete',required.filter(id=>!$(id)).join(', '));
     return;
   }
 
   $('densitySelect').value=featureSettings.density;
-  $('backgroundSelect').value=featureSettings.background;
   $('cardSizeSelect').value=featureSettings.cardSize||'normal';
   $('columnsSelect').value=featureSettings.columns||'2';
-  $('accentSelect').value=featureSettings.accent||'host';
-  $('radiusSelect').value=featureSettings.radius||'rounded';
   $('focusModeSetting').checked=featureSettings.focusMode;
   $('dashboardSetting').checked=featureSettings.showDashboard;
 
   $('densitySelect').onchange=async e=>{featureSettings.density=e.target.value;await saveFeatures();applyFeatureAppearance()};
-  $('backgroundSelect').onchange=async e=>{featureSettings.background=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('cardSizeSelect').onchange=async e=>{featureSettings.cardSize=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('columnsSelect').onchange=async e=>{featureSettings.columns=e.target.value;await saveFeatures();applyFeatureAppearance()};
-  $('accentSelect').onchange=async e=>{featureSettings.accent=e.target.value;await saveFeatures();applyFeatureAppearance()};
-  $('radiusSelect').onchange=async e=>{featureSettings.radius=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('focusModeSetting').onchange=async e=>{featureSettings.focusMode=e.target.checked;await saveFeatures();applyFeatureAppearance()};
   $('dashboardSetting').onchange=async e=>{featureSettings.showDashboard=e.target.checked;await saveFeatures();if($('homeDashboard'))$('homeDashboard').hidden=!e.target.checked};
   $('pinCurrentBook').onclick=pinCurrentBook;
