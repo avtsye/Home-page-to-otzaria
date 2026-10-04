@@ -784,6 +784,166 @@ mark{
   margin:5px 6px;
   background:var(--color-outline-variant,var(--outline));
 }
+
+/* Otzaria store visual compliance pass — follows the official M3 plugin guide. */
+.modal{
+  background:color-mix(in srgb,var(--color-scrim) 30%,transparent)!important;
+  padding:10px!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+}
+.settingsDialog{
+  width:min(400px,92vw)!important;
+  height:calc(100vh - 22px)!important;
+  max-height:none!important;
+  border-radius:18px!important;
+  background:var(--color-surface-container-high)!important;
+  color:var(--color-on-surface)!important;
+  box-shadow:0 8px 24px color-mix(in srgb,var(--color-shadow) 18%,transparent)!important;
+  overflow:hidden!important;
+}
+.dialogHead{
+  min-height:64px!important;
+  padding:16px 18px 10px!important;
+  background:var(--color-surface-container-high)!important;
+}
+.dialogHead h2{font-size:20px!important;line-height:1.2!important}
+.settingsSubtitle{font-size:11px!important;color:var(--color-on-surface-variant)!important}
+.settingsTabs{
+  min-height:72px!important;
+  padding:4px 8px 8px!important;
+  gap:2px!important;
+  background:var(--color-surface-container-high)!important;
+}
+.settingsTab{
+  min-width:0!important;
+  min-height:64px!important;
+  padding:4px 2px!important;
+  gap:3px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--color-on-surface-variant)!important;
+}
+.settingsTab:hover{background:transparent!important}
+.settingsTab .settingsTabIcon{
+  width:56px!important;
+  height:32px!important;
+  border-radius:999px!important;
+  transition:background .16s,color .16s!important;
+}
+.settingsTab.active{
+  background:transparent!important;
+  color:var(--color-on-surface)!important;
+}
+.settingsTab.active .settingsTabIcon{
+  background:var(--color-secondary-container)!important;
+  color:var(--color-on-secondary-container)!important;
+}
+.settingsTab b{font-size:11px!important;font-weight:600!important}
+.settingsContent{background:var(--color-surface-container-high)!important}
+.settingsContent>.dialogBody{
+  padding:6px 10px 12px!important;
+  background:var(--color-surface-container-high)!important;
+}
+.settingsPaneHead{padding:8px 6px 10px!important}
+.settingsPaneHead h3{font-size:17px!important}
+.settingsPaneHead p{font-size:11px!important;line-height:1.45!important}
+.settingsGrid{gap:10px!important}
+.settingBlock{
+  background:var(--color-surface)!important;
+  border:0!important;
+  border-radius:16px!important;
+  box-shadow:none!important;
+}
+.settingBlock>h3{
+  padding:16px 14px 8px!important;
+  font-size:13px!important;
+  color:var(--color-primary)!important;
+}
+.settingRow{
+  min-height:52px!important;
+  padding:8px 0!important;
+  border-top:1px solid var(--color-outline-variant)!important;
+}
+.settingRows .settingRow:first-child{border-top:0!important}
+.settingRow select,
+.settingBlock select,
+.settingBlock input[type="text"],
+.settingBlock input[type="number"],
+.feedbackSettings textarea{
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  border:1px solid var(--color-outline)!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+  font-family:var(--font-ui)!important;
+}
+.primaryBtn,.searchBtn{
+  min-height:40px!important;
+  padding:0 18px!important;
+  border-radius:999px!important;
+  background:var(--color-primary)!important;
+  color:var(--color-on-primary)!important;
+  box-shadow:none!important;
+}
+.secondaryBtn,.aboutLinks button{
+  min-height:40px!important;
+  padding:0 16px!important;
+  border-radius:999px!important;
+  border:1px solid var(--color-outline)!important;
+  background:transparent!important;
+  color:var(--color-primary)!important;
+  box-shadow:none!important;
+}
+.dialogFoot{
+  min-height:58px!important;
+  padding:8px 10px!important;
+  border-top:1px solid var(--color-outline-variant)!important;
+  background:var(--color-surface-container-high)!important;
+}
+
+/* Feedback fills the available settings viewport instead of using a fixed box. */
+.settingsPane#settingsTab-feedback.active{
+  height:100%!important;
+  min-height:0!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+}
+.settingsPane#settingsTab-feedback .feedbackSettings{
+  min-height:0!important;
+  height:100%!important;
+  display:grid!important;
+  grid-template-rows:auto auto auto minmax(180px,1fr) auto auto!important;
+  align-content:stretch!important;
+  padding-bottom:12px!important;
+}
+.feedbackSettings textarea#feedbackText{
+  width:calc(100% - 28px)!important;
+  height:100%!important;
+  min-height:180px!important;
+  max-height:none!important;
+  margin:0 14px!important;
+  padding:12px!important;
+  resize:none!important;
+  box-sizing:border-box!important;
+}
+.feedbackSettings .hint{
+  margin-top:8px!important;
+  margin-bottom:6px!important;
+}
+.feedbackSettings .feedbackActions{
+  margin-bottom:0!important;
+  min-height:44px!important;
+}
+
+@media(max-width:440px){
+  .modal{padding:0!important}
+  .settingsDialog{
+    width:100vw!important;
+    height:100vh!important;
+    border-radius:0!important;
+  }
+}
 </style>
 
 </head>
