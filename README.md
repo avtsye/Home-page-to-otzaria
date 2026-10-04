@@ -2,7 +2,7 @@
 
 תוסף דף בית מתקדם לאוצריא, המבוסס על ה־Plugin API הרשמי.
 
-גרסה נוכחית: **4.0.4**
+גרסה נוכחית: **4.0.5**
 
 **תיאור קצר לחנות:** דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.
 
@@ -124,7 +124,7 @@
 
 הורידו את הקובץ האחרון מתוך:
 
-`dist/home-page-to-otzaria-4.0.4.otzplugin`
+`dist/home-page-to-otzaria-4.0.5.otzplugin`
 
 או מתוך Artifact של ריצת GitHub Actions האחרונה.
 
@@ -142,7 +142,7 @@
 ├── tests/
 │   └── smoke.js
 ├── dist/
-│   └── home-page-to-otzaria-4.0.4.otzplugin
+│   └── home-page-to-otzaria-4.0.5.otzplugin
 └── .github/
     └── workflows/
         └── package.yml
@@ -202,3 +202,9 @@ https://github.com/avtsye/Home-page-to-otzaria
 - `manifest.json` מפנה כעת ל־`plugin-icon.jpg` כאייקון הרשמי.
 - האייקון נכלל בכל חבילות ה־Release, Debug ו־dev-compat.
 - ממשק התוסף עצמו משתמש כעת באייקון החדש בכותרת, בדף הבית ובמסך אודות.
+
+
+## 4.0.5
+
+- קישורי “מאגר הפרויקט” ו“גרסאות להורדה” במסך אודות נפתחים דרך `app.openUrl` בדפדפן ברירת המחדל של המערכת.
+- נוספה הרשאת `app.open_url` למניפסט.
