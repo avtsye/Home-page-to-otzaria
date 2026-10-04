@@ -1,0 +1,55 @@
+name: Generate icon assets (temporary)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/generate-icon-assets-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: pip install pillow
+
+      - name: Generate large PNG icon assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          src = Path('assets/home-page-icon-256.png')
+          if not src.exists():
+              raise SystemExit('Missing '+str(src))
+
+          image = Image.open(src).convert('RGBA')
+          for size in (512, 1024, 2048):
+              out = Path(f'assets/home-page-icon-{size}.png')
+              resized = image.resize((size, size), Image.Resampling.LANCZOS)
+              resized.save(out, 'PNG', optimize=True)
+              print(out, out.stat().st_size)
+          PY
+
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/home-page-icon-512.png assets/home-page-icon-1024.png assets/home-page-icon-2048.png
+          if git diff --cached --quiet; then
+            echo "No asset changes."
+            exit 0
+          fi
+          git commit -m "Add larger icon assets [skip ci]"
+          git push
