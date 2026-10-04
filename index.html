@@ -3,49 +3,167 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>דף הבית</title>
+<title>דף הבית · אוצריא</title>
 <style>
-:root{--bg:#fff;--surface:#fff;--surface2:#f5f5f5;--top:#f5f5f5;--text:#1d1b20;--muted:#79747e;--primary:#6750a4;--onPrimary:#fff;--soft:#e8def8;--outline:#cac4d0;--error:#b3261e;--ui:system-ui,-apple-system,"Segoe UI",sans-serif}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--ui)}button,input,select,textarea{font:inherit;color:inherit}.topbar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px 0 10px;background:var(--top);border-bottom:1px solid color-mix(in srgb,var(--outline) 45%,transparent);position:sticky;top:0;z-index:30}.topbar strong{font-size:14px}.topActions{display:flex;gap:4px}.topActions button{border:0;background:transparent;border-radius:10px;padding:7px 9px;cursor:pointer}.topActions button:hover{background:var(--soft)}.page{width:min(1120px,calc(100% - 34px));margin:auto;padding:5vh 0 54px}.hero{text-align:center;margin-bottom:24px}.brand{font-size:38px;font-weight:750;letter-spacing:-.7px;margin:0 0 8px}.subtitle{font-size:13px;color:var(--muted)}.searchWrap{position:relative;max-width:760px;margin:22px auto 0}.searchbox{min-height:54px;display:flex;align-items:center;gap:10px;border:1px solid var(--outline);border-radius:18px;padding:0 14px;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.07)}.searchbox:focus-within{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 18%,transparent),0 4px 16px rgba(0,0,0,.08)}.searchbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:16px}.iconBtn,.searchAll{border:0;cursor:pointer;color:var(--muted);background:transparent;border-radius:10px}.iconBtn{font-size:20px;padding:8px}.searchAll{padding:8px 11px;background:var(--surface2);white-space:nowrap;font-size:12px}.searchAll:hover,.iconBtn:hover{background:var(--soft);color:var(--text)}.dropdown{position:absolute;top:62px;inset-inline:0;background:var(--surface);border:1px solid var(--outline);border-radius:16px;padding:7px;box-shadow:0 12px 32px rgba(0,0,0,.14);max-height:62vh;overflow:auto;z-index:40}.dropdown[hidden]{display:none}.groupTitle{font-size:11px;font-weight:800;color:var(--muted);padding:8px 12px 4px}.resultRow{display:grid;grid-template-columns:minmax(0,1fr) 38px;gap:3px;align-items:stretch}.result{width:100%;border:0;background:transparent;color:inherit;text-align:right;padding:10px 12px;border-radius:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.result:hover,.result.active{background:var(--surface2)}.result strong,.snippet{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.snippet{font-size:11px;color:var(--muted);margin-top:3px}.tag{font-size:10px;color:var(--muted);white-space:nowrap}.favBtn{border:0;background:transparent;border-radius:10px;cursor:pointer;font-size:19px}.favBtn:hover{background:var(--soft)}.status{height:18px;text-align:center;color:var(--muted);font-size:11px;padding-top:4px}.quick{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:23px auto 28px}.quick button{border:1px solid var(--outline);background:var(--surface);color:inherit;border-radius:13px;min-width:108px;padding:10px 13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}.quick button:hover{background:var(--surface2)}.sectionsHost{display:grid;gap:14px}.sectionPanel{border:1px solid var(--outline);background:var(--surface);border-radius:17px;padding:14px;min-width:0}.hiddenSection{display:none!important}.sectionHead{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}.sectionHead h2{font-size:15px;margin:0}.sectionHead span{font-size:11px;color:var(--muted)}.pluginGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}.pluginCard{border:1px solid var(--outline);background:var(--surface);color:inherit;border-radius:15px;padding:13px 10px;cursor:pointer;text-align:center;min-height:83px}.pluginCard:hover{background:var(--surface2);transform:translateY(-1px)}.pluginIcon{width:34px;height:34px;border-radius:11px;background:var(--soft);display:grid;place-items:center;margin:0 auto 7px;font-weight:800}.pluginCard b{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pluginCard small{font-size:9px;color:var(--muted)}.list{display:grid;gap:2px}.row{border:0;background:transparent;color:inherit;width:100%;text-align:right;border-radius:10px;padding:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.row:hover{background:var(--surface2)}.row b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .meta{font-size:10px;color:var(--muted);white-space:nowrap}.empty{padding:18px;text-align:center;color:var(--muted);font-size:12px}.footer{color:var(--muted);font-size:10px;text-align:center;margin-top:24px}.groupBlock{border-top:1px solid color-mix(in srgb,var(--outline) 45%,transparent);padding-top:10px;margin-top:10px}.groupBlock:first-child{border-top:0;padding-top:0;margin-top:0}.groupBlockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.groupBlockHead small{color:var(--muted)}.modal{position:fixed;inset:0;background:rgba(0,0,0,.36);display:grid;place-items:center;padding:18px;z-index:80}.modal[hidden]{display:none}.dialog{width:min(720px,100%);max-height:min(760px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:20px;box-shadow:0 20px 70px rgba(0,0,0,.28)}.dialog.small{width:min(560px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.dialogBody{padding:16px}.settingsGrid{display:grid;gap:18px}.settingBlock{border:1px solid var(--outline);border-radius:14px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:color-mix(in srgb,var(--soft) 70%,transparent)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn,.secondaryBtn{border-radius:10px;padding:9px 14px;cursor:pointer}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary)}.secondaryBtn{border:1px solid var(--outline);background:var(--surface)}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 16px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}textarea{width:100%;min-height:170px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:none}textarea:focus{border-color:var(--primary)}.hint{font-size:11px;color:var(--muted);line-height:1.5}.feedbackButtons{display:flex;gap:7px}.feedbackButtons button{border:1px solid var(--outline);background:var(--surface);border-radius:10px;padding:7px 10px;cursor:pointer}.feedbackButtons button:hover{background:var(--surface2)}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.toast[hidden]{display:none}.groupPicker{position:fixed;width:180px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
-@media(max-width:900px){.radioGrid,.checkGrid{grid-template-columns:1fr 1fr}}
-@media(max-width:620px){.page{width:min(100% - 20px,1120px);padding-top:3vh}.brand{font-size:31px}.searchAll{display:none}.pluginGrid{grid-template-columns:repeat(3,1fr)}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.feedbackButtons span{display:none}}
+:root{
+  --bg:#f7f7fb;--surface:#fff;--surface2:#f3f2f8;--surface3:#ebe9f3;--text:#1d1b20;--muted:#74717d;
+  --primary:#6750a4;--onPrimary:#fff;--soft:#ece5ff;--outline:#d8d4df;--error:#b3261e;--success:#247a52;
+  --shadow:0 18px 55px rgba(20,16,35,.10);--ui:system-ui,-apple-system,"Segoe UI",sans-serif
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:var(--ui);background:
+radial-gradient(circle at 8% 5%,color-mix(in srgb,var(--primary) 11%,transparent),transparent 28rem),
+radial-gradient(circle at 92% 18%,color-mix(in srgb,var(--soft) 70%,transparent),transparent 31rem),var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{user-select:none}
+[hidden]{display:none!important}
+.topbar{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:color-mix(in srgb,var(--surface) 84%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid color-mix(in srgb,var(--outline) 68%,transparent)}
+.brandMini{display:flex;align-items:center;gap:10px;font-weight:800}.brandMini img{width:30px;height:30px;border-radius:9px}.brandMini small{font-weight:500;color:var(--muted)}
+.topActions{display:flex;gap:7px}.topActions button{border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 86%,transparent);border-radius:12px;padding:8px 11px;cursor:pointer}.topActions button:hover{background:var(--soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}
+.page{width:min(1180px,calc(100% - 34px));margin:auto;padding:42px 0 64px}
+.heroCard{position:relative;padding:36px 30px 28px;border:1px solid color-mix(in srgb,var(--outline) 75%,transparent);border-radius:28px;background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:var(--shadow);overflow:visible}
+.heroGlow{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(70px);background:color-mix(in srgb,var(--primary) 22%,transparent);top:-180px;left:14%;pointer-events:none}
+.heroHeader{text-align:center;position:relative}.heroLogo{width:72px;height:72px;border-radius:21px;box-shadow:0 10px 32px rgba(0,0,0,.12);margin-bottom:12px}.brand{font-size:42px;line-height:1;margin:0;font-weight:850;letter-spacing:-1.4px}.subtitle{margin-top:9px;color:var(--muted);font-size:13px}
+.searchWrap{position:relative;max-width:900px;margin:26px auto 0}
+.searchbox{min-height:64px;display:flex;align-items:center;gap:9px;border:1px solid var(--outline);border-radius:20px;padding:7px;background:var(--surface);box-shadow:0 8px 28px rgba(20,16,35,.09);transition:.2s}
+.searchbox:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 14%,transparent),0 12px 34px rgba(20,16,35,.11)}
+.searchIcon{font-size:22px;color:var(--muted);padding-inline-start:10px}.searchbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:17px;padding:0 3px}
+.searchBtn,.filterBtn,.clearBtn{border:0;border-radius:13px;cursor:pointer}.searchBtn{background:var(--primary);color:var(--onPrimary);padding:12px 18px;font-weight:750}.filterBtn{background:var(--surface2);padding:11px 13px}.filterBtn.active{background:var(--soft);color:var(--primary)}.clearBtn{background:transparent;color:var(--muted);font-size:22px;padding:8px 10px}
+.searchBtn:hover{filter:brightness(1.03)}.filterBtn:hover,.clearBtn:hover{background:var(--soft)}
+.searchSummary{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin-top:11px;min-height:25px}
+.summaryChip{font-size:11px;color:var(--muted);border:1px solid color-mix(in srgb,var(--outline) 75%,transparent);background:color-mix(in srgb,var(--surface) 76%,transparent);padding:5px 9px;border-radius:999px}
+.summaryChip.strong{color:var(--primary);background:var(--soft);border-color:transparent}
+.advancedPanel{margin-top:13px;border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 93%,transparent);border-radius:18px;padding:16px;box-shadow:0 12px 32px rgba(20,16,35,.06)}
+.advancedGrid{display:grid;grid-template-columns:repeat(4,minmax(135px,1fr));gap:12px}.field label{display:block;font-size:10px;font-weight:800;color:var(--muted);margin:0 4px 6px}.field select,.field input[type=text],.field input[type=number]{width:100%;border:1px solid var(--outline);background:var(--surface);border-radius:11px;padding:9px 10px;outline:0}.field input:focus,.field select:focus{border-color:var(--primary)}
+.field.span2{grid-column:span 2}.checkline{display:flex;align-items:center;gap:8px;padding-top:23px;font-size:12px}.advancedWide{margin-top:13px;display:grid;gap:12px}
+.optionGroupTitle{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:7px}.chipSet{display:flex;flex-wrap:wrap;gap:7px}.toggleChip{border:1px solid var(--outline);background:var(--surface);padding:7px 10px;border-radius:999px;cursor:pointer;font-size:11px}.toggleChip.on{border-color:color-mix(in srgb,var(--primary) 45%,var(--outline));background:var(--soft);color:var(--primary)}
+.advancedFooter{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--outline) 70%,transparent)}.linkBtn{border:0;background:transparent;color:var(--primary);cursor:pointer;padding:7px 9px;border-radius:9px}.linkBtn:hover{background:var(--soft)}
+.suggestions{position:absolute;top:72px;inset-inline:0;background:var(--surface);border:1px solid var(--outline);border-radius:17px;padding:7px;box-shadow:0 18px 50px rgba(20,16,35,.18);z-index:45;max-height:340px;overflow:auto}
+.suggestion{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;text-align:right;border:0;background:transparent;border-radius:11px;padding:10px 12px;cursor:pointer}.suggestion:hover{background:var(--surface2)}.suggestion b{font-size:12px}.suggestion small{color:var(--muted);font-size:10px}
+.quick{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:22px 0 0}.quick button{border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 90%,transparent);border-radius:13px;padding:9px 13px;cursor:pointer}.quick button:hover{background:var(--soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline))}
+.searchSection{margin:18px 0 0;border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 91%,transparent);border-radius:22px;padding:17px;box-shadow:0 12px 36px rgba(20,16,35,.06)}
+.searchHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.searchHead h2{margin:0;font-size:18px}.searchHead p{margin:4px 0 0;color:var(--muted);font-size:11px}.searchHeadActions{display:flex;gap:7px}.secondaryBtn{border:1px solid var(--outline);background:var(--surface);border-radius:11px;padding:8px 11px;cursor:pointer}.secondaryBtn:hover{background:var(--soft)}
+.facets{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 11px}.facet{border:1px solid var(--outline);background:var(--surface2);border-radius:999px;padding:6px 10px;cursor:pointer;font-size:10px}.facet:hover,.facet.selected{background:var(--soft);color:var(--primary);border-color:transparent}
+.resultGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.searchResult{border:1px solid color-mix(in srgb,var(--outline) 85%,transparent);background:var(--surface);border-radius:15px;padding:13px;text-align:right;cursor:pointer;min-width:0;transition:.16s}.searchResult:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--primary) 35%,var(--outline));box-shadow:0 9px 25px rgba(20,16,35,.07)}
+.resultTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.resultBook{font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.resultRef{font-size:10px;color:var(--primary);white-space:nowrap}.resultText{font-size:12px;line-height:1.65;color:color-mix(in srgb,var(--text) 88%,var(--muted));display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.resultMeta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:var(--muted);font-size:9px}.resultMeta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-radius:4px;padding:0 1px}
+.searchEmpty{padding:26px;text-align:center;color:var(--muted);font-size:12px}.loadMoreWrap{text-align:center;margin-top:12px}
+.sectionsHost{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:18px}.sectionPanel{border:1px solid var(--outline);background:color-mix(in srgb,var(--surface) 92%,transparent);border-radius:21px;padding:16px;box-shadow:0 10px 32px rgba(20,16,35,.055);min-width:0}.sectionPanel.wide{grid-column:1/-1}.hiddenSection{display:none!important}
+.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.sectionHead h2{font-size:15px;margin:0}.sectionHead span{font-size:10px;color:var(--muted)}
+.pluginToolbar{display:flex;gap:8px;margin-bottom:12px}.pluginToolbar input{flex:1;min-width:0;border:1px solid var(--outline);background:var(--surface);border-radius:11px;padding:9px 11px;outline:0}.pluginToolbar input:focus{border-color:var(--primary)}
+.pluginGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}.pluginCard{position:relative;border:1px solid var(--outline);background:linear-gradient(145deg,var(--surface),color-mix(in srgb,var(--surface2) 38%,var(--surface)));border-radius:17px;padding:14px 11px;cursor:pointer;text-align:center;min-height:116px;transition:.17s}.pluginCard:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--primary) 38%,var(--outline));box-shadow:0 10px 25px rgba(20,16,35,.08)}.pluginCard.disabled{opacity:.62}.pluginIcon{width:46px;height:46px;border-radius:15px;background:var(--soft);display:grid;place-items:center;margin:0 auto 9px;color:var(--primary);overflow:hidden}.pluginIcon img{width:34px;height:34px;border-radius:9px}.pluginIcon svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.pluginCard b{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pluginCard small{font-size:9px;color:var(--muted)}.pluginBadge{position:absolute;top:8px;left:8px;background:var(--surface2);border:1px solid var(--outline);font-size:8px;padding:3px 6px;border-radius:999px}.pluginBadge.off{color:var(--error)}
+.list{display:grid;gap:3px}.row{border:0;background:transparent;color:inherit;width:100%;text-align:right;border-radius:11px;padding:10px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.row:hover{background:var(--surface2)}.row b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .meta{font-size:10px;color:var(--muted);white-space:nowrap}.empty{padding:20px;text-align:center;color:var(--muted);font-size:11px}
+.groupBlock{border-top:1px solid color-mix(in srgb,var(--outline) 65%,transparent);padding-top:10px;margin-top:10px}.groupBlock:first-child{border-top:0;padding-top:0;margin-top:0}.groupBlockHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.groupBlockHead small{color:var(--muted)}
+.footer{color:var(--muted);font-size:10px;text-align:center;margin-top:25px}
+.modal{position:fixed;inset:0;background:rgba(16,12,28,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:18px;z-index:90}.dialog{width:min(760px,100%);max-height:min(780px,92vh);overflow:auto;background:var(--surface);border:1px solid var(--outline);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.3)}.dialog.small{width:min(570px,100%)}.dialogHead{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--outline);z-index:2}.dialogHead h2{font-size:16px;margin:0}.dialogHead button{border:0;background:transparent;border-radius:9px;padding:7px 10px;cursor:pointer}.dialogBody{padding:17px}.settingsGrid{display:grid;gap:16px}.settingBlock{border:1px solid var(--outline);border-radius:15px;padding:13px}.settingBlock h3{margin:0 0 10px;font-size:13px}.radioGrid,.checkGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.option{border:1px solid var(--outline);border-radius:11px;padding:10px;display:flex;align-items:center;gap:8px;cursor:pointer}.option:has(input:checked){border-color:var(--primary);background:var(--soft)}.settingRow{display:flex;align-items:center;justify-content:space-between;gap:12px}.settingRow select,.manageGroup input,.newGroup input{border:1px solid var(--outline);background:var(--surface);border-radius:9px;padding:8px}.orderList{display:grid;gap:6px}.orderRow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:10px}.orderRow button{border:0;background:var(--surface);border-radius:7px;padding:5px 8px;cursor:pointer}.manageGroups{display:grid;gap:7px}.manageGroup{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}.manageGroup span{font-size:11px;color:var(--muted)}.danger{border:0;background:color-mix(in srgb,var(--error) 12%,transparent);color:var(--error);border-radius:8px;padding:7px 9px;cursor:pointer}.newGroup{display:flex;gap:8px;margin-top:10px}.newGroup input{flex:1;min-width:0}.primaryBtn{border:1px solid var(--primary);background:var(--primary);color:var(--onPrimary);border-radius:10px;padding:9px 14px;cursor:pointer}.dialogFoot{display:flex;justify-content:flex-start;gap:8px;padding:14px 17px;border-top:1px solid var(--outline);position:sticky;bottom:0;background:var(--surface)}
+textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--outline);background:var(--surface);border-radius:12px;padding:12px;outline:0}textarea:focus{border-color:var(--primary)}.hint{font-size:10px;color:var(--muted);line-height:1.55}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.25);font-size:12px}.groupPicker{position:fixed;width:190px;background:var(--surface);border:1px solid var(--outline);border-radius:12px;padding:6px;z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.18)}.groupPickerTitle{padding:6px 8px;color:var(--muted);font-size:10px}.groupPicker button{display:block;width:100%;border:0;background:transparent;text-align:right;border-radius:8px;padding:8px;cursor:pointer}.groupPicker button:hover{background:var(--surface2)}
+@media(max-width:920px){.advancedGrid{grid-template-columns:repeat(2,1fr)}.resultGrid{grid-template-columns:1fr}.sectionsHost{grid-template-columns:1fr}.sectionPanel.wide{grid-column:auto}}
+@media(max-width:620px){.page{width:min(100% - 18px,1180px);padding-top:18px}.heroCard{padding:26px 13px 20px;border-radius:22px}.brand{font-size:34px}.heroLogo{width:58px;height:58px}.searchbox{min-height:58px}.filterBtn{padding:10px}.searchBtn{padding:11px 13px}.advancedGrid{grid-template-columns:1fr}.field.span2{grid-column:auto}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.topActions .txt{display:none}.pluginGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.searchHead{display:block}.searchHeadActions{margin-top:9px}}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <strong>דף הבית</strong>
+  <div class="brandMini"><img src="otzaria-icon.png" alt=""><span>דף הבית</span><small>3.2</small></div>
   <div class="topActions">
-    <div class="feedbackButtons"><button id="ideaBtn" title="הצעת רעיון">💡 <span>רעיון</span></button><button id="bugBtn" title="דיווח על תקלה">⚠ <span>תקלה</span></button></div>
-    <button id="settingsBtn" title="הגדרות" aria-label="הגדרות">⚙</button>
+    <button id="ideaBtn" title="הצעת רעיון">💡 <span class="txt">רעיון</span></button>
+    <button id="bugBtn" title="דיווח על תקלה">⚠ <span class="txt">תקלה</span></button>
+    <button id="settingsBtn" title="הגדרות">⚙</button>
   </div>
 </header>
+
 <main class="page">
-  <section class="hero">
-    <h1 class="brand">אוצריא</h1>
-    <div class="subtitle">פתח ספר, חפש בתוכן או המשך מאיפה שעצרת</div>
-    <div class="searchWrap">
-      <div class="searchbox"><span aria-hidden="true">⌕</span><input id="q" autocomplete="off" placeholder="חיפוש ספרים ובתוכן הספרייה…" aria-label="חיפוש"><button id="searchAll" class="searchAll" title="פתח בחיפוש המלא של אוצריא">חיפוש מלא</button><button id="clear" class="iconBtn" title="נקה" aria-label="נקה">×</button></div>
-      <div id="dropdown" class="dropdown" hidden></div>
+  <section class="heroCard">
+    <div class="heroGlow"></div>
+    <div class="heroHeader">
+      <img class="heroLogo" src="otzaria-icon.png" alt="אוצריא">
+      <h1 class="brand">אוצריא</h1>
+      <div class="subtitle">חיפוש חכם, הספרים שלך וכל הכלים — במקום אחד</div>
     </div>
-    <div id="status" class="status"></div>
+
+    <div class="searchWrap">
+      <div class="searchbox">
+        <span class="searchIcon">⌕</span>
+        <input id="q" autocomplete="off" placeholder="חפש ספר, ביטוי או תוכן…" aria-label="חיפוש">
+        <button id="clear" class="clearBtn" title="נקה">×</button>
+        <button id="advancedToggle" class="filterBtn" title="אפשרויות חיפוש">☷</button>
+        <button id="searchGo" class="searchBtn">חפש</button>
+      </div>
+      <div id="suggestions" class="suggestions" hidden></div>
+    </div>
+
+    <div id="searchSummary" class="searchSummary"></div>
+
+    <div id="advancedPanel" class="advancedPanel" hidden>
+      <div class="advancedGrid">
+        <div class="field"><label>מצב חיפוש</label><select id="searchMode"></select></div>
+        <div class="field"><label>מיון</label><select id="searchOrder"></select></div>
+        <div class="field"><label>איחוד תוצאות</label><select id="searchGrouping"></select></div>
+        <div class="field" id="distanceField"><label>מרחק מילים</label><input id="searchDistance" type="number" min="0" max="20" value="0"></div>
+        <div class="field" id="proximityField"><label>תחום קירבה</label><select id="searchProximity"></select></div>
+        <div class="field" id="wordMatchField"><label>התאמת מילים</label><select id="searchWordMatch"></select></div>
+        <div class="field" id="wordCountField" hidden><label>כמה מילים לפחות</label><input id="searchWordCount" type="number" min="1" value="2"></div>
+        <div class="field span2" id="negativeField"><label>לא לכלול</label><input id="negativeQuery" type="text" placeholder="מילים שלא יופיעו בתוצאות"></div>
+        <label class="checkline"><input id="baseBooksOnly" type="checkbox"> ספרי יסוד בלבד</label>
+      </div>
+      <div class="advancedWide">
+        <div><div class="optionGroupTitle">תקופות</div><div id="eraChips" class="chipSet"></div></div>
+        <div id="wordOptionsBlock"><div class="optionGroupTitle">אפשרויות מילים</div><div id="wordOptionChips" class="chipSet"></div></div>
+      </div>
+      <div class="advancedFooter">
+        <button id="resetSearchOptions" class="linkBtn">איפוס אפשרויות</button>
+        <span class="hint">האפשרויות נטענות ישירות מ־search.getOptions של אוצריא.</span>
+      </div>
+    </div>
+
+    <nav class="quick" aria-label="פעולות מהירות">
+      <button id="goLibrary" data-quick="library">▦ ספרייה</button>
+      <button id="goReading" data-quick="reading">▤ עיון</button>
+      <button id="goBuiltInSearch" data-quick="search">⌕ החיפוש המובנה</button>
+      <button id="goHistory" data-quick="history">◷ היסטוריה</button>
+      <button id="goBookmarks" data-quick="bookmarks">☆ סימניות</button>
+    </nav>
   </section>
 
-  <nav class="quick" aria-label="פעולות מהירות">
-    <button id="goLibrary" data-quick="library">▦ ספרייה</button>
-    <button id="goReading" data-quick="reading">▤ עיון</button>
-    <button id="goSearch" data-quick="search">⌕ חיפוש</button>
-    <button id="goHistory" data-quick="history">◷ היסטוריה</button>
-    <button id="goBookmarks" data-quick="bookmarks">☆ סימניות</button>
-  </nav>
+  <section id="searchSection" class="searchSection" hidden>
+    <div class="searchHead">
+      <div><h2>תוצאות חיפוש</h2><p id="searchMeta"></p></div>
+      <div class="searchHeadActions">
+        <button id="openBuiltInSearch" class="secondaryBtn">פתח בחיפוש המובנה</button>
+        <button id="closeSearchResults" class="secondaryBtn">סגור</button>
+      </div>
+    </div>
+    <div id="searchFacets" class="facets"></div>
+    <div id="searchResults" class="resultGrid"></div>
+    <div id="searchEmpty" class="searchEmpty" hidden></div>
+    <div class="loadMoreWrap"><button id="loadMore" class="secondaryBtn" hidden>עוד תוצאות</button></div>
+  </section>
 
   <div id="sectionsHost" class="sectionsHost">
-    <section id="section-groups" class="sectionPanel"><div class="sectionHead"><h2>מועדפים וקבוצות ספרים</h2><span>מותאם אישית</span></div><div id="groups"></div></section>
-    <section id="section-plugins" class="sectionPanel"><div class="sectionHead"><h2>תוספים</h2><span id="pluginCount"></span></div><div id="plugins" class="pluginGrid"></div></section>
-    <section id="section-recent" class="sectionPanel"><div class="sectionHead"><h2>המשך לקרוא</h2><span>נפתח לאחרונה</span></div><div id="recent" class="list"></div></section>
-    <section id="section-bookmarks" class="sectionPanel"><div class="sectionHead"><h2>סימניות אחרונות</h2></div><div id="bookmarks" class="list"></div></section>
-    <section id="section-history" class="sectionPanel"><div class="sectionHead"><h2>היסטוריה אחרונה</h2></div><div id="history" class="list"></div></section>
+    <section id="section-groups" class="sectionPanel">
+      <div class="sectionHead"><h2>מועדפים וקבוצות ספרים</h2><span>מותאם אישית</span></div><div id="groups"></div>
+    </section>
+
+    <section id="section-recent" class="sectionPanel">
+      <div class="sectionHead"><h2>המשך לקרוא</h2><span>נפתח לאחרונה</span></div><div id="recent" class="list"></div>
+    </section>
+
+    <section id="section-bookmarks" class="sectionPanel">
+      <div class="sectionHead"><h2>סימניות אחרונות</h2></div><div id="bookmarks" class="list"></div>
+    </section>
+
+    <section id="section-history" class="sectionPanel">
+      <div class="sectionHead"><h2>היסטוריה אחרונה</h2></div><div id="history" class="list"></div>
+    </section>
+
+    <section id="section-plugins" class="sectionPanel wide">
+      <div class="sectionHead"><h2>כל התוספים המותקנים</h2><span id="pluginCount"></span></div>
+      <div class="pluginToolbar"><input id="pluginFilter" type="text" placeholder="סינון תוספים…"><button id="refreshPlugins" class="secondaryBtn">רענן</button></div>
+      <div id="plugins" class="pluginGrid"></div>
+    </section>
   </div>
-  <div class="footer">דף הבית משתמש ב־API הרשמי של אוצריא · גרסה 3.1.0</div>
+
+  <div class="footer">דף הבית לאוצריא · גרסה 3.2.0 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
@@ -56,24 +174,42 @@
         <label class="option"><input type="radio" name="plusTarget" value="plugin"> דף הבית</label>
         <label class="option"><input type="radio" name="plusTarget" value="library"> ספרייה</label>
         <label class="option"><input type="radio" name="plusTarget" value="reading"> עיון</label>
-      </div><p class="hint">ברירת המחדל היא דף הבית. בחירה בספרייה מחזירה את התנהגות ברירת המחדל של אוצריא.</p></section>
+      </div><p class="hint">ברירת המחדל היא דף הבית.</p></section>
+
       <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
-        <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label><label class="option"><input id="show-plugins" type="checkbox"> תוספים</label><label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label><label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label><label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
+        <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label>
+        <label class="option"><input id="show-plugins" type="checkbox"> תוספים</label>
+        <label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label>
+        <label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label>
+        <label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
       </div></section>
+
       <section class="settingBlock"><h3>סדר הכרטיסים</h3><div id="orderList" class="orderList"></div></section>
+
       <section class="settingBlock"><h3>פעולות מהירות</h3><div class="checkGrid">
-        <label class="option"><input id="quick-library" type="checkbox"> ספרייה</label><label class="option"><input id="quick-reading" type="checkbox"> עיון</label><label class="option"><input id="quick-search" type="checkbox"> חיפוש</label><label class="option"><input id="quick-history" type="checkbox"> היסטוריה</label><label class="option"><input id="quick-bookmarks" type="checkbox"> סימניות</label>
+        <label class="option"><input id="quick-library" type="checkbox"> ספרייה</label>
+        <label class="option"><input id="quick-reading" type="checkbox"> עיון</label>
+        <label class="option"><input id="quick-search" type="checkbox"> חיפוש</label>
+        <label class="option"><input id="quick-history" type="checkbox"> היסטוריה</label>
+        <label class="option"><input id="quick-bookmarks" type="checkbox"> סימניות</label>
       </div></section>
-      <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">משפיע על היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option></select></div></section>
-      <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">כדי להוסיף ספר לקבוצה, חפש אותו בדף הבית ולחץ על הכוכב ליד תוצאת הספר.</p></section>
+
+      <section class="settingBlock"><div class="settingRow"><div><h3>מספר פריטים בכל רשימה</h3><div class="hint">היסטוריה, סימניות וקבוצות</div></div><select id="listLimit"><option>5</option><option>7</option><option>10</option><option>12</option><option>20</option></select></div></section>
+
+      <section class="settingBlock"><h3>קבוצות ספרים</h3><div id="groupSettings" class="manageGroups"></div><div class="newGroup"><input id="newGroupName" type="text" maxlength="40" placeholder="שם קבוצה חדשה"><button id="addGroup" class="secondaryBtn">הוסף</button></div><p class="hint">מוסיפים ספר לקבוצה מתוך תוצאות חיפוש הספרים.</p></section>
     </div>
     <div class="dialogFoot"><button id="saveSettings" class="primaryBtn">שמור</button><button id="cancelSettings" class="secondaryBtn">ביטול</button></div>
   </div>
 </div>
 
 <div id="feedbackModal" class="modal" hidden>
-  <div class="dialog small"><div class="dialogHead"><h2 id="feedbackTitle">דיווח</h2><button id="closeFeedback">✕</button></div><div class="dialogBody"><textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את הפרטים…"></textarea><p class="hint">הדיווח יישלח דרך מנגנון המשוב הרשמי של אוצריא. לפני השליחה אוצריא תציג לך דיאלוג אישור.</p></div><div class="dialogFoot"><button id="sendFeedback" class="primaryBtn">שלח</button><button id="cancelFeedback" class="secondaryBtn">ביטול</button></div></div>
+  <div class="dialog small">
+    <div class="dialogHead"><h2 id="feedbackTitle">דיווח</h2><button id="closeFeedback">✕</button></div>
+    <div class="dialogBody"><textarea id="feedbackText" maxlength="5000" placeholder="כתוב כאן את הפרטים…"></textarea><p class="hint">הדיווח יישלח דרך מנגנון feedback.report הרשמי של אוצריא. אוצריא תציג דיאלוג אישור לפני השליחה.</p></div>
+    <div class="dialogFoot"><button id="sendFeedback" class="primaryBtn">שלח</button><button id="cancelFeedback" class="secondaryBtn">ביטול</button></div>
+  </div>
 </div>
+
 <div id="toast" class="toast" hidden></div>
 <script src="main.js"></script>
 </body>
