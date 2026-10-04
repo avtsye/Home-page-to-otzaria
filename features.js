@@ -76,6 +76,7 @@ function invalidate(prefix){
 function mergeFeatureSettings(raw){
   const f=Object.assign({},featureSettings,raw||{});
   for(const k of ['pluginFavorites','savedSearches','quickPins'])if(!Array.isArray(f[k]))f[k]=[];
+  f.pluginFavorites=f.pluginFavorites.filter(id=>id!==SELF);
   f.background='flat';
   f.accent='host';
   f.radius='rounded';
@@ -149,7 +150,7 @@ async function refreshDashboard(){
   if($('statRecent'))$('statRecent').textContent=(recent||[]).length;
   if($('statBookmarks'))$('statBookmarks').textContent=(marks||[]).length;
   if($('statSearches'))$('statSearches').textContent=(searches||[]).length;
-  if($('statPlugins'))$('statPlugins').textContent=(plugins||[]).filter(x=>x.enabled).length;
+  if($('statPlugins'))$('statPlugins').textContent=visibleInstalledPlugins(plugins).filter(x=>x.enabled).length;
 }
 async function loadSearchHistoryV4(){
   try{searchHistory=await cached('search-history',()=>Otzaria.call('history.listSearches',{limit:12}).then(dataOf))||[]}
