@@ -21,7 +21,7 @@ const UI_ICONS_V4={
 };
 function uiIconV4(name){
   if(UI_ICONS_V4[name])return UI_ICONS_V4[name];
-  const aliases={settings:'settings_24_regular',home:'home_24_regular',apps:'apps_24_regular'};
+  const aliases={settings:'settings_24_regular',home:'home_24_regular',apps:'apps_24_regular',search:'search_24_regular',link:'link_24_regular'};
   const key=aliases[name];
   return (key&&window.OFFICIAL_FLUENT_ICONS&&window.OFFICIAL_FLUENT_ICONS[key])||UI_ICONS_V4.star;
 }
@@ -360,7 +360,7 @@ function renderQuickPins(){
   let box=$('quickPins');if(!box){box=document.createElement('div');box.id='quickPins';box.className='quickPins';document.querySelector('.quick').insertAdjacentElement('afterend',box)}
   box.innerHTML='';
   featureSettings.quickPins.forEach((pin,i)=>{const wrap=document.createElement('span');wrap.className='quickPinWrap';wrap.__homeQuickPin={pin,index:i};const b=document.createElement('button');b.className='iconTextBtn';b.innerHTML=iconTextV4('pin',pin.title);b.onclick=()=>{if(pin.type==='group'){featureSettings.groupScope=pin.groupId;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=pin.groupId;$('q').focus();toast('החיפוש הוגבל לקבוצה '+pin.title)}else smartOpenPinnedBook(pin.book)};const remove=document.createElement('button');setIconButtonV4(remove,'close','הסר הצמדה');remove.onclick=async e=>{e.stopPropagation();const removed=featureSettings.quickPins.splice(i,1)[0];await saveFeatures();renderQuickPins();window.homePushUndo('ההצמדה הוסרה',async()=>{featureSettings.quickPins.splice(Math.min(i,featureSettings.quickPins.length),0,removed);await saveFeatures();renderQuickPins()})};wrap.append(b,remove);box.appendChild(wrap)});
-  allPlugins.filter(p=>featureSettings.pluginFavorites.includes(p.pluginId)).slice(0,5).forEach(p=>{const b=document.createElement('button');b.className='iconTextBtn';b.__homePlugin=p;b.innerHTML=iconTextV4('star',p.name||p.pluginId);b.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:p.pluginId});box.appendChild(b)});
+  allPlugins.filter(p=>featureSettings.pluginFavorites.includes(p.pluginId)).slice(0,5).forEach(p=>{const b=document.createElement('button');b.className='iconTextBtn';b.__homePlugin=p;b.dataset.homePluginContext='1';b.innerHTML=iconTextV4('star',p.name||p.pluginId);b.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:p.pluginId});box.appendChild(b)});
 }
 async function pinCurrentBook(){
   try{
@@ -1200,7 +1200,16 @@ function contextForQuickPinV5(meta){
 }
 function contextForSectionV5(section){
   const id=section.id||'';const key=id.startsWith('section-')?id.slice(8):'';
-  const items=[{label:'רענן דף הבית',icon:'refresh',action:()=>loadHome()}];
+  const items=[];
+  if(key==='saved-tabs'){
+    items.push(
+      {label:'שמור את הלשוניות הפתוחות',icon:'bookmark',action:()=>captureCurrentTabsV4()},
+      {label:'ייצא את כל הכרטיסים',action:()=>exportTabSetsV4()},
+      {label:'ייבא כרטיסים',action:()=>$('importTabSetsFile')?.click()},
+      contextSeparatorV5()
+    );
+  }
+  items.push({label:'רענן דף הבית',icon:'refresh',action:()=>loadHome()});
   if(key&&key!=='saved-tabs'&&settings.visibleSections&&Object.prototype.hasOwnProperty.call(settings.visibleSections,key)){
     items.push({label:'הסתר כרטיס',icon:'close',action:async()=>{settings.visibleSections[key]=false;await saveSettings();applyLayout();toast('הכרטיס הוסתר')}})
   }
@@ -1214,8 +1223,21 @@ function setupGlobalContextMenusV5(){
     const target=e.target;
     if(!target||!(target instanceof Element))return;
 
-    // Preserve native text-edit menus unless the control has a specific plugin action.
-    if(target.closest('input,textarea,[contenteditable="true"]')&&!target.closest('#savedSearchBar'))return;
+    const savedSearch=target.closest('#savedSearchSelect');
+    if(savedSearch){
+      const idx=Number(savedSearch.value);
+      const item=Number.isInteger(idx)&&idx>=0?featureSettings.savedSearches[idx]:null;
+      if(item){
+        e.preventDefault();
+        return showHomeContextMenuV5([
+          {label:'הפעל חיפוש שמור',icon:'search',action:()=>applySavedSearchProfile()},
+          {label:'מחק חיפוש שמור',icon:'close',danger:true,action:()=>deleteSavedSearchProfileV4()}
+        ],e.clientX,e.clientY,item.name);
+      }
+    }
+
+    // Preserve native editing menus in editable controls.
+    if(target.closest('input,textarea,select,[contenteditable="true"]'))return;
 
     const tabCard=target.closest('.savedTabCard');
     if(tabCard&&tabCard.__homeTabSet){e.preventDefault();return showHomeContextMenuV5(contextForTabSetV5(tabCard.__homeTabSet),e.clientX,e.clientY,tabCard.__homeTabSet.name)}
@@ -1240,8 +1262,9 @@ function setupGlobalContextMenusV5(){
 
     if(target.closest('#settingsModal')){
       const tab=target.closest('.settingsTab');
-      if(tab){e.preventDefault();return showHomeContextMenuV5([{label:'פתח לשונית',action:()=>setSettingsTab(tab.dataset.settingsTab)},{label:'סגור הגדרות',icon:'close',action:()=>closeSettings()}],e.clientX,e.clientY)}
-      return;
+      e.preventDefault();
+      if(tab)return showHomeContextMenuV5([{label:'פתח לשונית',action:()=>setSettingsTab(tab.dataset.settingsTab)},{label:'סגור הגדרות',icon:'close',action:()=>closeSettings()}],e.clientX,e.clientY);
+      return showHomeContextMenuV5([{label:'סגור הגדרות',icon:'close',action:()=>closeSettings()}],e.clientX,e.clientY,'הגדרות');
     }
 
     e.preventDefault();
