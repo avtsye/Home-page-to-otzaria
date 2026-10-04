@@ -17,7 +17,12 @@ const UI_ICONS_V4={
   up:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5"/></svg>',
   down:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>'
 };
-function uiIconV4(name){return UI_ICONS_V4[name]||UI_ICONS_V4.star}
+function uiIconV4(name){
+  if(UI_ICONS_V4[name])return UI_ICONS_V4[name];
+  const aliases={settings:'settings_24_regular',home:'home_24_regular',apps:'apps_24_regular'};
+  const key=aliases[name];
+  return (key&&window.OFFICIAL_FLUENT_ICONS&&window.OFFICIAL_FLUENT_ICONS[key])||UI_ICONS_V4.star;
+}
 function iconTextV4(name,label){return uiIconV4(name)+'<span>'+esc(label)+'</span>'}
 function setIconButtonV4(button,name,label){
   button.classList.add('nativeIconButton');
