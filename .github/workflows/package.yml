@@ -1,0 +1,41 @@
+name: Package Otzaria plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'main.js'
+      - 'manifest.json'
+      - '.github/workflows/package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate manifest
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest OK')"
+      - name: Check JavaScript
+        run: node --check main.js
+      - name: Read version
+        id: version
+        shell: bash
+        run: echo "version=$(node -p \"require('./manifest.json').version\")" >> "$GITHUB_OUTPUT"
+      - name: Build package
+        shell: bash
+        run: |
+          mkdir -p build
+          zip -9 -j "build/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html main.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: home-page-to-otzaria-${{ steps.version.outputs.version }}
+          path: build/*.otzplugin
+          if-no-files-found: error
