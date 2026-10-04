@@ -1,0 +1,21 @@
+name: Replace 4.0.10 release asset (temporary)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/replace-release-4.0.10-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  replace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v4.0.10             dist/home-page-to-otzaria-4.0.10.otzplugin             --clobber             --repo avtsye/Home-page-to-otzaria
