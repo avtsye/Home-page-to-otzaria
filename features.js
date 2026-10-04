@@ -540,7 +540,21 @@ function rawTabCandidatesV4(raw){
 function firstValueV4(values){
   return values.find(v=>v!==undefined&&v!==null&&v!=='');
 }
+function isRealBookTabV4(raw){
+  if(!raw||typeof raw!=='object')return false;
+  const r=raw,book=r.book&&typeof r.book==='object'?r.book:{};
+  // Otzaria ReaderState: toolId is non-null for built-in tools and plugin tabs.
+  if(r.toolId!=null&&String(r.toolId).trim()!=='')return false;
+  if(r.isSelf===true)return false;
+  const bookUid=String(firstValueV4([book.bookUid,book.uid,r.bookUid,r.currentBookUid,r.uid])||'').trim();
+  const id=firstValueV4([book.id,book.bookDbId,book.databaseId,r.currentId,r.bookDbId,r.databaseId,r.id]);
+  const type=firstValueV4([book.type,book.bookType,book.format,r.currentType,r.type,r.bookType,r.format]);
+  const source=firstValueV4([book.source,r.currentSource,r.source]);
+  // Official API marks non-book tabs with id/type/source null.
+  return id!=null||!!bookUid||type!=null||source!=null;
+}
 function normalizeOpenTabV4(raw){
+  if(!isRealBookTabV4(raw))return null;
   const {r,book,loc}=rawTabCandidatesV4(raw);
   const id=firstValueV4([book.id,book.bookDbId,book.databaseId,r.currentId,r.bookDbId,r.databaseId,r.id]);
   const bookUid=String(firstValueV4([book.bookUid,book.uid,r.bookUid,r.currentBookUid,r.uid])||'').trim();
@@ -560,7 +574,7 @@ function normalizeOpenTabV4(raw){
 function readerTabsV4(state){
   const s=state&&typeof state==='object'?state:{};
   const tabs=Array.isArray(s.openTabs)?s.openTabs:Array.isArray(s.tabs)?s.tabs:Array.isArray(s.readerTabs)?s.readerTabs:[];
-  return tabs.map(normalizeOpenTabV4).filter(Boolean);
+  return tabs.filter(isRealBookTabV4).map(normalizeOpenTabV4).filter(Boolean);
 }
 function normalizedTextV4(v){return String(v||'').trim().toLocaleLowerCase('he').replace(/\s+/g,' ')}
 function tabIdentityScoreV4(tab,book){
@@ -678,8 +692,11 @@ function renderSavedTabSetsV4(){
 async function captureCurrentTabsV4(){
   let state;
   try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(e){fLog('error','read open tabs failed',e)}
+  const rawTabs=state&&Array.isArray(state.openTabs)?state.openTabs:[];
   const books=readerTabsV4(state);
+  const ignored=Math.max(0,rawTabs.length-books.length);
   if(!books.length){toast('אין כעת לשוניות ספרים פתוחות לשמירה');return}
+  if(ignored)toast(ignored+' לשוניות שאינן ספרים לא יישמרו');
   openTabSetEditorV4({mode:'create',books});
 }
 function openTabSetEditorV4({mode,set,books}){
@@ -738,7 +755,12 @@ function openTabSetEditorV4({mode,set,books}){
 
   dialog.querySelector('#tabSetAddOpenV4').onclick=async()=>{
     let state=null;try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(_){}
-    const added=addBooks(readerTabsV4(state));toast(added?'נוספו '+added+' ספרים':'לא נמצאו ספרים חדשים להוספה');
+    const rawTabs=state&&Array.isArray(state.openTabs)?state.openTabs:[];
+    const bookTabs=readerTabsV4(state);
+    const ignored=Math.max(0,rawTabs.length-bookTabs.length);
+    const added=addBooks(bookTabs);
+    if(added)toast('נוספו '+added+' ספרים'+(ignored?' · '+ignored+' לשוניות כלים/תוספים דולגו':''));
+    else toast(ignored?'לא נמצאו ספרים חדשים; לשוניות כלים/תוספים אינן נשמרות':'לא נמצאו ספרים חדשים להוספה');
   };
 
   dialog.querySelector('#tabSetRepairV4').onclick=async()=>{
