@@ -522,6 +522,29 @@ mark{
   .dialogFoot{align-items:flex-end!important}
   .dialogFoot>.hint{display:none!important}
 }
+
+/* Search frame cleanup: one outer frame only. */
+.searchbox{
+  border:1px solid var(--color-outline)!important;
+  border-radius:24px!important;
+  box-shadow:none!important;
+}
+.searchbox:focus-within{
+  border-color:var(--color-primary)!important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 16%,transparent)!important;
+}
+.searchbox input{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+.searchbox input:focus{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
 </style>
 
 </head>
