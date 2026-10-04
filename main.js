@@ -176,6 +176,7 @@ function makeRow(item,fallback){
   const meta=item.ref||item.reference||item.currentRef||item.label||'';
   el.innerHTML='<b>'+esc(title)+'</b><span class="meta">'+esc(meta)+'</span>';
   el.onclick=()=>openBook(item);
+  el.__homeBook=item;
   return el;
 }
 function renderList(id,items,empty){
@@ -195,6 +196,7 @@ function renderGroups(){
     if(!g.books.length)continue;
     const wrap=document.createElement('div');
     wrap.className='groupBlock';
+    wrap.__homeGroup=g;
     wrap.innerHTML='<div class="groupBlockHead"><b>'+esc(g.name)+'</b><small>'+g.books.length+'</small></div>';
     const list=document.createElement('div');
     list.className='groupBookList';
@@ -204,7 +206,6 @@ function renderGroups(){
       row.className='groupBookRow';
       const open=makeRow(book);
       open.classList.add('groupBookOpen');
-      open.oncontextmenu=e=>{e.preventDefault();addToGroupMenu(book,open)};
 
       const remove=document.createElement('button');
       remove.type='button';
@@ -306,6 +307,7 @@ function renderPlugins(){
   for(const p of rows){
     const b=document.createElement('button');
     b.className='pluginCard'+(p.enabled?'':' disabled');
+    b.__homePlugin=p;
     b.title=(p.name||p.pluginId)+' · '+(p.toolTabIconName||'ללא אייקון')+(p.version?' · '+p.version:'');
     let badge='';
     if(!p.enabled)badge='<span class="pluginBadge off">מושבת</span>';
@@ -652,7 +654,7 @@ function renderSuggestions(bookItems,contentItems,q){
       const ref=item.reference||item.ref||'';
       b.innerHTML='<span><b>'+esc(titleText)+'</b><small>'+esc(ref)+'</small><span class="suggestionText">'+highlightHtml(item.text||'',q)+'</span></span><span class="suggestionTag">תוכן</span>';
       b.onclick=()=>{box.hidden=true;openBook(item,q)};
-      b.oncontextmenu=e=>{e.preventDefault();addToGroupMenu(item,b)};
+      b.__homeBook=item;
       box.appendChild(b);
     }
   }
@@ -705,10 +707,7 @@ function renderSearchResults(){
       '<div class="resultText">'+highlightHtml(item.text||'',q)+'</div>'+
       '<div class="resultMeta"><span>'+esc(cat)+'</span><span>'+esc(status+merged)+'</span></div>';
     card.onclick=()=>openBook(item,q);
-    card.oncontextmenu=e=>{
-      e.preventDefault();
-      addToGroupMenu(item,card);
-    };
+    card.__homeBook=item;
     card.title=isInAnyGroup(item)?
       'ספר זה כבר נמצא במועדפים/קבוצה · לחיצה ימנית לניהול':
       'לחיצה לפתיחה · לחיצה ימנית להוספה לקבוצה';
