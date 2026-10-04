@@ -197,7 +197,41 @@ function renderGroups(){
     wrap.className='groupBlock';
     wrap.innerHTML='<div class="groupBlockHead"><b>'+esc(g.name)+'</b><small>'+g.books.length+'</small></div>';
     const list=document.createElement('div');
-    g.books.slice(0,settings.listLimit).forEach(b=>list.appendChild(makeRow(b)));
+    list.className='groupBookList';
+
+    g.books.slice(0,settings.listLimit).forEach(book=>{
+      const row=document.createElement('div');
+      row.className='groupBookRow';
+      const open=makeRow(book);
+      open.classList.add('groupBookOpen');
+      open.oncontextmenu=e=>{e.preventDefault();addToGroupMenu(book,open)};
+
+      const remove=document.createElement('button');
+      remove.type='button';
+      remove.className='groupBookRemove';
+      remove.title='הסר מ־'+g.name;
+      remove.setAttribute('aria-label','הסר מ־'+g.name);
+      remove.innerHTML='×';
+      remove.onclick=async e=>{
+        e.stopPropagation();
+        const before=clone(groups);
+        const key=bookKey(book);
+        g.books=g.books.filter(x=>bookKey(x)!==key);
+        await storageSet(GROUPS_KEY,groups);
+        renderGroups();
+        const message='הוסר מ־'+g.name;
+        toast(message);
+        if(window.homePushUndo){
+          window.homePushUndo(message,async()=>{
+            groups=normalizeGroups(before);
+            await storageSet(GROUPS_KEY,groups);
+            renderGroups();
+          });
+        }
+      };
+      row.append(open,remove);
+      list.appendChild(row);
+    });
     wrap.appendChild(list);
     box.appendChild(wrap);
     count++;
@@ -322,24 +356,42 @@ function addToGroupMenu(book,anchor){
   if(old)old.remove();
   const p=document.createElement('div');
   p.className='groupPicker';
-  p.innerHTML='<div class="groupPickerTitle">הוסף לקבוצה</div>';
+  p.innerHTML='<div class="groupPickerTitle">ניהול קבוצות ומועדפים</div>';
+  const k=bookKey(book);
+
   for(const g of groups){
+    const exists=g.books.some(x=>bookKey(x)===k);
     const b=document.createElement('button');
-    b.textContent=g.name;
+    b.className='groupPickerAction'+(exists?' selected':'');
+    b.innerHTML=(exists?'✓ ':'＋ ')+esc(g.name);
+    b.title=exists?'לחץ להסרה מהקבוצה':'לחץ להוספה לקבוצה';
     b.onclick=async e=>{
       e.stopPropagation();
-      const k=bookKey(book);
-      if(!g.books.some(x=>bookKey(x)===k))g.books.unshift(compactBook(book));
+      const before=clone(groups);
+      if(exists){
+        g.books=g.books.filter(x=>bookKey(x)!==k);
+      }else{
+        g.books.unshift(compactBook(book));
+      }
       await storageSet(GROUPS_KEY,groups);
       p.remove();
       renderGroups();
-      toast('נוסף אל '+g.name);
+      const message=exists?'הוסר מ־'+g.name:'נוסף אל '+g.name;
+      toast(message);
+      if(window.homePushUndo){
+        window.homePushUndo(message,async()=>{
+          groups=normalizeGroups(before);
+          await storageSet(GROUPS_KEY,groups);
+          renderGroups();
+        });
+      }
     };
     p.appendChild(b);
   }
+
   const r=anchor.getBoundingClientRect();
-  p.style.top=Math.min(innerHeight-230,r.bottom+6)+'px';
-  p.style.left=Math.max(8,Math.min(innerWidth-200,r.left))+'px';
+  p.style.top=Math.min(innerHeight-260,r.bottom+6)+'px';
+  p.style.left=Math.max(8,Math.min(innerWidth-220,r.left))+'px';
   document.body.appendChild(p);
   setTimeout(()=>document.addEventListener('click',()=>p.remove(),{once:true}),0);
 }
@@ -862,10 +914,21 @@ function renderGroupSettings(){
     };
     const del=row.querySelector('.danger');
     if(del)del.onclick=async()=>{
+      const before=clone(groups);
       groups=groups.filter(x=>x.id!==g.id);
       await storageSet(GROUPS_KEY,groups);
       renderGroupSettings();
       renderGroups();
+      const message='הקבוצה “'+g.name+'” נמחקה';
+      toast(message);
+      if(window.homePushUndo){
+        window.homePushUndo(message,async()=>{
+          groups=normalizeGroups(before);
+          await storageSet(GROUPS_KEY,groups);
+          renderGroupSettings();
+          renderGroups();
+        });
+      }
     };
     box.appendChild(row);
   }
