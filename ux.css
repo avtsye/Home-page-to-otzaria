@@ -386,3 +386,14 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   .feedbackModalV9 .feedbackTypeV9{grid-template-columns:1fr!important}
   .tabSetDialog{padding:8px!important}
 }
+
+/* About modal */
+.aboutDialogV9{width:min(520px,94vw)!important}
+.aboutModalV9{display:grid;gap:12px}
+.aboutModalBrandV9{display:flex;align-items:center;gap:12px}
+.aboutModalBrandV9 img{width:48px;height:48px;border-radius:12px;object-fit:cover}
+.aboutModalBrandV9>div{display:grid;gap:3px}
+.aboutModalBrandV9 b{font-size:15px}
+.aboutModalBrandV9 span{font-size:10px;color:var(--color-on-surface-variant)}
+.aboutModalV9 p{margin:0;font-size:11px;line-height:1.6;color:var(--color-on-surface-variant)}
+.aboutModalV9 .shortcutList{display:grid;gap:7px}
