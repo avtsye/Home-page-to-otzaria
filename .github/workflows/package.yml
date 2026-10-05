@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'ux.css'
       - 'main.js'
       - 'features.js'
       - 'home-core.js'
@@ -59,12 +60,12 @@ jobs:
         run: |
           mkdir -p dist build debug-build
           rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin"
-          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg
+          zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html ux.css home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
 
           printf "debug" > debug.flag
-          cp manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag debug-build/
-          (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag)
+          cp manifest.json index.html ux.css home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag debug-build/
+          (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html ux.css home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag)
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" build/
 
       - name: Verify assets are excluded from packages
