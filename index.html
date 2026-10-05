@@ -277,6 +277,24 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   .sectionsHost{grid-template-columns:1fr!important}
   .sectionPanel{grid-column:span 1!important}
 }
+
+.allPluginsControlsV8{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 160px auto!important;
+  gap:8px!important;
+  align-items:center!important;
+  margin-bottom:9px!important;
+}
+.allPluginsControlsV8 input,.allPluginsControlsV8 select{
+  min-height:38px!important;
+  border:1px solid var(--color-outline)!important;
+  border-radius:9px!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  padding:6px 9px!important;
+}
+.allPluginsControlsV8 label{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:10px}
+@media(max-width:620px){.allPluginsControlsV8{grid-template-columns:1fr!important}}
 </style>
 
 <style id="otzariaNativeStyles">
