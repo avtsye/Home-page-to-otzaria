@@ -483,14 +483,13 @@
 
   // ---------- Skeletons and actionable empty states ----------
   function showLoadingSkeletons(){
-    for(const id of ['recent','bookmarks','history']){
+    for(const id of ['bookmarks','history']){
       const box=$(id);if(box&&!box.children.length){box.innerHTML='';box.appendChild(Core.makeSkeleton(3))}
     }
     const plugins=$('plugins');if(plugins&&!plugins.children.length){plugins.innerHTML='';plugins.appendChild(Core.makeSkeleton(4))}
   }
   function improveEmptyStates(){
     const configs={
-      recent:['אין עדיין ספרים אחרונים','ספרים שתפתח באוצריא יופיעו כאן.','פתח ספרייה',()=>Otzaria.call('navigation.goTo',{target:'library'})],
       bookmarks:['אין סימניות להצגה','סימניות שתיצור יופיעו כאן.','פתח ספרייה',()=>Otzaria.call('navigation.goTo',{target:'library'})],
       history:['אין היסטוריה להצגה','לאחר פתיחת ספרים תופיע כאן הפעילות האחרונה.','פתח ספרייה',()=>Otzaria.call('navigation.goTo',{target:'library'})]
     };
