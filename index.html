@@ -195,6 +195,88 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
   max-width:none!important;
   align-self:start!important;
 }
+
+/* UX v8 — consistent dashboard cards, edit mode and responsive behavior */
+.sectionsHost{
+  align-items:start!important;
+  grid-auto-flow:row!important;
+}
+.sectionsHost>.sectionPanel{
+  align-self:start!important;
+  min-height:0!important;
+  height:auto!important;
+}
+.sectionHead{
+  min-height:34px!important;
+  align-items:center!important;
+}
+.sectionHead>div:first-child,
+.sectionHead h2{min-width:0}
+.sectionHead h2{line-height:1.25!important}
+.sectionHead span{line-height:1.3!important}
+.sectionTools{
+  display:none!important;
+  align-items:center!important;
+  gap:2px!important;
+}
+body.homeEditModeV8 .sectionTools{display:flex!important}
+body:not(.homeEditModeV8) #sectionsHost .sectionPanel{cursor:default!important}
+body.homeEditModeV8 #sectionsHost .sectionPanel{
+  outline:1px dashed color-mix(in srgb,var(--color-primary) 35%,transparent);
+  outline-offset:2px;
+}
+#editHomeV8.active{
+  background:var(--color-secondary-container)!important;
+  color:var(--color-on-secondary-container)!important;
+}
+.uxHomeOverflowV8{display:none!important}
+.showAllHomeListV8,.showAllSavedV8{
+  width:100%!important;
+  margin-top:7px!important;
+  min-height:34px!important;
+}
+.savedSecondaryActionV8{display:none!important}
+#savedMoreV8{min-width:40px!important;padding:0 12px!important}
+.uxListDialogV8{width:min(620px,94vw)!important}
+.uxModalSearchWrapV8{margin-bottom:8px}
+.uxModalSearchV8{
+  width:100%;min-height:40px;border:1px solid var(--color-outline);
+  border-radius:10px;background:var(--color-surface);color:var(--color-on-surface);
+  padding:8px 10px;outline:0
+}
+.uxModalSearchV8:focus{border-color:var(--color-primary)}
+.uxModalListV8{display:flex;flex-direction:column;gap:5px;max-height:62vh;overflow:auto}
+.uxListRowV8{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:1px solid var(--color-outline-variant);border-radius:10px;background:var(--color-surface);
+  color:var(--color-on-surface);padding:9px 10px;text-align:start;cursor:pointer
+}
+.uxListRowV8>span:first-child{display:grid;gap:2px;min-width:0}
+.uxListRowV8 b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uxListRowV8 small{font-size:9px;color:var(--color-on-surface-variant)}
+.quickActionsAllV8,.resetActionsV8{display:flex;flex-wrap:wrap;gap:7px}
+.onboardingV8{width:min(430px,92vw)!important;display:grid;gap:12px}
+.onboardingV8 label{display:grid;gap:5px}
+.onboardingV8 select{min-height:40px;border:1px solid var(--color-outline);border-radius:9px;background:var(--color-surface);padding:6px 8px}
+.settingsTabs .settingsTab[data-settings-tab="about"]{display:none!important}
+.settingsTabs .settingsTab{flex:1 1 33.333%!important}
+#settingsTab-feedback .advancedAboutV8{display:grid;gap:12px;margin-top:12px}
+#section-saved-tabs{grid-column:span 1!important}
+#section-plugins{grid-column:span 1!important}
+.sectionPanel.wide{grid-column:span 1!important}
+@media(min-width:1400px){
+  .sectionsHost{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(min-width:900px) and (max-width:1399px){
+  .sectionsHost{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(min-width:650px) and (max-width:899px){
+  .sectionsHost{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:649px){
+  .sectionsHost{grid-template-columns:1fr!important}
+  .sectionPanel{grid-column:span 1!important}
+}
 </style>
 
 <style id="otzariaNativeStyles">
@@ -732,12 +814,8 @@ mark{
 /* Four-tab settings navigation after diagnostics screen removal. */
 .settingsTabs .settingsTab{flex:1 1 25%!important}
 
-/* Stable feedback/settings sizing and saved-tabs visibility. */
-#section-saved-tabs{
-  display:block!important;
-  grid-column:1 / -1!important;
-  visibility:visible!important;
-}
+/* Stable feedback/settings sizing. */
+#section-saved-tabs{display:block!important;grid-column:span 1!important;visibility:visible!important}
 .settingsPane#settingsTab-feedback{
   align-content:start!important;
 }
@@ -1531,7 +1609,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
       <nav class="settingsTabs" role="tablist" aria-label="קטגוריות הגדרות">
         <button class="settingsTab active" data-settings-tab="general" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></span><b>כללי</b><small>התנהגות ותוכן</small></button>
         <button class="settingsTab" data-settings-tab="appearance" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z"/></svg></span><b>מראה</b><small>צבעים ופריסה</small></button>
-        <button class="settingsTab" data-settings-tab="feedback" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><b>משוב</b><small>תקלה או רעיון</small></button>
+        <button class="settingsTab" data-settings-tab="feedback" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><b>מתקדם</b><small>גיבוי, משוב ומידע</small></button>
         <button class="settingsTab" data-settings-tab="about" type="button"><span class="settingsTabIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v7M12 7h.01"/></svg></span><b>אודות</b><small>גרסה וקיצורים</small></button>
       </nav>
 
