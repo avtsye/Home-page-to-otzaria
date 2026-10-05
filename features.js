@@ -281,7 +281,7 @@ function addSectionTools(){
     const head=section.querySelector('.sectionHead');if(!head||head.querySelector('.sectionTools'))return;
     const tools=document.createElement('div');tools.className='sectionTools';
     const refresh=document.createElement('button');setIconButtonV4(refresh,'refresh','רענן כרטיס');refresh.onclick=e=>{e.stopPropagation();refreshSection(section.id)};
-    const pin=document.createElement('button');setIconButtonV4(pin,'pin','הצמד כרטיס לראש הדף');pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הוצמד לראש הדף')};
+    const pin=document.createElement('button');setIconButtonV4(pin,'up','העבר כרטיס לראש הדף');pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הועבר לראש הדף')};
     const hide=document.createElement('button');setIconButtonV4(hide,'close','הסתר כרטיס');hide.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.visibleSections[key]=false;section.classList.add('hiddenSection');await storageSet(SETTINGS_KEY,settings)};
     tools.append(refresh,pin,hide);head.appendChild(tools);
   });
@@ -710,6 +710,42 @@ async function captureCurrentTabsV4(){
   if(ignored)toast(ignored+' לשוניות שאינן ספרים לא יישמרו');
   openTabSetEditorV4({mode:'create',books});
 }
+function bindTabSetDialogCloseV7(dialog,close){
+  const onKey=e=>{if(e.key==='Escape'){e.preventDefault();close()}};
+  document.addEventListener('keydown',onKey);
+  dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
+  dialog._cleanupCloseV7=()=>document.removeEventListener('keydown',onKey);
+}
+async function chooseBookTocLocationV7(book,onPick){
+  const old=$('tabSetTocDialogV7');if(old)old.remove();
+  const dialog=document.createElement('div');dialog.id='tabSetTocDialogV7';dialog.className='tabSetDialog';
+  dialog.innerHTML='<div class="tabSetDialogCard"><div class="tabSetDialogHeader"><div><h2>בחר מיקום</h2><div class="hint">'+esc(book.title||book.bookId||'ספר')+'</div></div><button id="tabSetTocCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><input id="tabSetTocFilterV7" type="text" placeholder="חפש בתוכן העניינים…"><div id="tabSetTocListV7" class="tabSetPreview"></div></div>';
+  document.body.appendChild(dialog);
+  const close=()=>{dialog._cleanupCloseV7?.();dialog.remove()};
+  bindTabSetDialogCloseV7(dialog,close);
+  dialog.querySelector('#tabSetTocCloseV7').onclick=close;
+  const box=dialog.querySelector('#tabSetTocListV7');
+  let toc=[];
+  try{
+    const r=await Otzaria.call('library.getBookToc',{bookId:book.bookId||book.title});
+    toc=Array.isArray(dataOf(r))?dataOf(r):[];
+  }catch(_){}
+  const render=()=>{
+    const q=dialog.querySelector('#tabSetTocFilterV7').value.trim().toLowerCase();
+    box.innerHTML='';
+    const rows=toc.filter(x=>!q||String(x.text||'').toLowerCase().includes(q)).slice(0,500);
+    if(!rows.length){box.innerHTML='<div class="savedTabsEmpty">לא נמצא תוכן עניינים זמין לספר זה.</div>';return}
+    rows.forEach(item=>{
+      const b=document.createElement('button');b.type='button';b.className='tabSetBookSearchResult';
+      b.style.paddingInlineStart=(10+Math.max(0,Number(item.level||1)-1)*14)+'px';
+      b.innerHTML='<b>'+esc(item.text||'מיקום')+'</b><span>'+esc(String(item.index??''))+'</span>';
+      b.onclick=()=>{onPick({ref:String(item.text||''),index:Number(item.index)||0});close()};
+      box.appendChild(b);
+    });
+  };
+  dialog.querySelector('#tabSetTocFilterV7').addEventListener('input',render);
+  render();
+}
 function openTabSetEditorV4({mode,set,books}){
   const old=$('tabSetDialogV4');if(old)old.remove();
   const dialog=document.createElement('div');dialog.id='tabSetDialogV4';dialog.className='tabSetDialog';
@@ -730,10 +766,10 @@ function openTabSetEditorV4({mode,set,books}){
   const behavior=dialog.querySelector('#tabSetConflictDefaultV4');
   behavior.value=source.conflictDefault||'ask';
 
-  const close=()=>dialog.remove();
+  const close=()=>{dialog._cleanupCloseV7?.();dialog.remove()};
+  bindTabSetDialogCloseV7(dialog,close);
   dialog.querySelector('#tabSetCloseV4').onclick=close;
   dialog.querySelector('#tabSetCancelV4').onclick=close;
-  dialog.onclick=e=>{if(e.target===dialog)close()};
 
   const renderDraft=()=>{
     const box=dialog.querySelector('#tabSetPreviewV4');box.innerHTML='';
@@ -741,13 +777,23 @@ function openTabSetEditorV4({mode,set,books}){
     draftBooks.forEach((book,i)=>{
       const row=document.createElement('div');row.className='tabSetPreviewRow editable';
       const text=document.createElement('div');text.className='tabSetPreviewText';
-      text.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><span>'+esc(book.ref||'')+'</span>';
+      text.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><span>'+(book.positionMode==='last'?'ייפתח במיקום האחרון':esc(book.ref||('שורה '+(book.index||0))))+'</span>';
+      const choose=document.createElement('button');choose.type='button';choose.className='secondaryBtn';choose.textContent='בחר מיקום';
+      choose.onclick=()=>chooseBookTocLocationV7(book,loc=>{book.positionMode='fixed';book.index=loc.index;book.ref=loc.ref;renderDraft()});
+
       const controls=document.createElement('div');controls.className='tabSetBookControls';
       const mode=document.createElement('select');mode.className='tabSetPositionMode';mode.title='מיקום פתיחה';
-      mode.innerHTML='<option value="fixed">מיקום שמור</option><option value="last">המיקום האחרון</option>';
+      mode.innerHTML='<option value="fixed">המיקום השמור בכרטיס</option><option value="last">המיקום האחרון בספר</option><option value="manual">בחר מיקום מתוכן העניינים…</option>';
       mode.value=book.positionMode||'fixed';
-      mode.onchange=()=>{book.positionMode=mode.value==='last'?'last':'fixed'};
-      controls.appendChild(mode);
+      mode.onchange=()=>{
+        if(mode.value==='manual'){
+          chooseBookTocLocationV7(book,loc=>{
+            book.positionMode='fixed';book.index=loc.index;book.ref=loc.ref;renderDraft();
+          });
+          mode.value=book.positionMode||'fixed';
+        }else book.positionMode=mode.value==='last'?'last':'fixed';
+      };
+      controls.append(mode,choose);
       const actions=document.createElement('div');actions.className='tabSetPreviewActions';
       const up=document.createElement('button');setIconButtonV4(up,'up','העבר למעלה');up.disabled=i===0;
       up.onclick=()=>{if(i<=0)return;[draftBooks[i-1],draftBooks[i]]=[draftBooks[i],draftBooks[i-1]];renderDraft()};
@@ -944,9 +990,9 @@ async function openTabSetPreviewV4(set){
     const state=document.createElement('span');state.className='tabSetOpenState '+(opened?'open':'missing');state.textContent=opened?'פתוח':'ייפתח';
     row.append(check,text,state);list.appendChild(row);
   });
-  const close=()=>dialog.remove();
+  const close=()=>{dialog._cleanupCloseV7?.();dialog.remove()};
+  bindTabSetDialogCloseV7(dialog,close);
   dialog.querySelector('#tabSetPreviewCloseV4').onclick=close;
-  dialog.onclick=e=>{if(e.target===dialog)close()};
   dialog.querySelector('#tabSetSelectAllV4').onclick=()=>list.querySelectorAll('input').forEach(x=>x.checked=true);
   dialog.querySelector('#tabSetClearAllV4').onclick=()=>list.querySelectorAll('input').forEach(x=>x.checked=false);
   dialog.querySelector('#tabSetPreviewEditV4').onclick=()=>{close();openTabSetEditorV4({mode:'edit',set})};
