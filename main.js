@@ -230,13 +230,6 @@ function renderGroups(){
         renderGroups();
         const message='הוסר מ־'+g.name;
         toast(message);
-        if(window.homePushUndo){
-          window.homePushUndo(message,async()=>{
-            groups=normalizeGroups(before);
-            await storageSet(GROUPS_KEY,groups);
-            renderGroups();
-          });
-        }
       };
       row.append(open,remove);
       list.appendChild(row);
@@ -408,13 +401,6 @@ function addToGroupMenu(book,anchor){
       renderGroups();
       const message=exists?'הוסר מ־'+g.name:'נוסף אל '+g.name;
       toast(message);
-      if(window.homePushUndo){
-        window.homePushUndo(message,async()=>{
-          groups=normalizeGroups(before);
-          await storageSet(GROUPS_KEY,groups);
-          renderGroups();
-        });
-      }
     };
     p.appendChild(b);
   }
@@ -1010,14 +996,6 @@ function renderGroupSettings(){
       renderGroups();
       const message='הקבוצה “'+g.name+'” נמחקה';
       toast(message);
-      if(window.homePushUndo){
-        window.homePushUndo(message,async()=>{
-          groups=normalizeGroups(before);
-          await storageSet(GROUPS_KEY,groups);
-          renderGroupSettings();
-          renderGroups();
-        });
-      }
     };
     box.appendChild(row);
   }
@@ -1213,14 +1191,6 @@ function wire(){
     renderGroupSettings();
     renderGroups();
     toast('הקבוצה נוספה');
-    if(window.homePushUndo){
-      window.homePushUndo('הקבוצה “'+group.name+'” נוספה',async()=>{
-        groups=groups.filter(x=>x.id!==group.id);
-        await storageSet(GROUPS_KEY,groups);
-        renderGroupSettings();
-        renderGroups();
-      });
-    }
   };
 
   document.querySelectorAll('.settingsTab').forEach(b=>{
