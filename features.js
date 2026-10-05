@@ -136,18 +136,18 @@ function applyFeatureAppearance(){
 function addDashboard(){
   if($('homeDashboard'))return;
   const box=document.createElement('section');box.id='homeDashboard';box.className='homeDashboard';
-  box.innerHTML='<div class="statCard"><b id="statRecent">—</b><span>ספרים אחרונים</span></div><div class="statCard"><b id="statBookmarks">—</b><span>סימניות</span></div><div class="statCard"><b id="statSearches">—</b><span>חיפושים אחרונים</span></div><div class="statCard"><b id="statPlugins">—</b><span>תוספים פעילים</span></div>';
+  box.innerHTML='<div class="statCard"><b id="statRecent">—</b><span>נפתחו לאחרונה</span></div><div class="statCard"><b id="statBookmarks">—</b><span>סימניות</span></div><div class="statCard"><b id="statSearches">—</b><span>חיפושים אחרונים</span></div><div class="statCard"><b id="statPlugins">—</b><span>תוספים פעילים</span></div>';
   $('searchSection').insertAdjacentElement('afterend',box);
   box.hidden=!featureSettings.showDashboard;
 }
 async function refreshDashboard(){
-  const [recent,marks,searches,plugins]=await Promise.all([
-    cached('recent-count',()=>Otzaria.call('library.listRecentBooks').then(dataOf).catch(()=>[])),
+  const [historyItems,marks,searches,plugins]=await Promise.all([
+    cached('history-count',()=>Otzaria.call('history.list',{limit:50}).then(dataOf).catch(()=>[])),
     cached('bookmarks-count',()=>Otzaria.call('bookmarks.list',{limit:50}).then(dataOf).catch(()=>[])),
     cached('search-history',()=>Otzaria.call('history.listSearches',{limit:20}).then(dataOf).catch(()=>[])),
     cached('plugins',()=>Otzaria.call('plugin.listInstalled').then(dataOf).catch(()=>[]))
   ]);
-  if($('statRecent'))$('statRecent').textContent=(recent||[]).length;
+  if($('statRecent'))$('statRecent').textContent=(historyItems||[]).length;
   if($('statBookmarks'))$('statBookmarks').textContent=(marks||[]).length;
   if($('statSearches'))$('statSearches').textContent=(searches||[]).length;
   if($('statPlugins'))$('statPlugins').textContent=visibleInstalledPlugins(plugins).filter(x=>x.enabled).length;
@@ -339,12 +339,13 @@ async function loadPluginsReliableV4(){
 const coreLoadHome=loadHome;
 loadHome=async function(){
   const calls=await Promise.allSettled([
-    cached('recent',()=>Otzaria.call('library.listRecentBooks').then(dataOf)),
     cached('bookmarks',()=>Otzaria.call('bookmarks.list',{limit:30}).then(dataOf)),
-    cached('history',()=>Otzaria.call('history.list',{limit:30}).then(dataOf))
+    cached('history',()=>Otzaria.call('history.list',{limit:50}).then(dataOf)),
+    Otzaria.call('reader.getCurrentState')
   ]);
-  const val=i=>calls[i].status==='fulfilled'?calls[i].value:null;
-  renderList('recent',val(0)||[],'אין ספרים אחרונים');renderList('bookmarks',val(1)||[],'אין סימניות');renderList('history',val(2)||[],'אין היסטוריה');
+  const val=i=>calls[i].status==='fulfilled'?(i===2?dataOf(calls[i].value):calls[i].value):null;
+  renderList('bookmarks',val(0)||[],'אין סימניות');
+  renderList('history',historyWithoutOpenBooksV7(val(1)||[],val(2)),'אין ספרים סגורים בהיסטוריה');
   renderGroups();applyLayout();
   try{ensureSavedTabsSectionV4();renderSavedTabSetsV4()}catch(e){fLog('error','saved tabs render after layout failed',e)}
   refreshDashboard();await loadPluginsReliableV4();
@@ -1367,14 +1368,6 @@ function setupFeatureUi(){
     try{step()}catch(e){fLog('error','Feature setup failed: '+name,e);console.error('Feature setup failed:',name,e)}
   }
 }
-
-const coreRenderListV4=renderList;
-renderList=function(id,items,empty){
-  coreRenderListV4(id,items,empty);
-  if(id==='recent'){
-    [...$('recent').querySelectorAll('.row .meta')].forEach(meta=>{if(meta.textContent)meta.textContent='המשך · '+meta.textContent;else meta.textContent='המשך לקריאה'});
-  }
-};
 
 Otzaria.on('plugin.boot',async()=>{
   try{
