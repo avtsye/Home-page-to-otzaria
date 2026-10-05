@@ -45,6 +45,8 @@
     base.icon=safeText(raw.icon||'book').trim().slice(0,32)||'book';
     base.order=Number.isFinite(Number(raw.order))?Number(raw.order):9999;
     base.lastOpenSummary=raw.lastOpenSummary&&typeof raw.lastOpenSummary==='object'?raw.lastOpenSummary:null;
+    base.workspaceState=raw.workspaceState&&typeof raw.workspaceState==='object'?clone(raw.workspaceState):null;
+    base.legacyWorkspaceId=safeText(raw.legacyWorkspaceId||'');
     return base;
   };
 
@@ -175,9 +177,9 @@
       const status=summary?'<div class="savedTabLastStatus">'+esc(summary.text||'')+'</div>':'';
       card.innerHTML='<div class="savedTabCardTitle"><span class="savedTabCardIcon">'+uiIconV4(set.icon||'book')+'</span><h3>'+esc(set.name)+'</h3>'+(set.favorite?'<span class="savedTabFavoriteMark">★</span>':'')+'</div>'+
         (set.description?'<div class="savedTabDescription">'+esc(set.description)+'</div>':'')+
-        '<div class="savedTabMeta">'+set.books.length+' ספרים</div><div class="savedTabBooks">'+preview+(set.books.length>4?'<div class="savedTabMore">ועוד '+(set.books.length-4)+'…</div>':'')+'</div>'+status;
+        '<div class="savedTabMeta">'+set.books.length+' ספרים'+(set.workspaceState?' · כולל מצב עבודה':'')+'</div><div class="savedTabBooks">'+preview+(set.books.length>4?'<div class="savedTabMore">ועוד '+(set.books.length-4)+'…</div>':'')+'</div>'+status;
       card.appendChild(overflow);
-      card.onclick=()=>openTabSetPreviewV4(set);
+      card.onclick=()=>set.workspaceState?restoreWorkspace(set):openTabSetPreviewV4(set);
       card.oncontextmenu=e=>{e.preventDefault();e.stopPropagation();openTabSetActionsV4(set,{clientX:e.clientX,clientY:e.clientY})};
       card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTabSetPreviewV4(set)}};
       card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/x-home-tabset',set.id);card.classList.add('dragging')});
@@ -202,7 +204,7 @@
     // Use the unified M3 context menu when available.
     if(typeof showHomeContextMenuV5==='function'){
       const items=[
-        {label:'פתח / בחר ספרים',icon:'book',action:()=>openTabSetPreviewV4(set)},
+        {label:set.workspaceState?'פתח ושחזר':'פתח / בחר ספרים',icon:'book',action:()=>set.workspaceState?restoreWorkspace(set):openTabSetPreviewV4(set)},
         {label:'פתח רק ספרים שאינם פתוחים',icon:'apps',action:()=>openMissingFromSet(set)},
         {label:set.favorite?'הסר ממועדפים':'הוסף למועדפים',icon:'star',checked:!!set.favorite,action:()=>toggleTabSetFavorite(set)},
         {label:'שכפל כרטיס',action:()=>duplicateTabSet(set)},
@@ -240,9 +242,34 @@
   // ---------- Full workspace snapshots ----------
   async function loadWorkspaces(){
     const raw=await fGet(WORKSPACE_KEY,[]);
-    workspaces=Array.isArray(raw)?raw.filter(x=>x&&x.id&&x.name):[];
+    const legacy=Array.isArray(raw)?raw.filter(x=>x&&x.id&&x.name):[];
+    let changed=false;
+    for(const ws of legacy){
+      if(savedTabSets.some(x=>x.legacyWorkspaceId===ws.id))continue;
+      const item=normalizeTabSetV4({
+        id:makeFeatureIdV4('tabs'),
+        name:ws.name,
+        books:Array.isArray(ws.books)?ws.books:[],
+        conflictDefault:'keep',
+        createdAt:ws.createdAt||Date.now(),
+        updatedAt:ws.updatedAt||Date.now(),
+        order:savedTabSets.length,
+        legacyWorkspaceId:ws.id,
+        workspaceState:{
+          activeBook:ws.activeBook||null,
+          query:ws.query||'',
+          searchConfig:ws.searchConfig||DEFAULT_SEARCH,
+          groupScope:ws.groupScope||'',
+          focusMode:!!ws.focusMode
+        }
+      });
+      if(item){savedTabSets.push(item);changed=true}
+    }
+    workspaces=[];
+    if(changed)await saveSavedTabSetsV4();
+    if(legacy.length)await fSet(WORKSPACE_KEY,[]);
   }
-  async function saveWorkspaces(){await fSet(WORKSPACE_KEY,workspaces);emit('workspaces:changed',clone(workspaces))}
+  async function saveWorkspaces(){await fSet(WORKSPACE_KEY,[]);emit('workspaces:changed',[])}
 
   async function askName(title,defaultName){
     return new Promise(resolve=>{
@@ -258,35 +285,38 @@
 
   async function saveWorkspace(){
     let state=null;try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(_){}
-    const name=await askName('שמירת סביבת עבודה','סביבת עבודה '+(workspaces.length+1));if(!name)return;
-    const snapshot={
-      id:'ws-'+Date.now().toString(36),
+    const name=await askName('שמירת מצב עבודה','שמירה '+(savedTabSets.length+1));if(!name)return;
+    const item=normalizeTabSetV4({
+      id:makeFeatureIdV4('tabs'),
       name,
-      createdAt:Date.now(),updatedAt:Date.now(),
       books:readerTabsV4(state),
-      activeBook:state?{id:state.currentId,type:state.currentType,source:state.currentSource,bookId:state.currentBookId,title:state.currentBook,index:state.currentIndex,ref:state.currentRef}:null,
-      query:$('q')?.value||'',
-      searchConfig:clone(settings.searchConfig||DEFAULT_SEARCH),
-      groupScope:featureSettings.groupScope||'',
-      focusMode:!!featureSettings.focusMode
-    };
-    workspaces.unshift(snapshot);workspaces=workspaces.slice(0,30);
-    await saveWorkspaces();renderWorkspaces();toast('סביבת העבודה נשמרה');
+      conflictDefault:'keep',
+      createdAt:Date.now(),updatedAt:Date.now(),
+      order:savedTabSets.length,
+      workspaceState:{
+        activeBook:state?{id:state.currentId,type:state.currentType,source:state.currentSource,bookId:state.currentBookId,title:state.currentBook,index:state.currentIndex,ref:state.currentRef}:null,
+        query:$('q')?.value||'',
+        searchConfig:clone(settings.searchConfig||DEFAULT_SEARCH),
+        groupScope:featureSettings.groupScope||'',
+        focusMode:!!featureSettings.focusMode
+      }
+    });
+    savedTabSets.push(item);
+    await saveSavedTabSetsV4();renderSavedTabSetsV4();toast('מצב העבודה נשמר');
   }
 
-  async function restoreWorkspace(ws){
+  async function restoreWorkspace(set){
+    const ws=set.workspaceState||{};
     settings.searchConfig=clone(ws.searchConfig||DEFAULT_SEARCH);
     featureSettings.groupScope=ws.groupScope||'';
     featureSettings.focusMode=!!ws.focusMode;
     await saveFeatures();
     if($('q'))$('q').value=ws.query||'';
     applySearchSettingsToUi();renderDynamicSearchControls();applyFeatureAppearance();renderSavedSearchControls();
-    if(ws.books?.length){
-      await openTabSetV4({name:ws.name,books:ws.books,conflictDefault:'keep',lastOpenedAt:0,updatedAt:Date.now()},ws.books);
-    }
+    if(set.books?.length)await openTabSetV4(set,set.books);
     if(ws.activeBook){try{await openBook(ws.activeBook)}catch(_){}}
     if((ws.query||'').trim().length>=2)runSearch(false);
-    toast('סביבת העבודה שוחזרה');
+    toast('המצב השמור שוחזר');
   }
 
   async function deleteWorkspace(ws){
@@ -296,37 +326,14 @@
   }
 
   function ensureWorkspaceSection(){
-    if($('section-workspaces'))return;
-    const saved=$('section-saved-tabs');if(!saved)return;
-    const sec=document.createElement('section');sec.id='section-workspaces';sec.className='sectionPanel wide workspaceSectionV6';
-    sec.innerHTML='<div class="sectionHead"><div><h2>סביבות עבודה</h2><span>שמור ספרים, חיפוש ומצב עבודה יחד</span></div><button id="saveWorkspaceV6" class="secondaryBtn" type="button">שמור סביבה נוכחית</button></div><div id="workspaceGridV6" class="workspaceGridV6"></div>';
-    saved.insertAdjacentElement('afterend',sec);
-    $('saveWorkspaceV6').onclick=saveWorkspace;
+    const old=$('section-workspaces');if(old)old.remove();
+    const toolbar=document.querySelector('#section-saved-tabs .savedTabToolbar');if(!toolbar||$('saveWorkspaceV6'))return;
+    const b=document.createElement('button');b.id='saveWorkspaceV6';b.className='secondaryBtn';b.type='button';b.textContent='שמור מצב נוכחי';
+    const capture=$('captureTabsBtn');if(capture)capture.insertAdjacentElement('afterend',b);else toolbar.appendChild(b);
+    b.onclick=saveWorkspace;
   }
 
-  function renderWorkspaces(){
-    ensureWorkspaceSection();const box=$('workspaceGridV6');if(!box)return;box.innerHTML='';
-    if(!workspaces.length){
-      const empty=Core.makeEmptyState({title:'אין סביבות עבודה שמורות',text:'שמור את הספרים, החיפוש והמצב הנוכחי כדי לחזור אליהם יחד.',action:'שמור את הסביבה הנוכחית',actionId:'emptyWorkspaceSaveV6'});
-      box.appendChild(empty);empty.querySelector('#emptyWorkspaceSaveV6').onclick=saveWorkspace;return;
-    }
-    workspaces.forEach(ws=>{
-      const card=document.createElement('article');card.className='workspaceCardV6';
-      card.innerHTML='<div><b>'+esc(ws.name)+'</b><span>'+((ws.books||[]).length)+' ספרים'+(ws.query?' · חיפוש: '+esc(ws.query):'')+'</span></div><div class="workspaceActionsV6"><button class="primaryBtn">פתח</button><button class="cardOverflowBtn">⋯</button></div>';
-      card.querySelector('.primaryBtn').onclick=()=>restoreWorkspace(ws);
-      card.querySelector('.cardOverflowBtn').onclick=e=>{
-        e.stopPropagation();
-        if(typeof showHomeContextMenuV5==='function'){
-          const r=e.currentTarget.getBoundingClientRect();
-          showHomeContextMenuV5([
-            {label:'שחזר סביבת עבודה',action:()=>restoreWorkspace(ws)},
-            {label:'מחק',icon:'close',danger:true,action:()=>deleteWorkspace(ws)}
-          ],r.left,r.bottom+4,ws.name);
-        }
-      };
-      box.appendChild(card);
-    });
-  }
+  function renderWorkspaces(){ensureWorkspaceSection();renderSavedTabSetsV4()}
 
   // ---------- Unified local search ----------
   const baseRenderSuggestions=renderSuggestions;
@@ -437,7 +444,13 @@
     groups=normalizeGroups(raw.groups||[]);
     featureSettings=mergeFeatureSettings(raw.features||{});
     savedTabSets=(raw.savedTabSets||[]).map(normalizeTabSetV4).filter(Boolean);
-    workspaces=Array.isArray(raw.workspaces)?raw.workspaces:[];
+    const importedWorkspaces=Array.isArray(raw.workspaces)?raw.workspaces:[];
+    for(const ws of importedWorkspaces){
+      if(!ws||!ws.name)continue;
+      const item=normalizeTabSetV4({id:makeFeatureIdV4('tabs'),name:ws.name,books:ws.books||[],conflictDefault:'keep',createdAt:ws.createdAt||Date.now(),updatedAt:ws.updatedAt||Date.now(),order:savedTabSets.length,workspaceState:{activeBook:ws.activeBook||null,query:ws.query||'',searchConfig:ws.searchConfig||DEFAULT_SEARCH,groupScope:ws.groupScope||'',focusMode:!!ws.focusMode}});
+      if(item)savedTabSets.push(item);
+    }
+    workspaces=[];
     await Promise.all([
       storageSet(SETTINGS_KEY,settings),storageSet(GROUPS_KEY,groups),saveFeatures(),saveSavedTabSetsV4(),saveWorkspaces()
     ]);
