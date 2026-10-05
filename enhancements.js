@@ -335,6 +335,28 @@
 
   function renderWorkspaces(){ensureWorkspaceSection();renderSavedTabSetsV4()}
 
+  // ---------- Unified saved books: tab sets + favorites/groups ----------
+  function ensureUnifiedSavedBooksV7(){
+    const saved=$('section-saved-tabs'),groupsSection=$('section-groups'),groupsBox=$('groups');
+    if(!saved||!groupsBox)return;
+    const head=saved.querySelector('.sectionHead h2');if(head)head.textContent='ספרים שמורים';
+    const sub=saved.querySelector('.sectionHead span');if(sub)sub.textContent='כרטיסי ספרים, מועדפים וקבוצות במקום אחד';
+    let host=$('savedGroupsHostV7');
+    if(!host){
+      host=document.createElement('div');host.id='savedGroupsHostV7';host.className='savedGroupsHostV7';
+      host.innerHTML='<div class="savedSubsectionHeadV7"><b>מועדפים וקבוצות</b><span>ספרים שאורגנו לקבוצות אישיות</span></div>';
+      saved.appendChild(host);
+    }
+    if(groupsBox.parentElement!==host)host.appendChild(groupsBox);
+    if(groupsSection){groupsSection.classList.add('unifiedSourceHiddenV7');groupsSection.hidden=true}
+    saved.classList.toggle('hiddenSection',settings.visibleSections&&settings.visibleSections.groups===false);
+  }
+  const baseApplyLayoutUnifiedV7=applyLayout;
+  applyLayout=function(){
+    baseApplyLayoutUnifiedV7();
+    ensureUnifiedSavedBooksV7();
+  };
+
   // ---------- Unified local search ----------
   const baseRenderSuggestions=renderSuggestions;
   renderSuggestions=function(bookItems,contentItems,q){
@@ -525,7 +547,7 @@
   loadHome=async function(){
     showLoadingSkeletons();
     try{return await baseLoadHomeV6()}
-    finally{improveEmptyStates();renderWorkspaces();ensurePluginFilters();addVisibleOverflowMenus();emit('home:rendered')}
+    finally{improveEmptyStates();renderWorkspaces();ensureUnifiedSavedBooksV7();ensurePluginFilters();addVisibleOverflowMenus();emit('home:rendered')}
   };
 
   const baseRunSearchV6=runSearch;
@@ -562,7 +584,7 @@
 
   // ---------- Settings & boot ----------
   function setupEnhancements(){
-    ensureBackupControls();ensureLauncherSetting();ensurePluginFilters();ensureWorkspaceSection();renderWorkspaces();renderSavedTabSetsV4();addVisibleOverflowMenus();auditUi();applyFeatureAppearance();improveEmptyStates();
+    ensureBackupControls();ensureLauncherSetting();ensurePluginFilters();ensureWorkspaceSection();renderWorkspaces();renderSavedTabSetsV4();ensureUnifiedSavedBooksV7();addVisibleOverflowMenus();auditUi();applyFeatureAppearance();improveEmptyStates();
   }
 
   Otzaria.on('plugin.boot',async()=>{
