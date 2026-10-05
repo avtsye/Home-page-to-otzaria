@@ -246,7 +246,7 @@ renderGroups=function(){
       row.draggable=true;
       row.ondragstart=e=>{e.dataTransfer&&e.dataTransfer.setData('application/x-home-book',JSON.stringify(book))};
     });
-    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';setIconButtonV4(pin,'pin','הצמד קבוצה לפעולות מהירות');pin.onclick=async e=>{e.stopPropagation();if(featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id)){toast('הקבוצה כבר מוצמדת');return}const item={type:'group',groupId:g.id,title:g.name};featureSettings.quickPins.push(item);await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה');};head.appendChild(pin)}
+    if(head&&!head.querySelector('.pinGroupV4')){const pin=document.createElement('button');pin.className='pinGroupV4';setIconButtonV4(pin,'pin','הוסף קבוצה לפעולות מהירות');pin.onclick=async e=>{e.stopPropagation();if(featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id)){toast('הקבוצה כבר מוצמדת');return}const item={type:'group',groupId:g.id,title:g.name};featureSettings.quickPins.push(item);await saveFeatures();renderQuickPins();toast('הקבוצה נוספה לפעולות המהירות');};head.appendChild(pin)}
     head&&head.addEventListener('dblclick',()=>{featureSettings.groupScope=g.id;saveFeatures();if($('searchGroupScope'))$('searchGroupScope').value=g.id;$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)});
   });
 };
@@ -339,25 +339,35 @@ function sortedPluginsV7(source,favOnly=false){
 }
 function openAllPluginsModalV7(favOnly=false){
   const old=$('allPluginsDialogV7');if(old)old.remove();
+  const trigger=document.activeElement;
   const dialog=document.createElement('div');dialog.id='allPluginsDialogV7';dialog.className='tabSetDialog';
-  dialog.innerHTML='<div class="tabSetDialogCard allPluginsDialogCardV7"><div class="tabSetDialogHeader"><div><h2>כל התוספים</h2><div class="hint">כל התוספים המותקנים באוצריא</div></div><button id="allPluginsCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div id="allPluginsListV7" class="allPluginsListV7"></div></div>';
+  dialog.innerHTML='<div class="tabSetDialogCard allPluginsDialogCardV7"><div class="tabSetDialogHeader"><div><h2>כל התוספים</h2><div class="hint">חיפוש, מיון ומועדפים</div></div><button id="allPluginsCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="allPluginsControlsV8"><input id="allPluginsSearchV8" type="search" placeholder="חפש תוסף…"><select id="allPluginsSortV8"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><label><input id="allPluginsFavOnlyV8" type="checkbox"> מועדפים בלבד</label></div><div id="allPluginsListV7" class="allPluginsListV7"></div></div>';
   document.body.appendChild(dialog);
-  const close=()=>dialog.remove();dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
-  const list=dialog.querySelector('#allPluginsListV7');const favs=new Set(featureSettings.pluginFavorites);
-  const rows=sortedPluginsV7(allPlugins,favOnly);
-  rows.forEach(p=>{
-    const row=document.createElement('div');row.className='pluginAllRowV7'+(p.enabled?'':' disabled');row.__homePlugin=p;
-    const info=document.createElement('button');info.type='button';info.className='pluginAllOpenV7';
-    info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
-    info.onclick=()=>{if(!p.enabled){toast('התוסף מושבת באוצריא');return}close();openPluginV5(p)};
-    const actions=document.createElement('div');actions.className='pluginAllActionsV7';
-    const star=document.createElement('button');setIconButtonV4(star,'star',favs.has(p.pluginId)?'הסר ממועדפים':'הוסף למועדפים');star.classList.toggle('on',favs.has(p.pluginId));
-    star.onclick=async()=>{await togglePluginFavoriteV5(p);close();openAllPluginsModalV7(favOnly)};
-    const more=document.createElement('button');setIconButtonV4(more,'more','פעולות נוספות');
-    more.textContent='⋯';more.onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();showHomeContextMenuV5(contextForPluginV5(p),r.left,r.bottom+4,p.name||p.pluginId)};
-    actions.append(star,more);row.append(info,actions);list.appendChild(row);
-  });
-  if(!rows.length)list.innerHTML='<div class="savedTabsEmpty">לא נמצאו תוספים מתאימים.</div>';
+  const close=()=>{dialog.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
+  dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
+  const search=dialog.querySelector('#allPluginsSearchV8'),sort=dialog.querySelector('#allPluginsSortV8'),fav=dialog.querySelector('#allPluginsFavOnlyV8'),list=dialog.querySelector('#allPluginsListV7');
+  sort.value=featureSettings.pluginSort||'host';fav.checked=!!favOnly;
+  const draw=()=>{
+    const favs=new Set(featureSettings.pluginFavorites),q=search.value.trim().toLowerCase();
+    const previousSort=featureSettings.pluginSort;featureSettings.pluginSort=sort.value;
+    let rows=sortedPluginsV7(allPlugins,fav.checked).filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.pluginId||'').toLowerCase().includes(q));
+    featureSettings.pluginSort=previousSort;
+    list.innerHTML='';
+    rows.forEach(p=>{
+      const row=document.createElement('div');row.className='pluginAllRowV7'+(p.enabled?'':' disabled');row.__homePlugin=p;
+      const info=document.createElement('button');info.type='button';info.className='pluginAllOpenV7';
+      info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
+      info.onclick=()=>{if(!p.enabled){toast('התוסף מושבת באוצריא');return}close();openPluginV5(p)};
+      const actions=document.createElement('div');actions.className='pluginAllActionsV7';
+      const star=document.createElement('button');setIconButtonV4(star,'star',favs.has(p.pluginId)?'הסר ממועדפים':'הוסף למועדפים');star.classList.toggle('on',favs.has(p.pluginId));
+      star.onclick=async()=>{await togglePluginFavoriteV5(p);draw()};
+      const more=document.createElement('button');more.className='nativeIconButton';more.textContent='⋯';more.setAttribute('aria-label','פעולות נוספות');
+      more.onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();showHomeContextMenuV5(contextForPluginV5(p),r.left,r.bottom+4,p.name||p.pluginId)};
+      actions.append(star,more);row.append(info,actions);list.appendChild(row);
+    });
+    if(!rows.length)list.innerHTML='<div class="savedTabsEmpty">לא נמצאו תוספים מתאימים.</div>';
+  };
+  search.oninput=draw;sort.onchange=draw;fav.onchange=draw;draw();search.focus();
 }
 function renderPluginsV4(favOnly){
   const original=allPlugins.slice();
@@ -458,7 +468,7 @@ async function pinCurrentBook(){
     const book={id:state.currentId,type:state.currentType,source:state.currentSource,bookId:state.currentBookId,title:state.currentBook,index:state.currentIndex,ref:state.currentRef};
     if(featureSettings.quickPins.some(x=>x.book&&bookKey(x.book)===bookKey(book))){toast('הספר כבר מוצמד לדף הבית');return}
     const pin={type:'book',title:state.currentBook||state.currentBookId,book};featureSettings.quickPins.push(pin);
-    await saveFeatures();renderQuickPins();toast('הספר הוצמד לדף הבית');
+    await saveFeatures();renderQuickPins();toast('הספר נוסף לפעולות המהירות');
   }catch(e){toast('לא ניתן להצמיד את הספר הנוכחי')}
 }
 function injectSettingsTabsV4(){
@@ -1228,24 +1238,24 @@ async function togglePinnedBookV5(book){
   const idx=featureSettings.quickPins.findIndex(x=>x.type==='book'&&x.book&&bookKey(x.book)===bookKey(book));
   if(idx>=0){
     const removed=featureSettings.quickPins.splice(idx,1)[0];
-    await saveFeatures();renderQuickPins();toast('ההצמדה הוסרה');
+    await saveFeatures();renderQuickPins();toast('הוסר מהפעולות המהירות');
     
     return;
   }
   const pin={type:'book',title:book.title||book.book||book.bookTitle||book.bookId||'ספר',book:compactBook(book)};
-  featureSettings.quickPins.push(pin);await saveFeatures();renderQuickPins();toast('הספר הוצמד לדף הבית');
+  featureSettings.quickPins.push(pin);await saveFeatures();renderQuickPins();toast('הספר נוסף לפעולות המהירות');
   
 }
 async function togglePinnedGroupV5(g){
   const idx=featureSettings.quickPins.findIndex(x=>x.type==='group'&&x.groupId===g.id);
   if(idx>=0){
     const removed=featureSettings.quickPins.splice(idx,1)[0];
-    await saveFeatures();renderQuickPins();toast('הצמדת הקבוצה הוסרה');
+    await saveFeatures();renderQuickPins();toast('הקבוצה הוסרה מהפעולות המהירות');
     
     return;
   }
   const item={type:'group',groupId:g.id,title:g.name};
-  featureSettings.quickPins.push(item);await saveFeatures();renderQuickPins();toast('הקבוצה הוצמדה');
+  featureSettings.quickPins.push(item);await saveFeatures();renderQuickPins();toast('הקבוצה נוספה לפעולות המהירות');
   
 }
 async function deleteGroupV5(g){
@@ -1271,7 +1281,7 @@ function contextForBookV5(book,target){
   const pinned=featureSettings.quickPins.some(x=>x.type==='book'&&x.book&&bookKey(x.book)===bookKey(book));
   const items=[
     {label:'פתח ספר',icon:'book',action:()=>openBook(book)},
-    {label:pinned?'הסר מהצמדות':'הצמד לדף הבית',icon:'pin',checked:pinned,action:()=>togglePinnedBookV5(book)},
+    {label:pinned?'הסר מהפעולות המהירות':'הוסף לפעולות מהירות',icon:'pin',checked:pinned,action:()=>togglePinnedBookV5(book)},
     contextSeparatorV5()
   ];
   for(const g of groups){
@@ -1303,7 +1313,7 @@ function contextForGroupV5(g){
   const pinned=featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id);
   return [
     {label:'חפש רק בקבוצה זו',icon:'search',action:()=>{featureSettings.groupScope=g.id;saveFeatures();renderSavedSearchControls();$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)}},
-    {label:pinned?'הסר הצמדה':'הצמד לדף הבית',icon:'pin',checked:pinned,action:()=>togglePinnedGroupV5(g)},
+    {label:pinned?'הסר הצמדה':'הוסף לפעולות מהירות',icon:'pin',checked:pinned,action:()=>togglePinnedGroupV5(g)},
     {label:'ערוך קבוצות',icon:'settings',action:()=>{openSettings();setSettingsTab('general');setTimeout(()=>$('manageGroups')?.scrollIntoView({block:'center'}),80)}},
     contextSeparatorV5(),
     {label:'מחק קבוצה',icon:'close',danger:true,action:()=>deleteGroupV5(g)}
