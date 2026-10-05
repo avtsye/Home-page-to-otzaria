@@ -7,7 +7,7 @@
   "author": "אברהם mch",
   "homepage": "https://github.com/avtsye/Home-page-to-otzaria",
   "icon": "plugin-icon.jpg",
-  "minAppVersion": "0.9.98",
+  "minAppVersion": "0.9.97",
   "sdkVersion": "1.x",
   "entrypoint": "index.html",
   "permissions": [
