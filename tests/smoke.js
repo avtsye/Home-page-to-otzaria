@@ -145,3 +145,7 @@ assert(/plugins:changed/.test(enhancements),'plugin data event missing');
 assert(html.includes('plusSettingsBlock'),'plus button settings must use one unified card');
 assert(html.includes('plusSettingsDivider'),'plus target section divider missing');
 assert(!/id="plusTargetSettings" class="settingBlock"/.test(html),'plus target must not be a separate settings card');
+
+assert(html.includes('ux.css'),'unified UX stylesheet missing');
+assert(/openFeedbackV9/.test(enhancements),'dedicated feedback launcher missing');
+assert(/feedback\.report/.test(enhancements),'dedicated feedback API wiring missing');
