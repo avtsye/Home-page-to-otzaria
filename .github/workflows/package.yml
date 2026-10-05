@@ -67,10 +67,6 @@ jobs:
           (cd debug-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg debug.flag)
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" build/
 
-          cp manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg dev-compat-build/
-          node -e "const fs=require('fs'); const p='dev-compat-build/manifest.json'; const m=JSON.parse(fs.readFileSync(p,'utf8')); m.minAppVersion='0.9.97'; fs.writeFileSync(p,JSON.stringify(m,null,2)+'\\n')"
-          (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg)
-          cp build/
       - name: Verify assets are excluded from packages
         shell: bash
         run: |
