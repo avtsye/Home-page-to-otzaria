@@ -701,6 +701,18 @@
     $('openFeedbackV9').onclick=openFeedbackModalV9;
   }
 
+  function openAboutModalV9(){
+    const content=document.createElement('div');content.className='aboutModalV9';
+    content.innerHTML='<div class="aboutModalBrandV9"><img src="plugin-icon.jpg" alt=""><div><b>דף הבית לאוצריא</b><span>גרסה 4.1.0</span></div></div><p>דף בית מתקדם לאוצריא עם חיפוש, ספרים שמורים, היסטוריה, סימניות ותוספים.</p><div class="shortcutList"><span><kbd>Ctrl</kbd> + <kbd>K</kbd><b>מיקוד בחיפוש</b></span><span><kbd>Ctrl</kbd> + <kbd>,</kbd><b>פתיחת הגדרות</b></span><span><kbd>Esc</kbd><b>סגירת חלון</b></span><span><kbd>Alt</kbd> + <kbd>F</kbd><b>Focus Mode</b></span></div>';
+    Core.ui.openModal({id:'aboutDialogV9',title:'אודות וקיצורים',className:'aboutDialogV9',content});
+  }
+  function ensureAboutLauncherV9(){
+    const pane=$('settingsTab-feedback');if(!pane||$('openAboutV9'))return;
+    const card=document.createElement('section');card.className='settingBlock feedbackLaunchCardV9';
+    card.innerHTML='<div><h3>אודות וקיצורים</h3><p class="hint">גרסה, מידע וקיצורי מקלדת שימושיים.</p></div><button id="openAboutV9" class="secondaryBtn" type="button">פתח אודות</button>';
+    pane.appendChild(card);$('openAboutV9').onclick=openAboutModalV9;
+  }
+
   function simplifySettingsV8(){
     const tabs=[...document.querySelectorAll('.settingsTab')];
     const feedback=tabs.find(x=>x.dataset.settingsTab==='feedback');
@@ -709,11 +721,9 @@
     if(about)about.hidden=true;
     const fp=$('settingsTab-feedback'),ap=$('settingsTab-about');
     ensureFeedbackLauncherV9();
-    if(fp&&ap&&!fp.querySelector('[data-moved-about-v8]')){
-      const wrap=document.createElement('div');wrap.dataset.movedAboutV8='1';wrap.className='advancedAboutV8';
-      while(ap.firstChild)wrap.appendChild(ap.firstChild);
-      fp.appendChild(wrap);
-    }
+    ensureAboutLauncherV9();
+    if(ap)ap.hidden=true;
+    fp?.querySelector('[data-moved-about-v8]')?.remove();
     ensureResetButtonsV8();
   }
   function ensureResetButtonsV8(){
