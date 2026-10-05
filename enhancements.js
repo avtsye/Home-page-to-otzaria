@@ -669,6 +669,44 @@
     };
   }
 
+  function openFeedbackModalV9(){
+    const old=$('feedbackDialogV9');if(old)old.remove();
+    const trigger=document.activeElement;
+    const d=document.createElement('div');d.id='feedbackDialogV9';d.className='tabSetDialog';
+    d.innerHTML='<div class="tabSetDialogCard feedbackModalV9"><div class="tabSetDialogHeader"><div><h2>משוב למפתח</h2><div class="hint">דווח על תקלה או שלח רעיון דרך מנגנון המשוב של אוצריא.</div></div><button class="nativeIconButton feedbackCloseV9" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="feedbackTypeV9"><label><input type="radio" name="feedbackTypeV9" value="bug" checked> דיווח על תקלה</label><label><input type="radio" name="feedbackTypeV9" value="other"> רעיון או משוב אחר</label></div><div class="feedbackFieldsV9"><label>קטגוריה<select id="feedbackCategoryV9"><option value="כללי">כללי</option><option value="חיפוש">חיפוש</option><option value="תצוגה">תצוגה</option><option value="כפתור +">כפתור +</option><option value="תוספים">תוספים</option><option value="ביצועים">ביצועים</option></select></label><label>תוכן ההודעה<textarea id="feedbackTextV9" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea></label><div class="hint">לפני השליחה אוצריא עשויה להציג חלון אישור.</div><div id="feedbackStatusV9" class="feedbackStatusV9"></div></div><div class="tabSetDialogActions"><button class="secondaryBtn feedbackCancelV9" type="button">ביטול</button><button id="feedbackSendV9" class="primaryBtn" type="button">שלח משוב</button></div></div>';
+    document.body.appendChild(d);
+    const close=()=>{d.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
+    d.querySelector('.feedbackCloseV9').onclick=close;d.querySelector('.feedbackCancelV9').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    const send=$('feedbackSendV9'),status=$('feedbackStatusV9'),textBox=$('feedbackTextV9');
+    send.onclick=async()=>{
+      const details=textBox.value.trim();if(!details){status.textContent='יש לכתוב את תוכן המשוב.';textBox.focus();return}
+      const selected=d.querySelector('input[name="feedbackTypeV9"]:checked');
+      const reportType=selected&&selected.value==='bug'?'bug':'other';
+      const category=$('feedbackCategoryV9').value;
+      send.disabled=true;status.textContent='מכין את הדיווח…';
+      try{
+        const payload='קטגוריה: '+category+'\n\n'+details;
+        const r=await Otzaria.call('feedback.report',{details:payload,reportType});
+        if(!r||r.success===false)throw new Error((r&&r.error)||'feedback failed');
+        if(r.data==='cancelled'){status.textContent='השליחה בוטלה.';return}
+        if(r.data==='queued'){status.textContent='הדיווח נשמר באוצריא וישלח כשיתאפשר.';textBox.value='';return}
+        status.textContent='הדיווח נשלח בהצלחה.';textBox.value='';
+      }catch(err){
+        status.textContent='הדיווח לא נשלח. נסה שוב.';
+        fLog('error','Feedback send failed',err);
+      }finally{send.disabled=false}
+    };
+    setTimeout(()=>textBox.focus(),0);
+  }
+  function ensureFeedbackLauncherV9(){
+    const pane=$('settingsTab-feedback');if(!pane||$('openFeedbackV9'))return;
+    const old=pane.querySelector('.feedbackSettings');if(old)old.hidden=true;
+    const card=document.createElement('section');card.className='settingBlock feedbackLaunchCardV9';
+    card.innerHTML='<div><h3>משוב למפתח</h3><p class="hint">פתח טופס משוב ייעודי שאינו תלוי בפריסת חלון ההגדרות.</p></div><button id="openFeedbackV9" class="primaryBtn" type="button">פתח טופס משוב</button>';
+    const head=pane.querySelector('.settingsPaneHead');if(head)head.insertAdjacentElement('afterend',card);else pane.prepend(card);
+    $('openFeedbackV9').onclick=openFeedbackModalV9;
+  }
+
   function simplifySettingsV8(){
     const tabs=[...document.querySelectorAll('.settingsTab')];
     const feedback=tabs.find(x=>x.dataset.settingsTab==='feedback');
@@ -676,6 +714,7 @@
     if(feedback){feedback.querySelector('b')&&(feedback.querySelector('b').textContent='מתקדם');feedback.querySelector('small')&&(feedback.querySelector('small').textContent='גיבוי, משוב ומידע')}
     if(about)about.hidden=true;
     const fp=$('settingsTab-feedback'),ap=$('settingsTab-about');
+    ensureFeedbackLauncherV9();
     if(fp&&ap&&!fp.querySelector('[data-moved-about-v8]')){
       const wrap=document.createElement('div');wrap.dataset.movedAboutV8='1';wrap.className='advancedAboutV8';
       while(ap.firstChild)wrap.appendChild(ap.firstChild);
