@@ -660,8 +660,8 @@ function uniqueTabSetNameV4(name,collection=savedTabSets){
 function ensureSavedTabsSectionV4(){
   let sec=$('section-saved-tabs');
   if(sec)return sec;
-  sec=document.createElement('section');sec.id='section-saved-tabs';sec.className='sectionPanel wide savedTabsSection';
-  sec.innerHTML='<div class="sectionHead"><h2>כרטיסיות שמורות</h2><span>פתיחת קבוצת ספרים בלחיצה אחת</span></div><div class="savedTabToolbar"><button id="newTabSetBtn" class="primaryBtn" type="button">'+iconTextV4('bookmark','כרטיס חדש')+'</button><button id="captureTabsBtn" class="secondaryBtn" type="button">שמור לשוניות פתוחות</button><button id="exportTabSetsBtn" class="secondaryBtn" type="button">ייצוא</button><button id="importTabSetsBtn" class="secondaryBtn" type="button">ייבוא</button><input id="importTabSetsFile" type="file" accept="application/json,.json" hidden></div><div id="savedTabGrid" class="savedTabGrid"></div>';
+  sec=document.createElement('section');sec.id='section-saved-tabs';sec.className='sectionPanel savedTabsSection';
+  sec.innerHTML='<div class="sectionHead"><h2>שמורים</h2><span>ספרים ומצבי עבודה</span></div><div class="savedTabToolbar"><button id="newTabSetBtn" class="primaryBtn" type="button">'+iconTextV4('bookmark','שמור חדש')+'</button><button id="captureTabsBtn" class="secondaryBtn" type="button">שמור לשוניות פתוחות</button><button id="exportTabSetsBtn" class="secondaryBtn" type="button">ייצוא</button><button id="importTabSetsBtn" class="secondaryBtn" type="button">ייבוא</button><input id="importTabSetsFile" type="file" accept="application/json,.json" hidden></div><div id="savedTabGrid" class="savedTabGrid"></div>';
   const host=$('sectionsHost');
   host.insertBefore(sec,host.firstChild);
   $('newTabSetBtn').onclick=createEmptyTabSetV4;
