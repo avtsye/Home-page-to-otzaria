@@ -75,8 +75,8 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .pluginCard small{font-size:8px!important}
 .list{gap:5px!important}
 .row{padding:7px 8px!important}
-.savedTabsSection{grid-column:1/-1!important}
-@media(max-width:980px){.sectionsHost{grid-template-columns:repeat(2,minmax(0,1fr))!important}.savedTabsSection{grid-column:1/-1!important}}
+.savedTabsSection{grid-column:auto!important}
+@media(max-width:980px){.sectionsHost{grid-template-columns:repeat(2,minmax(0,1fr))!important}.savedTabsSection{grid-column:auto!important}}
 @media(max-width:680px){.sectionsHost{grid-template-columns:1fr!important}.savedTabsSection{grid-column:auto!important}}
 </style>
 
@@ -1182,7 +1182,7 @@ mark{
 .tabSetMetaEditorV6 input,.tabSetMetaEditorV6 select{width:100%;min-height:38px;border:1px solid var(--color-outline);border-radius:8px;background:var(--color-surface);color:var(--color-on-surface);padding:6px 8px}
 .tabSetMetaEditorV6 input[type=color]{padding:4px}
 
-.workspaceSectionV6{grid-column:1/-1!important}
+.workspaceSectionV6{display:none!important}
 .workspaceGridV6{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .workspaceCardV6{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
