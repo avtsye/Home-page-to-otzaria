@@ -21,7 +21,7 @@ assert(html.includes('4.1.0'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
-assert(manifest.minAppVersion==='0.9.98','store release must require Otzaria 0.9.98');
+assert(manifest.minAppVersion==='0.9.97','store release must require Otzaria 0.9.97');
 assert(['stable','beta','experimental'].includes(manifest.stability),'manifest stability must be stable, beta or experimental');
 assert(manifest.permissions.includes('plugin.storage.read')&&manifest.permissions.includes('plugin.storage.write'),'storage permissions missing');
 assert(/Otzaria\.call\('search\.query'/.test(main),'main full-text search missing');
