@@ -59,6 +59,25 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 @media(max-width:920px){.advancedGrid{grid-template-columns:repeat(2,1fr)}.resultGrid{grid-template-columns:1fr}.sectionsHost{grid-template-columns:1fr}.sectionPanel.wide{grid-column:auto}}
 @media(max-width:760px){.settingsDialog{width:min(100% - 14px,980px);height:min(94vh,780px)}.settingsShell{grid-template-columns:1fr;grid-template-rows:auto 1fr}.settingsTabs{flex-direction:row;overflow-x:auto;border-inline-end:0;border-bottom:1px solid var(--outline);padding:8px}.settingsTab{min-width:118px}.settingsTab small{display:none}.settingsContent>.dialogBody{padding:12px}.dialogFoot{padding:10px 12px}.dialogFoot>#settingsFootHint{display:none}}
 @media(max-width:620px){.page{width:min(100% - 18px,1180px);padding-top:18px}.heroCard{padding:26px 13px 20px;border-radius:22px}.brand{font-size:34px}.heroLogo{width:58px;height:58px}.searchbox{min-height:58px}.filterBtn{padding:10px}.searchBtn{padding:11px 13px}.advancedGrid{grid-template-columns:1fr}.field.span2{grid-column:auto}.radioGrid,.checkGrid{grid-template-columns:1fr}.topbar{padding-inline:10px}.topActions .txt{display:none}.pluginGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.searchHead{display:block}.searchHeadActions{margin-top:9px}}
+
+/* 4.1 UX density pass: keep the important home content visible with much less scrolling. */
+.sectionsHost{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin-top:12px!important}
+.sectionPanel{padding:12px!important;border-radius:16px!important;min-height:0!important}
+.sectionPanel.wide{grid-column:auto!important}
+.sectionHead{margin-bottom:8px!important}
+.sectionHead h2{font-size:14px!important}
+.pluginToolbar{margin-bottom:8px!important}
+.pluginGrid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))!important;gap:7px!important}
+.pluginCard{min-height:86px!important;padding:9px 7px!important;border-radius:13px!important}
+.pluginIcon{width:34px!important;height:34px!important;border-radius:10px!important;margin-bottom:5px!important}
+.pluginIcon svg{width:21px!important;height:21px!important}
+.pluginCard b{font-size:11px!important}
+.pluginCard small{font-size:8px!important}
+.list{gap:5px!important}
+.row{padding:7px 8px!important}
+.savedTabsSection{grid-column:1/-1!important}
+@media(max-width:980px){.sectionsHost{grid-template-columns:repeat(2,minmax(0,1fr))!important}.savedTabsSection{grid-column:1/-1!important}}
+@media(max-width:680px){.sectionsHost{grid-template-columns:1fr!important}.savedTabsSection{grid-column:auto!important}}
 </style>
 
 <style id="otzariaNativeStyles">
@@ -1363,16 +1382,12 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
       <div class="sectionHead"><h2>מועדפים וקבוצות ספרים</h2><span>מותאם אישית</span></div><div id="groups"></div>
     </section>
 
-    <section id="section-recent" class="sectionPanel">
-      <div class="sectionHead"><h2>המשך לקרוא</h2><span>נפתח לאחרונה</span></div><div id="recent" class="list"></div>
-    </section>
-
     <section id="section-bookmarks" class="sectionPanel">
       <div class="sectionHead"><h2>סימניות אחרונות</h2></div><div id="bookmarks" class="list"></div>
     </section>
 
     <section id="section-history" class="sectionPanel">
-      <div class="sectionHead"><h2>היסטוריה אחרונה</h2></div><div id="history" class="list"></div>
+      <div class="sectionHead"><h2>נפתחו לאחרונה</h2><span>ספרים שכבר נסגרו</span></div><div id="history" class="list"></div>
     </section>
 
     <section id="section-plugins" class="sectionPanel wide">
@@ -1382,7 +1397,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
     </section>
   </div>
 
-  <div class="footer">דף הבית לאוצריא · גרסה 4.0.10 · מאת אברהם mch</div>
+  <div class="footer">דף הבית לאוצריא · גרסה 4.1.0 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
@@ -1430,7 +1445,6 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
             <section class="settingBlock"><h3>כרטיסים שיופיעו</h3><div class="checkGrid">
               <label class="option"><input id="show-groups" type="checkbox"> מועדפים וקבוצות</label>
               <label class="option"><input id="show-plugins" type="checkbox"> תוספים</label>
-              <label class="option"><input id="show-recent" type="checkbox"> המשך לקרוא</label>
               <label class="option"><input id="show-bookmarks" type="checkbox"> סימניות</label>
               <label class="option"><input id="show-history" type="checkbox"> היסטוריה</label>
             </div></section>
@@ -1496,7 +1510,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
               <img src="plugin-icon.jpg" alt="אייקון דף הבית">
               <h3>דף הבית לאוצריא</h3>
               <p>גרסה 4.0.10 · מאת אברהם mch</p>
-              <p>דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.</p>
+              <p>דף בית מתקדם לאוצריא עם חיפוש בתוכן, היסטוריה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.</p>
               <div class="aboutLinks"><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria">מאגר הפרויקט ↗</button><button type="button" class="externalLinkBtn" data-external-url="https://github.com/avtsye/Home-page-to-otzaria/releases">גרסאות להורדה ↗</button></div>
             </section>
 
