@@ -601,20 +601,16 @@
   }
 
   function openSimpleListModalV8(title,items,onOpen){
-    const old=$('simpleListModalV8');if(old)old.remove();
-    lastModalTriggerV8=document.activeElement;
-    const d=document.createElement('div');d.id='simpleListModalV8';d.className='tabSetDialog';
-    d.innerHTML='<div class="tabSetDialogCard uxListDialogV8"><div class="tabSetDialogHeader"><div><h2>'+esc(title)+'</h2><div class="hint">'+items.length+' פריטים</div></div><button class="nativeIconButton uxListCloseV8" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="uxModalSearchWrapV8"><input class="uxModalSearchV8" type="search" placeholder="סינון…"></div><div class="uxModalListV8"></div></div>';
-    document.body.appendChild(d);
-    const close=()=>{d.remove();const t=lastModalTriggerV8;lastModalTriggerV8=null;if(t&&t.isConnected&&t.focus)t.focus()};
-    d.querySelector('.uxListCloseV8').onclick=close;d.onclick=e=>{if(e.target===d)close()};
-    const host=d.querySelector('.uxModalListV8'),input=d.querySelector('.uxModalSearchV8');
+    const content=document.createElement('div');
+    content.innerHTML='<div class="uxModalSearchWrapV8"><input class="uxModalSearchV8" type="search" placeholder="סינון…"></div><div class="uxModalListV8"></div>';
+    const modal=Core.ui.openModal({id:'simpleListModalV8',title,subtitle:items.length+' פריטים',className:'uxListDialogV8',content});
+    const host=content.querySelector('.uxModalListV8'),input=content.querySelector('.uxModalSearchV8');
     const render=()=>{
       const q=input.value.trim().toLowerCase();host.innerHTML='';
       items.filter(x=>!q||String(x.title||'').toLowerCase().includes(q)||String(x.meta||'').toLowerCase().includes(q)).forEach(item=>{
         const b=document.createElement('button');b.type='button';b.className='uxListRowV8';
         b.innerHTML='<span><b>'+esc(item.title||'פריט')+'</b>'+(item.meta?'<small>'+esc(item.meta)+'</small>':'')+'</span><span aria-hidden="true">←</span>';
-        b.onclick=()=>{close();onOpen(item)};host.appendChild(b);
+        b.onclick=()=>{modal.close();onOpen(item)};host.appendChild(b);
       });
     };
     input.oninput=render;render();input.focus();
@@ -670,17 +666,14 @@
   }
 
   function openFeedbackModalV9(){
-    const old=$('feedbackDialogV9');if(old)old.remove();
-    const trigger=document.activeElement;
-    const d=document.createElement('div');d.id='feedbackDialogV9';d.className='tabSetDialog';
-    d.innerHTML='<div class="tabSetDialogCard feedbackModalV9"><div class="tabSetDialogHeader"><div><h2>משוב למפתח</h2><div class="hint">דווח על תקלה או שלח רעיון דרך מנגנון המשוב של אוצריא.</div></div><button class="nativeIconButton feedbackCloseV9" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="feedbackTypeV9"><label><input type="radio" name="feedbackTypeV9" value="bug" checked> דיווח על תקלה</label><label><input type="radio" name="feedbackTypeV9" value="other"> רעיון או משוב אחר</label></div><div class="feedbackFieldsV9"><label>קטגוריה<select id="feedbackCategoryV9"><option value="כללי">כללי</option><option value="חיפוש">חיפוש</option><option value="תצוגה">תצוגה</option><option value="כפתור +">כפתור +</option><option value="תוספים">תוספים</option><option value="ביצועים">ביצועים</option></select></label><label>תוכן ההודעה<textarea id="feedbackTextV9" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea></label><div class="hint">לפני השליחה אוצריא עשויה להציג חלון אישור.</div><div id="feedbackStatusV9" class="feedbackStatusV9"></div></div><div class="tabSetDialogActions"><button class="secondaryBtn feedbackCancelV9" type="button">ביטול</button><button id="feedbackSendV9" class="primaryBtn" type="button">שלח משוב</button></div></div>';
-    document.body.appendChild(d);
-    const close=()=>{d.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
-    d.querySelector('.feedbackCloseV9').onclick=close;d.querySelector('.feedbackCancelV9').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    const content=document.createElement('div');
+    content.innerHTML='<div class="feedbackTypeV9"><label><input type="radio" name="feedbackTypeV9" value="bug" checked> דיווח על תקלה</label><label><input type="radio" name="feedbackTypeV9" value="other"> רעיון או משוב אחר</label></div><div class="feedbackFieldsV9"><label>קטגוריה<select id="feedbackCategoryV9"><option value="כללי">כללי</option><option value="חיפוש">חיפוש</option><option value="תצוגה">תצוגה</option><option value="כפתור +">כפתור +</option><option value="תוספים">תוספים</option><option value="ביצועים">ביצועים</option></select></label><label>תוכן ההודעה<textarea id="feedbackTextV9" maxlength="5000" placeholder="כתוב כאן את פרטי התקלה, הרעיון או ההצעה…"></textarea></label><div class="hint">לפני השליחה אוצריא עשויה להציג חלון אישור.</div><div id="feedbackStatusV9" class="feedbackStatusV9"></div><div class="tabSetDialogActions"><button class="secondaryBtn feedbackCancelV9" type="button">ביטול</button><button id="feedbackSendV9" class="primaryBtn" type="button">שלח משוב</button></div></div>';
+    const modal=Core.ui.openModal({id:'feedbackDialogV9',title:'משוב למפתח',subtitle:'דווח על תקלה או שלח רעיון דרך מנגנון המשוב של אוצריא.',className:'feedbackModalV9',content});
+    content.querySelector('.feedbackCancelV9').onclick=modal.close;
     const send=$('feedbackSendV9'),status=$('feedbackStatusV9'),textBox=$('feedbackTextV9');
     send.onclick=async()=>{
       const details=textBox.value.trim();if(!details){status.textContent='יש לכתוב את תוכן המשוב.';textBox.focus();return}
-      const selected=d.querySelector('input[name="feedbackTypeV9"]:checked');
+      const selected=content.querySelector('input[name="feedbackTypeV9"]:checked');
       const reportType=selected&&selected.value==='bug'?'bug':'other';
       const category=$('feedbackCategoryV9').value;
       send.disabled=true;status.textContent='מכין את הדיווח…';
@@ -698,6 +691,7 @@
     };
     setTimeout(()=>textBox.focus(),0);
   }
+
   function ensureFeedbackLauncherV9(){
     const pane=$('settingsTab-feedback');if(!pane||$('openFeedbackV9'))return;
     const old=pane.querySelector('.feedbackSettings');if(old)old.hidden=true;
