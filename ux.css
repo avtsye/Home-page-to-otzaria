@@ -1,0 +1,388 @@
+/* Home Page to Otzaria — unified UX layer */
+:root{
+  --home-gap:10px;
+  --home-radius:16px;
+  --home-card-pad:12px;
+  --home-row-radius:10px;
+}
+
+/* Dashboard layout */
+.sectionsHost{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:var(--home-gap)!important;
+  margin-top:12px!important;
+  align-items:start!important;
+  grid-auto-flow:row!important;
+}
+.sectionsHost>.sectionPanel,
+.sectionsHost>#section-saved-tabs,
+.sectionsHost>#section-plugins,
+.sectionPanel.wide,
+.savedTabsSection{
+  grid-column:span 1!important;
+  align-self:start!important;
+  width:auto!important;
+  max-width:none!important;
+  min-height:0!important;
+  height:auto!important;
+}
+.sectionPanel{
+  padding:var(--home-card-pad)!important;
+  border-radius:var(--home-radius)!important;
+  min-width:0!important;
+}
+.sectionHead{
+  min-height:34px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  margin-bottom:8px!important;
+}
+.sectionHead h2{
+  font-size:14px!important;
+  line-height:1.25!important;
+  margin:0!important;
+}
+.sectionHead span{
+  font-size:9px!important;
+  line-height:1.3!important;
+}
+.list{gap:5px!important}
+.row{padding:7px 8px!important;border-radius:var(--home-row-radius)!important}
+
+/* Edit mode */
+.sectionTools{display:none!important;align-items:center!important;gap:2px!important}
+body.homeEditModeV8 .sectionTools{display:flex!important}
+body:not(.homeEditModeV8) #sectionsHost .sectionPanel{cursor:default!important}
+body.homeEditModeV8 #sectionsHost .sectionPanel{
+  outline:1px dashed color-mix(in srgb,var(--color-primary) 35%,transparent);
+  outline-offset:2px;
+}
+#editHomeV8.active{
+  background:var(--color-secondary-container)!important;
+  color:var(--color-on-secondary-container)!important;
+}
+
+/* Home list caps */
+.uxHomeOverflowV8{display:none!important}
+.showAllHomeListV8,.showAllSavedV8,.showAllPluginsV7{
+  width:100%!important;
+  min-height:34px!important;
+  margin-top:7px!important;
+}
+
+/* Saved books */
+#section-saved-tabs .savedTabToolbar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:wrap!important;
+  gap:6px!important;
+  margin-bottom:8px!important;
+}
+#section-saved-tabs .savedTabToolbar button{
+  min-height:34px!important;
+  height:auto!important;
+  padding:6px 10px!important;
+  font-size:11px!important;
+  width:auto!important;
+}
+.savedSecondaryActionV8{display:none!important}
+#savedMoreV8{min-width:40px!important;padding-inline:12px!important}
+#section-saved-tabs .savedTabGrid{gap:7px!important}
+#section-saved-tabs .homeEmptyState{
+  min-height:0!important;
+  padding:12px 14px!important;
+  gap:4px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:wrap!important;
+  text-align:start!important;
+}
+#section-saved-tabs .homeEmptyState b{font-size:11px!important}
+#section-saved-tabs .homeEmptyState span{
+  font-size:9px!important;
+  max-width:none!important;
+  flex:1 1 220px!important;
+}
+#section-saved-tabs .homeEmptyState button{
+  margin:0!important;
+  min-height:32px!important;
+  padding:5px 10px!important;
+  flex:0 0 auto!important;
+}
+.savedGroupsHostV7{
+  margin-top:8px!important;
+  padding-top:8px!important;
+  border-top:1px solid var(--color-outline-variant)!important;
+}
+.savedSubsectionHeadV7{
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  margin-bottom:5px!important;
+}
+.savedSubsectionHeadV7 b{font-size:12px!important}
+.savedSubsectionHeadV7 span{font-size:9px!important;color:var(--color-on-surface-variant)!important}
+.savedGroupsHostV7 #groups{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important;
+  gap:6px!important;
+}
+.savedGroupsHostV7 .groupBlock{
+  margin:0!important;
+  padding:9px!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:12px!important;
+  background:var(--color-surface)!important;
+  min-width:0!important;
+}
+.savedGroupsHostV7 .homeEmptyState{
+  background:transparent!important;
+  border:1px dashed var(--color-outline-variant)!important;
+}
+.unifiedSourceHiddenV7{display:none!important}
+
+/* Plugins */
+.pluginToolbar{margin-bottom:8px!important}
+.pluginGrid{
+  grid-template-columns:repeat(auto-fill,minmax(112px,1fr))!important;
+  gap:7px!important;
+}
+.pluginCard{
+  position:relative!important;
+  min-height:86px!important;
+  padding:38px 7px 9px!important;
+  border-radius:13px!important;
+}
+.pluginIcon{
+  width:34px!important;
+  height:34px!important;
+  border-radius:10px!important;
+  margin-bottom:5px!important;
+}
+.pluginIcon svg{width:21px!important;height:21px!important}
+.pluginCard b{font-size:11px!important}
+.pluginCard small{font-size:8px!important}
+.pluginCard>.pluginFav{
+  position:absolute!important;
+  top:6px!important;
+  inset-inline-start:6px!important;
+  inset-inline-end:auto!important;
+  width:28px!important;
+  height:28px!important;
+  display:grid!important;
+  place-items:center!important;
+  z-index:4!important;
+}
+.pluginCard>.cardOverflowBtn,
+.pluginCard>.pluginOverflowV6{
+  position:absolute!important;
+  top:6px!important;
+  inset-inline-end:6px!important;
+  inset-inline-start:auto!important;
+  width:28px!important;
+  height:28px!important;
+  z-index:4!important;
+}
+.pluginGrid.listView{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+}
+.pluginGrid.listView .pluginCard{
+  width:100%!important;
+  min-height:58px!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) auto!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  text-align:start!important;
+  column-gap:10px!important;
+  row-gap:1px!important;
+  padding:8px 76px 8px 10px!important;
+}
+[dir="rtl"] .pluginGrid.listView .pluginCard{padding:8px 10px 8px 76px!important}
+.pluginGrid.listView .pluginIcon{
+  grid-column:1!important;
+  grid-row:1/3!important;
+  margin:0!important;
+  width:38px!important;
+  height:38px!important;
+}
+.pluginGrid.listView .pluginCard>b{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:end!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.pluginGrid.listView .pluginCard>small{
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:start!important;
+  text-align:start!important;
+}
+
+/* Unified modal surface */
+.tabSetDialog{
+  position:fixed!important;
+  inset:0!important;
+  z-index:220!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:18px!important;
+  background:rgba(16,12,28,.36)!important;
+  backdrop-filter:blur(6px)!important;
+}
+.tabSetDialogCard{
+  width:min(680px,96vw)!important;
+  max-height:min(86vh,760px)!important;
+  overflow:auto!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:18px!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  padding:14px!important;
+  box-shadow:0 18px 55px color-mix(in srgb,var(--color-shadow,#000) 24%,transparent)!important;
+}
+.tabSetDialogHeader{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin-bottom:12px!important;
+}
+.tabSetDialogHeader h2{margin:0!important;font-size:16px!important}
+.tabSetDialogActions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  margin-top:12px!important;
+  flex-wrap:wrap!important;
+}
+
+/* List modals */
+.uxListDialogV8{width:min(620px,94vw)!important}
+.uxModalSearchWrapV8{margin-bottom:8px!important}
+.uxModalSearchV8,
+.allPluginsControlsV8 input,
+.allPluginsControlsV8 select,
+.feedbackModalV9 textarea,
+.feedbackModalV9 select{
+  width:100%!important;
+  min-height:40px!important;
+  border:1px solid var(--color-outline)!important;
+  border-radius:10px!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  padding:8px 10px!important;
+  box-sizing:border-box!important;
+  outline:0!important;
+}
+.uxModalSearchV8:focus,
+.allPluginsControlsV8 input:focus,
+.feedbackModalV9 textarea:focus,
+.feedbackModalV9 select:focus{border-color:var(--color-primary)!important}
+.uxModalListV8,.allPluginsListV7{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:5px!important;
+  max-height:62vh!important;
+  overflow:auto!important;
+}
+.uxListRowV8{
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:10px!important;
+  background:var(--color-surface)!important;
+  color:var(--color-on-surface)!important;
+  padding:9px 10px!important;
+  text-align:start!important;
+  cursor:pointer!important;
+}
+.allPluginsControlsV8{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 160px auto!important;
+  gap:8px!important;
+  align-items:center!important;
+  margin-bottom:9px!important;
+}
+.allPluginsControlsV8 label{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  white-space:nowrap!important;
+  font-size:10px!important;
+}
+
+/* Dedicated feedback modal */
+.feedbackModalV9{width:min(560px,94vw)!important}
+.feedbackModalV9 .feedbackTypeV9{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  margin-bottom:10px!important;
+}
+.feedbackModalV9 .feedbackTypeV9 label{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:42px!important;
+  padding:8px 10px!important;
+  border:1px solid var(--color-outline-variant)!important;
+  border-radius:10px!important;
+}
+.feedbackModalV9 .feedbackFieldsV9{display:grid!important;gap:9px!important}
+.feedbackModalV9 textarea{
+  min-height:180px!important;
+  resize:vertical!important;
+}
+.feedbackStatusV9{min-height:18px!important;font-size:10px!important;color:var(--color-on-surface-variant)!important}
+.feedbackLaunchCardV9{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+.feedbackLaunchCardV9>div{min-width:0!important}
+
+/* Settings cleanup */
+.settingsTabs .settingsTab[data-settings-tab="about"]{display:none!important}
+.settingsTabs .settingsTab{flex:1 1 33.333%!important}
+#settingsTab-feedback .feedbackSettings{display:none!important}
+#settingsTab-feedback .advancedAboutV8{display:grid!important;gap:12px!important;margin-top:12px!important}
+.resetActionsV8,.quickActionsAllV8{display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+
+/* Onboarding */
+.onboardingV8{width:min(430px,92vw)!important;display:grid!important;gap:12px!important}
+.onboardingV8 label{display:grid!important;gap:5px!important}
+.onboardingV8 select{
+  min-height:40px!important;
+  border:1px solid var(--color-outline)!important;
+  border-radius:9px!important;
+  background:var(--color-surface)!important;
+  padding:6px 8px!important;
+}
+
+/* Responsive */
+@media(max-width:899px){
+  .sectionsHost{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:649px){
+  .sectionsHost{grid-template-columns:1fr!important}
+  .sectionPanel{grid-column:span 1!important}
+  .allPluginsControlsV8{grid-template-columns:1fr!important}
+  .feedbackModalV9 .feedbackTypeV9{grid-template-columns:1fr!important}
+  .tabSetDialog{padding:8px!important}
+}
