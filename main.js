@@ -24,7 +24,7 @@ const DEFAULT_SEARCH={
 const DEFAULT_SETTINGS={
   plusEnabled:true,
   plusTarget:'plugin',
-  sectionOrder:['plugins','groups','bookmarks','history'],
+  sectionOrder:['history','bookmarks','plugins','groups'],
   visibleSections:{groups:true,plugins:true,bookmarks:true,history:true},
   quickActions:{library:true,search:true,reading:true,history:true,bookmarks:true},
   listLimit:7,
@@ -68,7 +68,8 @@ function normalizeSettings(raw){
   s.searchConfig.options=s.searchConfig.options&&typeof s.searchConfig.options==='object'?s.searchConfig.options:{};
   const valid=DEFAULT_SETTINGS.sectionOrder;
   const incoming=Array.isArray(raw&&raw.sectionOrder)?raw.sectionOrder.filter(x=>x!=='recent'):[];
-  const wasLegacyDefault=Array.isArray(raw&&raw.sectionOrder)&&raw.sectionOrder.join(',')==='groups,recent,bookmarks,history,plugins';
+  const rawOrder=Array.isArray(raw&&raw.sectionOrder)?raw.sectionOrder.join(','):'';
+  const wasLegacyDefault=rawOrder==='groups,recent,bookmarks,history,plugins'||rawOrder==='plugins,groups,bookmarks,history';
   s.sectionOrder=wasLegacyDefault?[...valid]:incoming.filter(x=>valid.includes(x)).concat(valid.filter(x=>!incoming.includes(x)));
   delete s.visibleSections.recent;
   s.plusEnabled=s.plusEnabled!==false;
@@ -1023,13 +1024,17 @@ async function saveSettingsFromUi(){
   closeSettings();
   toast('ההגדרות נשמרו');
 }
+let settingsReturnFocus=null;
 function openSettings(){
+  settingsReturnFocus=document.activeElement;
   renderSettings();
   setSettingsTab('general');
   $('settingsModal').hidden=false;
 }
 function closeSettings(){
   $('settingsModal').hidden=true;
+  const target=settingsReturnFocus;settingsReturnFocus=null;
+  if(target&&target.isConnected&&typeof target.focus==='function')target.focus();
 }
 function toast(msg){
   const t=$('toast');
