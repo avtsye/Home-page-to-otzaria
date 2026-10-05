@@ -464,7 +464,7 @@ function openQuickActionsModalV8(entries){
 
 async function pinCurrentBook(){
   try{
-    const state=dataOf(await Otzaria.call('reader.getCurrentState'));if(!state||!state.currentBookId){toast('אין ספר פעיל להצמדה');return}
+    const state=dataOf(await Otzaria.call('reader.getCurrentState'));if(!state||!state.currentBookId){toast('אין ספר פעיל להוספה לפעולות מהירות');return}
     const book={id:state.currentId,type:state.currentType,source:state.currentSource,bookId:state.currentBookId,title:state.currentBook,index:state.currentIndex,ref:state.currentRef};
     if(featureSettings.quickPins.some(x=>x.book&&bookKey(x.book)===bookKey(book))){toast('הספר כבר מוצמד לדף הבית');return}
     const pin={type:'book',title:state.currentBook||state.currentBookId,book};featureSettings.quickPins.push(pin);
@@ -1313,7 +1313,7 @@ function contextForGroupV5(g){
   const pinned=featureSettings.quickPins.some(x=>x.type==='group'&&x.groupId===g.id);
   return [
     {label:'חפש רק בקבוצה זו',icon:'search',action:()=>{featureSettings.groupScope=g.id;saveFeatures();renderSavedSearchControls();$('q').focus();toast('החיפוש הוגבל לקבוצה '+g.name)}},
-    {label:pinned?'הסר הצמדה':'הוסף לפעולות מהירות',icon:'pin',checked:pinned,action:()=>togglePinnedGroupV5(g)},
+    {label:pinned?'הסר מהפעולות המהירות':'הוסף לפעולות מהירות',icon:'pin',checked:pinned,action:()=>togglePinnedGroupV5(g)},
     {label:'ערוך קבוצות',icon:'settings',action:()=>{openSettings();setSettingsTab('general');setTimeout(()=>$('manageGroups')?.scrollIntoView({block:'center'}),80)}},
     contextSeparatorV5(),
     {label:'מחק קבוצה',icon:'close',danger:true,action:()=>deleteGroupV5(g)}
@@ -1322,7 +1322,7 @@ function contextForGroupV5(g){
 function contextForQuickPinV5(meta){
   const {pin,index}=meta;
   const items=[{label:pin.type==='group'?'הפעל קבוצה':'פתח ספר',icon:pin.type==='group'?'bookmark':'book',action:()=>pin.type==='group'?(()=>{featureSettings.groupScope=pin.groupId;saveFeatures();renderSavedSearchControls();$('q').focus()})():smartOpenPinnedBook(pin.book)}];
-  items.push({label:'הסר הצמדה',icon:'close',danger:true,action:async()=>{const removed=featureSettings.quickPins.splice(index,1)[0];await saveFeatures();renderQuickPins();}});
+  items.push({label:'הסר מהפעולות המהירות',icon:'close',danger:true,action:async()=>{const removed=featureSettings.quickPins.splice(index,1)[0];await saveFeatures();renderQuickPins();}});
   return items;
 }
 function contextForSectionV5(section){
