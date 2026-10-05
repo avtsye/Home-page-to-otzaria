@@ -322,7 +322,7 @@
   async function deleteWorkspace(ws){
     const idx=workspaces.findIndex(x=>x.id===ws.id);if(idx<0)return;
     const [removed]=workspaces.splice(idx,1);await saveWorkspaces();renderWorkspaces();toast('סביבת העבודה נמחקה');
-    window.homePushUndo?.('סביבת העבודה נמחקה',async()=>{workspaces.splice(Math.min(idx,workspaces.length),0,removed);await saveWorkspaces();renderWorkspaces()});
+    
   }
 
   function ensureWorkspaceSection(){
@@ -582,14 +582,145 @@
     document.querySelectorAll('select').forEach(s=>{if(!s.getAttribute('aria-label')&&!s.closest('label')){const row=s.closest('.settingRow,.field');const label=row?.querySelector('label,span');if(label)s.setAttribute('aria-label',label.textContent.trim())}});
   }
 
+  // ---------- UX v8: edit mode, capped home lists, unified modals ----------
+  let homeEditModeV8=false;
+  let lastModalTriggerV8=null;
+
+  function setHomeEditModeV8(on){
+    homeEditModeV8=!!on;
+    document.body.classList.toggle('homeEditModeV8',homeEditModeV8);
+    document.querySelectorAll('#sectionsHost .sectionPanel').forEach(sec=>sec.draggable=homeEditModeV8);
+    const b=$('editHomeV8');if(b){b.classList.toggle('active',homeEditModeV8);b.setAttribute('aria-pressed',homeEditModeV8?'true':'false');b.querySelector('span')&&(b.querySelector('span').textContent=homeEditModeV8?'סיום עריכה':'ערוך דף')}
+    toast(homeEditModeV8?'מצב עריכת דף הבית פעיל':'עריכת דף הבית הסתיימה');
+  }
+  function ensureEditHomeButtonV8(){
+    if($('editHomeV8'))return;
+    const top=document.querySelector('.topActions');if(!top)return;
+    const b=document.createElement('button');b.id='editHomeV8';b.className='iconTextBtn';b.type='button';b.setAttribute('aria-pressed','false');b.innerHTML=uiIconV4('settings')+'<span>ערוך דף</span>';
+    b.onclick=()=>setHomeEditModeV8(!homeEditModeV8);top.prepend(b);
+  }
+
+  function openSimpleListModalV8(title,items,onOpen){
+    const old=$('simpleListModalV8');if(old)old.remove();
+    lastModalTriggerV8=document.activeElement;
+    const d=document.createElement('div');d.id='simpleListModalV8';d.className='tabSetDialog';
+    d.innerHTML='<div class="tabSetDialogCard uxListDialogV8"><div class="tabSetDialogHeader"><div><h2>'+esc(title)+'</h2><div class="hint">'+items.length+' פריטים</div></div><button class="nativeIconButton uxListCloseV8" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="uxModalSearchWrapV8"><input class="uxModalSearchV8" type="search" placeholder="סינון…"></div><div class="uxModalListV8"></div></div>';
+    document.body.appendChild(d);
+    const close=()=>{d.remove();const t=lastModalTriggerV8;lastModalTriggerV8=null;if(t&&t.isConnected&&t.focus)t.focus()};
+    d.querySelector('.uxListCloseV8').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    const host=d.querySelector('.uxModalListV8'),input=d.querySelector('.uxModalSearchV8');
+    const render=()=>{
+      const q=input.value.trim().toLowerCase();host.innerHTML='';
+      items.filter(x=>!q||String(x.title||'').toLowerCase().includes(q)||String(x.meta||'').toLowerCase().includes(q)).forEach(item=>{
+        const b=document.createElement('button');b.type='button';b.className='uxListRowV8';
+        b.innerHTML='<span><b>'+esc(item.title||'פריט')+'</b>'+(item.meta?'<small>'+esc(item.meta)+'</small>':'')+'</span><span aria-hidden="true">←</span>';
+        b.onclick=()=>{close();onOpen(item)};host.appendChild(b);
+      });
+    };
+    input.oninput=render;render();input.focus();
+  }
+
+  function capRenderedListV8(id,title,limit=6){
+    const box=$(id);if(!box)return;
+    const rows=[...box.querySelectorAll('.row')];box.querySelector('.showAllHomeListV8')?.remove();
+    rows.forEach((row,i)=>row.classList.toggle('uxHomeOverflowV8',i>=limit));
+    if(rows.length<=limit)return;
+    const btn=document.createElement('button');btn.type='button';btn.className='secondaryBtn showAllHomeListV8';btn.textContent='הצג הכל ('+rows.length+')';
+    btn.onclick=()=>{
+      const items=rows.map(row=>({title:row.querySelector('b')?.textContent||'פריט',meta:row.querySelector('.meta')?.textContent||'',book:row.__homeBook||null}));
+      openSimpleListModalV8(title,items,item=>item.book?openBook(item.book):null);
+    };
+    box.appendChild(btn);
+  }
+
+  function capSavedBooksV8(){
+    const cards=[...document.querySelectorAll('#savedTabGrid .savedTabCard')];
+    document.querySelector('#section-saved-tabs .showAllSavedV8')?.remove();
+    cards.forEach((card,i)=>card.classList.toggle('uxHomeOverflowV8',i>=5));
+    const groupBlocks=[...document.querySelectorAll('#savedGroupsHostV7 .groupBlock')];
+    groupBlocks.forEach((card,i)=>card.classList.toggle('uxHomeOverflowV8',i>=5));
+    const total=cards.length+groupBlocks.length;if(total<=5)return;
+    const b=document.createElement('button');b.className='secondaryBtn showAllSavedV8';b.type='button';b.textContent='הצג את כל הספרים השמורים ('+total+')';
+    b.onclick=()=>{
+      const items=[];
+      savedTabSets.forEach(set=>items.push({title:set.name,meta:(set.books||[]).length+' ספרים',set}));
+      groups.filter(g=>(g.books||[]).length).forEach(g=>items.push({title:g.name,meta:(g.books||[]).length+' ספרים',group:g}));
+      openSimpleListModalV8('כל הספרים השמורים',items,item=>item.set?openTabSetPreviewV4(item.set):(()=>{featureSettings.groupScope=item.group.id;saveFeatures();$('q')?.focus()})());
+    };
+    $('section-saved-tabs')?.appendChild(b);
+  }
+
+  function compactSavedActionsV8(){
+    const toolbar=document.querySelector('#section-saved-tabs .savedTabToolbar');if(!toolbar||toolbar.dataset.uxV8==='1')return;
+    toolbar.dataset.uxV8='1';
+    const primary=$('newTabSetBtn');if(primary){primary.innerHTML=uiIconV4('bookmark')+'<span>חדש</span>'}
+    ['captureTabsBtn','saveWorkspaceV6','exportTabSetsBtn','importTabSetsBtn'].forEach(id=>{const el=$(id);if(el)el.classList.add('savedSecondaryActionV8')});
+    let more=$('savedMoreV8');
+    if(!more){more=document.createElement('button');more.id='savedMoreV8';more.type='button';more.className='secondaryBtn';more.textContent='⋯';toolbar.appendChild(more)}
+    more.onclick=e=>{
+      const r=e.currentTarget.getBoundingClientRect();
+      showHomeContextMenuV5([
+        {label:'שמור לשוניות פתוחות',icon:'bookmark',action:()=>captureCurrentTabsV4()},
+        {label:'שמור מצב נוכחי',icon:'apps',action:()=>saveWorkspace()},
+        contextSeparatorV5(),
+        {label:'ייבא',action:()=>$('importTabSetsFile')?.click()},
+        {label:'ייצא',action:()=>exportTabSetsV4()}
+      ],r.left,r.bottom+4,'ספרים שמורים');
+    };
+  }
+
+  function simplifySettingsV8(){
+    const tabs=[...document.querySelectorAll('.settingsTab')];
+    const feedback=tabs.find(x=>x.dataset.settingsTab==='feedback');
+    const about=tabs.find(x=>x.dataset.settingsTab==='about');
+    if(feedback){feedback.querySelector('b')&&(feedback.querySelector('b').textContent='מתקדם');feedback.querySelector('small')&&(feedback.querySelector('small').textContent='גיבוי, משוב ומידע')}
+    if(about)about.hidden=true;
+    const fp=$('settingsTab-feedback'),ap=$('settingsTab-about');
+    if(fp&&ap&&!fp.querySelector('[data-moved-about-v8]')){
+      const wrap=document.createElement('div');wrap.dataset.movedAboutV8='1';wrap.className='advancedAboutV8';
+      while(ap.firstChild)wrap.appendChild(ap.firstChild);
+      fp.appendChild(wrap);
+    }
+    ensureResetButtonsV8();
+  }
+  function ensureResetButtonsV8(){
+    const appearance=$('settingsTab-appearance');if(appearance&&!$('resetLayoutV8')){
+      const block=document.createElement('section');block.className='settingBlock';block.innerHTML='<h3>איפוס תצוגה</h3><div class="resetActionsV8"><button id="resetLayoutV8" class="secondaryBtn" type="button">אפס פריסת דף הבית</button><button id="resetPluginViewV8" class="secondaryBtn" type="button">אפס תצוגת תוספים</button></div>';appearance.appendChild(block);
+      $('resetLayoutV8').onclick=async()=>{settings.sectionOrder=['plugins','groups','bookmarks','history'];featureSettings.columns='3';featureSettings.density='comfortable';await storageSet(SETTINGS_KEY,settings);await saveFeatures();applyFeatureAppearance();applyLayout();toast('פריסת דף הבית אופסה')};
+      $('resetPluginViewV8').onclick=async()=>{featureSettings.pluginView='grid';featureSettings.pluginSort='host';await saveFeatures();setupPluginControls();renderPlugins();toast('תצוגת התוספים אופסה')};
+    }
+  }
+
+  function installModalBehaviorV8(){
+    if(document.body.dataset.modalUxV8==='1')return;document.body.dataset.modalUxV8='1';
+    document.addEventListener('keydown',e=>{
+      if(e.key!=='Escape')return;
+      const d=[...document.querySelectorAll('.tabSetDialog')].filter(x=>x.isConnected).at(-1);
+      if(d){e.preventDefault();d.remove();if(lastModalTriggerV8?.isConnected)lastModalTriggerV8.focus();lastModalTriggerV8=null}
+    },true);
+  }
+
+  async function maybeOnboardV8(){
+    const seen=await fGet('uxOnboardingV8',false);if(seen)return;
+    const d=document.createElement('div');d.className='tabSetDialog';d.id='uxOnboardingV8';
+    d.innerHTML='<div class="tabSetDialogCard onboardingV8"><div class="tabSetDialogHeader"><div><h2>הגדרת דף הבית</h2><div class="hint">שלושה דברים קצרים לפני שמתחילים</div></div></div><label>צפיפות<select id="onboardDensityV8"><option value="comfortable">נוחה</option><option value="compact">קומפקטית</option></select></label><label>מספר עמודות<select id="onboardColsV8"><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label><label class="checkline"><input id="onboardDashboardV8" type="checkbox"> הצג לוח נתונים קטן</label><div class="tabSetDialogActions"><button id="onboardDoneV8" class="primaryBtn" type="button">סיום</button></div></div>';
+    document.body.appendChild(d);
+    $('onboardDoneV8').onclick=async()=>{featureSettings.density=$('onboardDensityV8').value;featureSettings.columns=$('onboardColsV8').value;featureSettings.showDashboard=$('onboardDashboardV8').checked;await saveFeatures();await fSet('uxOnboardingV8',true);applyFeatureAppearance();d.remove()};
+  }
+
+  function applyUxV8(){
+    ensureEditHomeButtonV8();installModalBehaviorV8();simplifySettingsV8();compactSavedActionsV8();
+    capRenderedListV8('history','נפתחו לאחרונה',6);capRenderedListV8('bookmarks','סימניות',6);capSavedBooksV8();
+  }
+
   // ---------- Settings & boot ----------
   function setupEnhancements(){
-    ensureBackupControls();ensureLauncherSetting();ensurePluginFilters();ensureWorkspaceSection();renderWorkspaces();renderSavedTabSetsV4();ensureUnifiedSavedBooksV7();addVisibleOverflowMenus();auditUi();applyFeatureAppearance();improveEmptyStates();
+    ensureBackupControls();ensureLauncherSetting();ensurePluginFilters();ensureWorkspaceSection();renderWorkspaces();renderSavedTabSetsV4();ensureUnifiedSavedBooksV7();addVisibleOverflowMenus();auditUi();applyFeatureAppearance();improveEmptyStates();applyUxV8();
   }
 
   Otzaria.on('plugin.boot',async()=>{
     await loadWorkspaces();
-    setTimeout(setupEnhancements,0);
+    setTimeout(()=>{setupEnhancements();maybeOnboardV8()},0);
   });
-  Core.on('home:rendered',auditUi);
+  Core.on('home:rendered',()=>{auditUi();setTimeout(applyUxV8,0)});
 })();
