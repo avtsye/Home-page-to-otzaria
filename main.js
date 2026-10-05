@@ -24,8 +24,8 @@ const DEFAULT_SEARCH={
 const DEFAULT_SETTINGS={
   plusEnabled:true,
   plusTarget:'plugin',
-  sectionOrder:['groups','recent','bookmarks','history','plugins'],
-  visibleSections:{groups:true,plugins:true,recent:true,bookmarks:true,history:true},
+  sectionOrder:['plugins','groups','bookmarks','history'],
+  visibleSections:{groups:true,plugins:true,bookmarks:true,history:true},
   quickActions:{library:true,search:true,reading:true,history:true,bookmarks:true},
   listLimit:7,
   searchConfig:DEFAULT_SEARCH
@@ -67,8 +67,10 @@ function normalizeSettings(raw){
   s.searchConfig.eras=Array.isArray(s.searchConfig.eras)?s.searchConfig.eras:[];
   s.searchConfig.options=s.searchConfig.options&&typeof s.searchConfig.options==='object'?s.searchConfig.options:{};
   const valid=DEFAULT_SETTINGS.sectionOrder;
-  const incoming=Array.isArray(raw&&raw.sectionOrder)?raw.sectionOrder:[];
-  s.sectionOrder=incoming.filter(x=>valid.includes(x)).concat(valid.filter(x=>!incoming.includes(x)));
+  const incoming=Array.isArray(raw&&raw.sectionOrder)?raw.sectionOrder.filter(x=>x!=='recent'):[];
+  const wasLegacyDefault=Array.isArray(raw&&raw.sectionOrder)&&raw.sectionOrder.join(',')==='groups,recent,bookmarks,history,plugins';
+  s.sectionOrder=wasLegacyDefault?[...valid]:incoming.filter(x=>valid.includes(x)).concat(valid.filter(x=>!incoming.includes(x)));
+  delete s.visibleSections.recent;
   s.plusEnabled=s.plusEnabled!==false;
   if(!['plugin','library','reading'].includes(s.plusTarget))s.plusTarget='plugin';
   if(![5,7,10,12,20].includes(Number(s.listLimit)))s.listLimit=7;
@@ -348,18 +350,32 @@ async function loadPlugins(){
   }catch(_){allPlugins=[]}
   renderPlugins();
 }
+function historyIdentityV7(item){
+  if(!item||typeof item!=='object')return '';
+  return [
+    item.bookUid&&'u:'+item.bookUid,
+    item.id!=null&&'i:'+item.id,
+    item.bookId&&'b:'+String(item.bookId).trim().toLowerCase(),
+    item.title&&'t:'+String(item.title).trim().toLowerCase(),
+    item.book&&'t:'+String(item.book).trim().toLowerCase()
+  ].filter(Boolean);
+}
+function historyWithoutOpenBooksV7(history,state){
+  const open=state&&Array.isArray(state.openTabs)?state.openTabs:[];
+  const openKeys=new Set(open.flatMap(historyIdentityV7));
+  return (Array.isArray(history)?history:[]).filter(item=>!historyIdentityV7(item).some(k=>openKeys.has(k)));
+}
 async function loadHome(){
   const calls=await Promise.allSettled([
-    Otzaria.call('library.listRecentBooks'),
     Otzaria.call('bookmarks.list',{limit:30}),
-    Otzaria.call('history.list',{limit:30}),
-    Otzaria.call('plugin.listInstalled')
+    Otzaria.call('history.list',{limit:50}),
+    Otzaria.call('plugin.listInstalled'),
+    Otzaria.call('reader.getCurrentState')
   ]);
   const val=i=>calls[i].status==='fulfilled'?dataOf(calls[i].value):null;
-  renderList('recent',val(0)||[],'אין ספרים אחרונים');
-  renderList('bookmarks',val(1)||[],'אין סימניות');
-  renderList('history',val(2)||[],'אין היסטוריה');
-  allPlugins=visibleInstalledPlugins(val(3));
+  renderList('bookmarks',val(0)||[],'אין סימניות');
+  renderList('history',historyWithoutOpenBooksV7(val(1)||[],val(3)),'אין ספרים סגורים בהיסטוריה');
+  allPlugins=visibleInstalledPlugins(val(2));
   renderPlugins();
   renderGroups();
   applyLayout();
@@ -956,7 +972,7 @@ function renderSettings(){
   });
   const order=$('orderList');
   order.innerHTML='';
-  const names={groups:'מועדפים וקבוצות',plugins:'תוספים',recent:'המשך לקרוא',bookmarks:'סימניות',history:'היסטוריה'};
+  const names={groups:'מועדפים וקבוצות',plugins:'תוספים',bookmarks:'סימניות',history:'נפתחו לאחרונה'};
   settings.sectionOrder.forEach((key,i)=>{
     const row=document.createElement('div');
     row.className='orderRow';
@@ -1221,8 +1237,12 @@ function wire(){
     }
   });
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&!$('advancedPanel').hidden)closeAdvancedSearch();
+    if(e.key!=='Escape')return;
+    if(!$('advancedPanel').hidden)closeAdvancedSearch();
+    if(!$('settingsModal').hidden)closeSettings();
+    document.querySelectorAll('.tabSetDialog').forEach(d=>d.remove());
   });
+  $('settingsModal').addEventListener('click',e=>{if(e.target===$('settingsModal'))closeSettings()});
 }
 
 function startUi(){
