@@ -57,8 +57,8 @@ jobs:
       - name: Build package into dist
         shell: bash
         run: |
-          mkdir -p dist build debug-build dev-compat-build
-          rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin"
+          mkdir -p dist build debug-build
+          rm -f "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-debug.otzplugin"
           zip -9 -j "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg
           cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}.otzplugin" build/
 
@@ -70,7 +70,7 @@ jobs:
           cp manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg dev-compat-build/
           node -e "const fs=require('fs'); const p='dev-compat-build/manifest.json'; const m=JSON.parse(fs.readFileSync(p,'utf8')); m.minAppVersion='0.9.97'; fs.writeFileSync(p,JSON.stringify(m,null,2)+'\\n')"
           (cd dev-compat-build && zip -9 "../dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" manifest.json index.html home-core.js main.js features.js enhancements.js official-otzaria-icons.js official-fluent-icons.js otzaria-icon.png plugin-icon.jpg)
-          cp "dist/home-page-to-otzaria-${{ steps.version.outputs.version }}-dev-compat.otzplugin" build/
+          cp build/
       - name: Verify assets are excluded from packages
         shell: bash
         run: |
@@ -92,7 +92,6 @@ jobs:
           TMP_DIR="$(mktemp -d)"
           cp "dist/home-page-to-otzaria-$VERSION.otzplugin" "$TMP_DIR/"
           cp "dist/home-page-to-otzaria-$VERSION-debug.otzplugin" "$TMP_DIR/"
-          cp "dist/home-page-to-otzaria-$VERSION-dev-compat.otzplugin" "$TMP_DIR/"
 
           # Another packaging run may have advanced main with binary dist files.
           # Sync to the latest main first, then restore this run's freshly built packages.
@@ -100,13 +99,11 @@ jobs:
           git reset --hard origin/main
           cp "$TMP_DIR/home-page-to-otzaria-$VERSION.otzplugin" dist/
           cp "$TMP_DIR/home-page-to-otzaria-$VERSION-debug.otzplugin" dist/
-          cp "$TMP_DIR/home-page-to-otzaria-$VERSION-dev-compat.otzplugin" dist/
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "dist/home-page-to-otzaria-$VERSION.otzplugin" \
-                  "dist/home-page-to-otzaria-$VERSION-debug.otzplugin" \
-                  "dist/home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
+                  "dist/home-page-to-otzaria-$VERSION-debug.otzplugin"
 
           if git diff --cached --quiet; then
             echo "dist already up to date"
@@ -131,7 +128,6 @@ jobs:
           TITLE="דף הבית לאוצריא $VERSION"
           RELEASE_FILE="build/home-page-to-otzaria-$VERSION.otzplugin"
           DEBUG_ASSET="home-page-to-otzaria-$VERSION-debug.otzplugin"
-          DEV_ASSET="home-page-to-otzaria-$VERSION-dev-compat.otzplugin"
 
           cat > release-notes.md <<EOF
           ## דף הבית לאוצריא $VERSION
