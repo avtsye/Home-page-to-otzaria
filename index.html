@@ -131,6 +131,62 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .pluginAllActionsV7 .nativeIconButton{width:32px;height:32px}
 .pluginAllActionsV7 .on{color:var(--color-primary)}
 
+
+/* Compact the unified saved-books card without shrinking empty states elsewhere. */
+#section-saved-tabs .savedTabToolbar{
+  gap:6px!important;
+  margin-bottom:8px!important;
+}
+#section-saved-tabs .savedTabToolbar button{
+  min-height:34px!important;
+  padding:6px 10px!important;
+  font-size:11px!important;
+}
+#section-saved-tabs .savedTabGrid{
+  gap:7px!important;
+}
+#section-saved-tabs .homeEmptyState{
+  min-height:0!important;
+  padding:12px 14px!important;
+  gap:4px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  flex-wrap:wrap!important;
+  text-align:start!important;
+}
+#section-saved-tabs .homeEmptyState b{
+  font-size:11px!important;
+}
+#section-saved-tabs .homeEmptyState span{
+  font-size:9px!important;
+  max-width:none!important;
+  flex:1 1 240px!important;
+}
+#section-saved-tabs .homeEmptyState button{
+  margin:0!important;
+  min-height:32px!important;
+  padding:5px 10px!important;
+  flex:0 0 auto!important;
+}
+#section-saved-tabs .savedGroupsHostV7{
+  margin-top:8px!important;
+  padding-top:8px!important;
+}
+#section-saved-tabs .savedSubsectionHeadV7{
+  margin-bottom:5px!important;
+}
+#section-saved-tabs .savedGroupsHostV7 #groups{
+  gap:6px!important;
+}
+#section-saved-tabs .savedGroupsHostV7 .homeEmptyState{
+  background:transparent!important;
+  border:1px dashed var(--color-outline-variant)!important;
+}
+#section-saved-tabs .savedTabsEmpty{
+  padding:10px 12px!important;
+  min-height:0!important;
+}
 </style>
 
 <style id="otzariaNativeStyles">
