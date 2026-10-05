@@ -281,9 +281,31 @@ function addSectionTools(){
     const head=section.querySelector('.sectionHead');if(!head||head.querySelector('.sectionTools'))return;
     const tools=document.createElement('div');tools.className='sectionTools';
     const refresh=document.createElement('button');setIconButtonV4(refresh,'refresh','רענן כרטיס');refresh.onclick=e=>{e.stopPropagation();refreshSection(section.id)};
-    const pin=document.createElement('button');setIconButtonV4(pin,'up','העבר כרטיס לראש הדף');pin.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.sectionOrder=[key,...settings.sectionOrder.filter(x=>x!==key)];$('sectionsHost').prepend(section);await storageSet(SETTINGS_KEY,settings);toast('הכרטיס הועבר לראש הדף')};
+    const move=document.createElement('button');
+    const syncMoveButton=()=>{
+      const panels=[...$('sectionsHost').querySelectorAll('.sectionPanel:not(.hiddenSection)')];
+      const isFirst=panels[0]===section;
+      setIconButtonV4(move,isFirst?'down':'up',isFirst?'העבר כרטיס לתחתית הדף':'העבר כרטיס לראש הדף');
+    };
+    syncMoveButton();
+    move.onclick=async e=>{
+      e.stopPropagation();
+      const key=section.id.replace('section-','');
+      const panels=[...$('sectionsHost').querySelectorAll('.sectionPanel:not(.hiddenSection)')];
+      const isFirst=panels[0]===section;
+      settings.sectionOrder=settings.sectionOrder.filter(x=>x!==key);
+      if(isFirst){
+        settings.sectionOrder.push(key);$('sectionsHost').append(section);toast('הכרטיס הועבר לתחתית הדף');
+      }else{
+        settings.sectionOrder=[key,...settings.sectionOrder];$('sectionsHost').prepend(section);toast('הכרטיס הועבר לראש הדף');
+      }
+      await storageSet(SETTINGS_KEY,settings);
+      document.querySelectorAll('.sectionTools').forEach(t=>{const b=t.children[1];if(b&&typeof b._syncMoveButton==='function')b._syncMoveButton()});
+      syncMoveButton();
+    };
+    move._syncMoveButton=syncMoveButton;
     const hide=document.createElement('button');setIconButtonV4(hide,'close','הסתר כרטיס');hide.onclick=async e=>{e.stopPropagation();const key=section.id.replace('section-','');settings.visibleSections[key]=false;section.classList.add('hiddenSection');await storageSet(SETTINGS_KEY,settings)};
-    tools.append(refresh,pin,hide);head.appendChild(tools);
+    tools.append(refresh,move,hide);head.appendChild(tools);
   });
 }
 async function refreshSection(id){
@@ -307,20 +329,59 @@ function setupPluginControls(){
 }
 const coreRenderPlugins=renderPlugins;
 renderPlugins=function(){renderPluginsV4(false)};
-function renderPluginsV4(favOnly){
-  const original=allPlugins.slice();const favs=new Set(featureSettings.pluginFavorites);
-  if(featureSettings.pluginSort==='name')allPlugins.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'he'));
-  else if(featureSettings.pluginSort==='favorite')allPlugins.sort((a,b)=>(favs.has(b.pluginId)?1:0)-(favs.has(a.pluginId)?1:0));
-  else if(featureSettings.pluginSort==='enabled')allPlugins.sort((a,b)=>(b.enabled?1:0)-(a.enabled?1:0));
-  else if(featureSettings.pluginSort==='recent')allPlugins.sort((a,b)=>(featureSettings.pluginLastUsed[b.pluginId]||0)-(featureSettings.pluginLastUsed[a.pluginId]||0));
-  if(favOnly)allPlugins=allPlugins.filter(p=>favs.has(p.pluginId));
-  coreRenderPlugins();$('plugins').classList.toggle('listView',featureSettings.pluginView==='list');
-  const cards=[...$('plugins').querySelectorAll('.pluginCard')];const q=(($('pluginFilter')&&$('pluginFilter').value)||'').trim().toLowerCase();
-  const visible=allPlugins.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.pluginId||'').toLowerCase().includes(q));
-  cards.forEach((card,i)=>{
-    const p=visible[i];if(!p)return;card.__homePlugin=p;const originalClick=card.onclick;card.onclick=async e=>{featureSettings.pluginLastUsed[p.pluginId]=Date.now();await saveFeatures();if(originalClick)originalClick.call(card,e)};const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');setIconButtonV4(star,'star','מועדף');star.setAttribute('aria-pressed',favs.has(p.pluginId)?'true':'false');
-    star.onclick=async e=>{e.stopPropagation();const before=[...featureSettings.pluginFavorites];const idx=featureSettings.pluginFavorites.indexOf(p.pluginId);if(idx>=0)featureSettings.pluginFavorites.splice(idx,1);else featureSettings.pluginFavorites.push(p.pluginId);await saveFeatures();renderPluginsV4(favOnly);renderQuickPins();const msg=idx>=0?'הוסר ממועדפי התוספים':'נוסף למועדפי התוספים';window.homePushUndo(msg,async()=>{featureSettings.pluginFavorites=before;await saveFeatures();renderPluginsV4(favOnly);renderQuickPins()})};card.appendChild(star);
+function sortedPluginsV7(source,favOnly=false){
+  const favs=new Set(featureSettings.pluginFavorites);
+  let rows=[...source];
+  if(featureSettings.pluginSort==='name')rows.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'he'));
+  else if(featureSettings.pluginSort==='favorite')rows.sort((a,b)=>(favs.has(b.pluginId)?1:0)-(favs.has(a.pluginId)?1:0));
+  else if(featureSettings.pluginSort==='enabled')rows.sort((a,b)=>(b.enabled?1:0)-(a.enabled?1:0));
+  else if(featureSettings.pluginSort==='recent')rows.sort((a,b)=>(featureSettings.pluginLastUsed[b.pluginId]||0)-(featureSettings.pluginLastUsed[a.pluginId]||0));
+  if(favOnly)rows=rows.filter(p=>favs.has(p.pluginId));
+  const q=(($('pluginFilter')&&$('pluginFilter').value)||'').trim().toLowerCase();
+  return rows.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.pluginId||'').toLowerCase().includes(q));
+}
+function openAllPluginsModalV7(favOnly=false){
+  const old=$('allPluginsDialogV7');if(old)old.remove();
+  const dialog=document.createElement('div');dialog.id='allPluginsDialogV7';dialog.className='tabSetDialog';
+  dialog.innerHTML='<div class="tabSetDialogCard allPluginsDialogCardV7"><div class="tabSetDialogHeader"><div><h2>כל התוספים</h2><div class="hint">כל התוספים המותקנים באוצריא</div></div><button id="allPluginsCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div id="allPluginsListV7" class="allPluginsListV7"></div></div>';
+  document.body.appendChild(dialog);
+  const close=()=>dialog.remove();dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
+  const list=dialog.querySelector('#allPluginsListV7');const favs=new Set(featureSettings.pluginFavorites);
+  const rows=sortedPluginsV7(allPlugins,favOnly);
+  rows.forEach(p=>{
+    const row=document.createElement('div');row.className='pluginAllRowV7'+(p.enabled?'':' disabled');row.__homePlugin=p;
+    const info=document.createElement('button');info.type='button';info.className='pluginAllOpenV7';
+    info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
+    info.onclick=()=>{if(!p.enabled){toast('התוסף מושבת באוצריא');return}close();openPluginV5(p)};
+    const actions=document.createElement('div');actions.className='pluginAllActionsV7';
+    const star=document.createElement('button');setIconButtonV4(star,'star',favs.has(p.pluginId)?'הסר ממועדפים':'הוסף למועדפים');star.classList.toggle('on',favs.has(p.pluginId));
+    star.onclick=async()=>{await togglePluginFavoriteV5(p);close();openAllPluginsModalV7(favOnly)};
+    const more=document.createElement('button');setIconButtonV4(more,'more','פעולות נוספות');
+    more.textContent='⋯';more.onclick=e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();showHomeContextMenuV5(contextForPluginV5(p),r.left,r.bottom+4,p.name||p.pluginId)};
+    actions.append(star,more);row.append(info,actions);list.appendChild(row);
   });
+  if(!rows.length)list.innerHTML='<div class="savedTabsEmpty">לא נמצאו תוספים מתאימים.</div>';
+}
+function renderPluginsV4(favOnly){
+  const original=allPlugins.slice();
+  const visible=sortedPluginsV7(original,favOnly);
+  allPlugins=visible.slice(0,8);
+  coreRenderPlugins();
+  const box=$('plugins');box.classList.toggle('listView',featureSettings.pluginView==='list');
+  const favs=new Set(featureSettings.pluginFavorites);
+  [...box.querySelectorAll('.pluginCard')].forEach(card=>{
+    const p=card.__homePlugin;if(!p)return;
+    const originalClick=card.onclick;
+    card.onclick=async e=>{featureSettings.pluginLastUsed[p.pluginId]=Date.now();await saveFeatures();if(originalClick)originalClick.call(card,e)};
+    const star=document.createElement('button');star.className='pluginFav'+(favs.has(p.pluginId)?' on':'');setIconButtonV4(star,'star',favs.has(p.pluginId)?'הסר ממועדפים':'הוסף למועדפים');star.setAttribute('aria-pressed',favs.has(p.pluginId)?'true':'false');
+    star.onclick=async e=>{e.stopPropagation();await togglePluginFavoriteV5(p);renderPluginsV4(favOnly);renderQuickPins()};
+    card.appendChild(star);
+  });
+  let more=$('showAllPluginsV7');
+  if(!more){more=document.createElement('button');more.id='showAllPluginsV7';more.type='button';more.className='secondaryBtn showAllPluginsV7';$('section-plugins').appendChild(more)}
+  const remaining=Math.max(0,visible.length-8);
+  more.hidden=remaining===0;more.textContent=remaining?'הצג הכל ('+visible.length+')':'הצג הכל';more.onclick=()=>openAllPluginsModalV7(favOnly);
+  const active=original.filter(p=>p.enabled).length;if($('pluginCount'))$('pluginCount').textContent=original.length+' מותקנים · '+active+' פעילים';
   allPlugins=original;
 }
 async function loadPluginsReliableV4(){
