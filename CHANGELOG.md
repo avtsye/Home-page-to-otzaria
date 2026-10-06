@@ -1,5 +1,12 @@
 # Changelog
 
+
+## 4.2.0
+
+- תיקון התנהגות כפתור + כך שמעבר לעיון או לקריאה אינו סוגר את דף הבית.
+- הוספת זיהוי הפניות ישירות בחיפוש באמצעות library.resolveRef ופתיחה עם reader.openBookAtRef.
+- הוספת הרשאת library.content.read הנדרשת עבור library.getBookToc.
+
 ## Unreleased
 
 ### Added
