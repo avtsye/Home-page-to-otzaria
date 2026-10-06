@@ -149,3 +149,8 @@ assert(!/id="plusTargetSettings" class="settingBlock"/.test(html),'plus target m
 assert(html.includes('ux.css'),'unified UX stylesheet missing');
 assert(/openFeedbackV9/.test(enhancements),'dedicated feedback launcher missing');
 assert(/feedback\.report/.test(enhancements),'dedicated feedback API wiring missing');
+
+assert(/library\.resolveRef/.test(main),'reference resolver must be integrated into search suggestions');
+assert(/reader\.openBookAtRef/.test(main),'reference suggestions must open with reader.openBookAtRef');
+assert(/title\.textContent='הפניות'/.test(main),'reference suggestions group missing');
+assert(!/closeSelfTabIfPresent/.test(main),'plus navigation must not close the home tab');
