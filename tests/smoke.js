@@ -16,8 +16,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.2.0','manifest version must be 4.1.0');
-assert(html.includes('4.1.0'),'UI must show current version');
+assert(manifest.version==='4.2.0','manifest version must be 4.2.0');
+assert(html.includes('4.2.0'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
