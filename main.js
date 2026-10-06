@@ -697,14 +697,41 @@ function highlightHtml(text,q){
   }
   return out;
 }
-function renderSuggestions(bookItems,contentItems,q){
+async function openResolvedRef(item){
+  if(!item)return;
+  const p=identity(item);
+  p.ref=item.reference||item.ref||'';
+  if(item.index!=null)p.index=item.index;
+  p.navigateToPositionIfReused=true;
+  const r=await Otzaria.call('reader.openBookAtRef',p);
+  if(!r||r.success===false)toast('לא ניתן לפתוח את ההפניה');
+  return r;
+}
+function renderSuggestions(refItems,bookItems,contentItems,q){
   const box=$('suggestions');
   box.innerHTML='';
+  const refs=refItems||[];
   const books=bookItems||[];
   const content=contentItems||[];
-  if(!books.length&&!content.length){
+  if(!refs.length&&!books.length&&!content.length){
     box.hidden=true;
     return;
+  }
+  if(refs.length){
+    const title=document.createElement('div');
+    title.className='suggestionsGroupTitle';
+    title.textContent='הפניות';
+    box.appendChild(title);
+    for(const item of refs.slice(0,5)){
+      const b=document.createElement('button');
+      b.className='suggestion';
+      const titleText=item.title||item.book||item.bookId||'ספר';
+      const ref=item.reference||item.ref||'';
+      b.innerHTML='<span><b>'+esc(titleText)+'</b><br><small>'+esc(ref)+'</small></span><span class="suggestionTag">הפניה</span>';
+      b.onclick=()=>{box.hidden=true;openResolvedRef(item)};
+      b.__homeBook=item;
+      box.appendChild(b);
+    }
   }
   if(books.length){
     const title=document.createElement('div');
@@ -796,9 +823,14 @@ function renderSearchResults(){
   $('loadMore').hidden=shown===0||(totalKnown>0&&shown>=totalKnown)||lastBatchSize<SEARCH_LIMIT;
 }
 async function fetchSuggestions(q,mySeq){
+  let refs=[];
   let books=[];
   let content=[];
   try{
+    const refsPromise=Otzaria.call('library.resolveRef',{ref:q,limit:5}).catch(err=>{
+      console.warn('Reference suggestions failed',err);
+      return null;
+    });
     const booksPromise=Otzaria.call('library.findBooks',{query:q,limit:6});
 
     // Live suggestions should be broader than an exact phrase search.
@@ -841,10 +873,11 @@ async function fetchSuggestions(q,mySeq){
       }
     }
 
-    const r=await booksPromise;
+    const [refResult,r]=await Promise.all([refsPromise,booksPromise]);
+    refs=dataOf(refResult)||[];
     books=dataOf(r)||[];
     if(mySeq!==searchSeq)return;
-    renderSuggestions(books,content,q);
+    renderSuggestions(refs,books,content,q);
   }catch(err){
     console.warn('Live suggestions failed',err);
     if(mySeq===searchSeq)$('suggestions').hidden=true;
@@ -910,24 +943,14 @@ async function syncPlusRegistration(){
     await Otzaria.call('plugin.setNewTabPage',{enabled:settings.plusEnabled!==false});
   }catch(_){}
 }
-async function closeSelfTabIfPresent(){
-  try{
-    const state=dataOf(await Otzaria.call('reader.getCurrentState'));
-    const idx=state&&state.openTabs?state.openTabs.findIndex(t=>t&&t.isSelf):-1;
-    if(idx>=0)await Otzaria.call('reader.closeTab',{index:idx});
-  }catch(_){}
-}
-
 async function handleNewTabOpen(){
   if(settings.plusEnabled===false)return;
   if(settings.plusTarget==='library'){
     await Otzaria.call('navigation.goTo',{target:'library'});
-    await closeSelfTabIfPresent();
     return;
   }
   if(settings.plusTarget==='reading'){
     await Otzaria.call('navigation.goTo',{target:'reading'});
-    await closeSelfTabIfPresent();
     return;
   }
   if(settings.plusTarget==='plugin'){
