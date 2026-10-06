@@ -16,7 +16,7 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.1.0','manifest version must be 4.1.0');
+assert(manifest.version==='4.2.0','manifest version must be 4.1.0');
 assert(html.includes('4.1.0'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
@@ -154,3 +154,5 @@ assert(/library\.resolveRef/.test(main),'reference resolver must be integrated i
 assert(/reader\.openBookAtRef/.test(main),'reference suggestions must open with reader.openBookAtRef');
 assert(/title\.textContent='הפניות'/.test(main),'reference suggestions group missing');
 assert(!/closeSelfTabIfPresent/.test(main),'plus navigation must not close the home tab');
+
+assert(manifest.permissions.includes('library.content.read'),'library.getBookToc requires library.content.read permission');
