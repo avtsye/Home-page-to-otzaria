@@ -16,8 +16,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.2.0','manifest version must be 4.2.0');
-assert(html.includes('4.2.0'),'UI must show current version');
+assert(manifest.version==='4.2.1','manifest version must be 4.2.1');
+assert(html.includes('4.2.1'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
@@ -156,3 +156,10 @@ assert(/title\.textContent='הפניות'/.test(main),'reference suggestions gro
 assert(!/closeSelfTabIfPresent/.test(main),'plus navigation must not close the home tab');
 
 assert(manifest.permissions.includes('library.content.read'),'library.getBookToc requires library.content.read permission');
+
+assert(/openLibraryMultiPickerV10/.test(features),'bulk library picker missing');
+assert(/library\.getTree/.test(features),'bulk library picker must use library.getTree');
+assert(/searchSourceScope/.test(features),'search repository scope control missing');
+assert(/sourceScope/.test(features)&&/groupScope/.test(features),'search scopes must persist');
+assert(/אין ספרים בתחום החיפוש שנבחר/.test(features),'empty search scope guard missing');
+assert(/groupScope:featureSettings\.groupScope/.test(features)&&/sourceScope:featureSettings\.sourceScope/.test(features),'saved searches must retain scopes');
