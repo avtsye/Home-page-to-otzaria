@@ -35,7 +35,7 @@ function setIconButtonV4(button,name,label){
 let featureSettings={
   density:'comfortable',background:'flat',cardSize:'normal',focusMode:false,
   pluginSort:'host',pluginView:'grid',pluginFavorites:[],savedSearches:[],quickPins:[],
-  groupScope:'',lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
+  groupScope:'',sourceScope:'',lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
   advancedOpen:false,pluginLastUsed:{},cardSize:'normal',columns:'2',accent:'host',radius:'rounded',feedbackCategory:'general'
 };
 let currentBookScopeV4=null;
@@ -163,23 +163,61 @@ function renderSearchHistoryV4(){
     b.onclick=()=>{$('q').value=item.query||'';runSearch(false)};host.appendChild(b);
   });
 }
+let libraryTreeV10=null;
+let libraryBooksV10=[];
+async function ensureLibraryCatalogueV10(force=false){
+  if(libraryTreeV10&&!force)return libraryTreeV10;
+  const r=await Otzaria.call('library.getTree',{includeBooks:true});
+  libraryTreeV10=dataOf(r)||null;
+  const out=[];
+  const walk=node=>{
+    if(!node)return;
+    (node.books||[]).forEach(book=>out.push({...book,categoryPath:book.categoryPath||node.path||''}));
+    (node.categories||[]).forEach(walk);
+  };
+  walk(libraryTreeV10);
+  libraryBooksV10=out;
+  return libraryTreeV10;
+}
+function sourceScopeBooksV10(scope){
+  if(!scope)return null;
+  return libraryBooksV10.filter(book=>scope==='user'?book.source==='user':scope==='library'?book.source==='library':true);
+}
+function applySearchScopeToBooksV10(){
+  const gid=featureSettings.groupScope;
+  let books=null;
+  if(gid==='__current')books=currentBookScopeV4?[identity(currentBookScopeV4)]:[];
+  else if(gid){
+    const g=groups.find(x=>x.id===gid);
+    books=g?(g.books||[]).map(identity):[];
+  }
+  const sourceScope=featureSettings.sourceScope||'';
+  if(sourceScope){
+    const allowed=sourceScopeBooksV10(sourceScope)||[];
+    const allowedKeys=new Set(allowed.map(bookKey));
+    books=books==null?allowed.map(identity):books.filter(b=>allowedKeys.has(bookKey(b)));
+  }
+  return books;
+}
 function addSavedSearchControls(){
   if($('savedSearchBar'))return;
   const bar=document.createElement('div');bar.id='savedSearchBar';bar.className='savedSearchBar';
-  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchGroupScope" aria-label="חיפוש בקבוצה"><option value="">כל הספרייה</option></select>';
+  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchSourceScope" aria-label="מאגר לחיפוש"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><select id="searchGroupScope" aria-label="חיפוש בקבוצה"><option value="">כל הספרים</option></select>';
   $('advancedPanel').appendChild(bar);
   $('saveSearchProfile').onclick=saveCurrentSearchProfile;$('savedSearchSelect').onchange=applySavedSearchProfile;$('deleteSearchProfile').onclick=deleteSavedSearchProfileV4;
   $('searchGroupScope').onchange=e=>{featureSettings.groupScope=e.target.value;saveFeatures();if($('q').value.trim())runSearch(false)};
+  $('searchSourceScope').onchange=async e=>{featureSettings.sourceScope=e.target.value;await saveFeatures();try{await ensureLibraryCatalogueV10()}catch(_){}if($('q').value.trim())runSearch(false)};
   renderSavedSearchControls();
 }
 function renderSavedSearchControls(){
   const sel=$('savedSearchSelect');if(sel){sel.innerHTML='<option value="">חיפוש שמור…</option>';featureSettings.savedSearches.forEach((x,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=x.name;sel.appendChild(o)})}
-  const gs=$('searchGroupScope');if(gs){gs.innerHTML='<option value="">כל הספרייה</option><option value="__current">הספר הפעיל</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent='קבוצה: '+g.name;gs.appendChild(o)});gs.value=featureSettings.groupScope||''}
+  const ss=$('searchSourceScope');if(ss)ss.value=featureSettings.sourceScope||'';
+  const gs=$('searchGroupScope');if(gs){gs.innerHTML='<option value="">כל הספרים</option><option value="__current">הספר הפעיל</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=(g.id==='favorites'?'מועדפים':'קבוצה: '+g.name);gs.appendChild(o)});gs.value=featureSettings.groupScope||''}
 }
 async function saveCurrentSearchProfile(){
   const q=$('q').value.trim();const name=q||'חיפוש '+(featureSettings.savedSearches.length+1);
   const before=[...featureSettings.savedSearches];
-  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH)});
+  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH),groupScope:featureSettings.groupScope||'',sourceScope:featureSettings.sourceScope||''});
   featureSettings.savedSearches=featureSettings.savedSearches.slice(0,12);await saveFeatures();renderSavedSearchControls();toast('החיפוש נשמר');
   
 }
@@ -192,14 +230,29 @@ async function deleteSavedSearchProfileV4(){
 function applySavedSearchProfile(){
   const idx=Number($('savedSearchSelect').value);if(!Number.isInteger(idx)||idx<0)return;
   const item=featureSettings.savedSearches[idx];if(!item)return;
-  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);$('q').value=item.query||'';applySearchSettingsToUi();renderDynamicSearchControls();if($('q').value.trim())runSearch(false);
+  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);featureSettings.groupScope=item.groupScope||'';featureSettings.sourceScope=item.sourceScope||'';$('q').value=item.query||'';saveFeatures();applySearchSettingsToUi();renderDynamicSearchControls();renderSavedSearchControls();if($('q').value.trim())runSearch(false);
 }
 const coreBuildSearchParams=buildSearchParams;
 buildSearchParams=function(q,offset){
-  const p=coreBuildSearchParams(q,offset);const gid=featureSettings.groupScope;
-  if(gid==='__current'&&currentBookScopeV4)p.books=[identity(currentBookScopeV4)];
-  else if(gid){const g=groups.find(x=>x.id===gid);if(g&&g.books.length)p.books=g.books.map(identity)}
+  const p=coreBuildSearchParams(q,offset);
+  const books=applySearchScopeToBooksV10();
+  if(books!=null)p.books=books;
   return p;
+};
+const coreRunSearchV10=runSearch;
+runSearch=async function(append){
+  if(featureSettings.sourceScope){
+    try{await ensureLibraryCatalogueV10()}catch(e){fLog('warn','library tree unavailable for search source filter',e)}
+  }
+  const scoped=applySearchScopeToBooksV10();
+  if(scoped&&scoped.length===0){
+    currentResults=[];currentBookCounts=[];currentTotal=0;currentGroupCount=0;currentOffset=0;lastBatchSize=0;
+    $('suggestions').hidden=true;$('searchSection').hidden=false;$('searchResults').innerHTML='';
+    $('searchMeta').textContent='0 תוצאות';$('searchEmpty').hidden=false;
+    $('searchEmpty').textContent='אין ספרים בתחום החיפוש שנבחר.';$('loadMore').hidden=true;renderFacets();
+    return;
+  }
+  return coreRunSearchV10(append);
 };
 
 const coreNormalizeGroupsV4=normalizeGroups;
@@ -823,6 +876,69 @@ async function chooseBookTocLocationV7(book,onPick){
   dialog.querySelector('#tabSetTocFilterV7').addEventListener('input',render);
   render();
 }
+function treeNodeBooksV10(node){
+  const out=[];
+  const walk=n=>{if(!n)return;(n.books||[]).forEach(b=>out.push({...b,categoryPath:b.categoryPath||n.path||''}));(n.categories||[]).forEach(walk)};
+  walk(node);return out;
+}
+async function openLibraryMultiPickerV10(onAdd){
+  const old=$('libraryMultiPickerV10');if(old)old.remove();
+  const dialog=document.createElement('div');dialog.id='libraryMultiPickerV10';dialog.className='tabSetDialog';
+  dialog.innerHTML='<div class="tabSetDialogCard libraryMultiPickerCardV10"><div class="tabSetDialogHeader"><div><h2>בחר ספרים מהספרייה</h2><div class="hint">אפשר לסמן ספרים בודדים או תיקייה שלמה.</div></div><button class="nativeIconButton libraryPickerCloseV10" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="libraryPickerToolsV10"><select id="libraryPickerSourceV10"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><input id="libraryPickerFilterV10" type="search" placeholder="סנן תיקיות וספרים…"></div><div id="libraryPickerTreeV10" class="libraryPickerTreeV10"><div class="hint">טוען ספרייה…</div></div><div class="tabSetDialogActions"><span id="libraryPickerCountV10" class="hint">0 נבחרו</span><button id="libraryPickerCancelV10" class="secondaryBtn" type="button">ביטול</button><button id="libraryPickerAddV10" class="primaryBtn" type="button">הוסף נבחרים</button></div></div>';
+  document.body.appendChild(dialog);
+  const close=()=>dialog.remove();dialog.querySelector('.libraryPickerCloseV10').onclick=close;dialog.querySelector('#libraryPickerCancelV10').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
+  const selected=new Map();
+  let tree=null;
+  const count=()=>{dialog.querySelector('#libraryPickerCountV10').textContent=selected.size+' נבחרו'};
+  const addSelection=(books,checked)=>{for(const b of books){const k=bookKey(b);if(!k)continue;if(checked)selected.set(k,b);else selected.delete(k)}count()};
+  const render=()=>{
+    const host=dialog.querySelector('#libraryPickerTreeV10');host.innerHTML='';
+    if(!tree){host.innerHTML='<div class="hint">לא ניתן לטעון את הספרייה.</div>';return}
+    const source=dialog.querySelector('#libraryPickerSourceV10').value;
+    const query=dialog.querySelector('#libraryPickerFilterV10').value.trim().toLowerCase();
+    const drawNode=(node,depth=0)=>{
+      let direct=(node.books||[]).filter(b=>(!source||b.source===source)&&(!query||String(b.title||b.bookId||'').toLowerCase().includes(query)));
+      const childRows=[];
+      for(const child of node.categories||[]){
+        const all=treeNodeBooksV10(child).filter(b=>!source||b.source===source);
+        const visible=query?(String(child.title||'').toLowerCase().includes(query)?all:all.filter(b=>String(b.title||b.bookId||'').toLowerCase().includes(query))):all;
+        if(visible.length)childRows.push({child,visible});
+      }
+      const allHere=treeNodeBooksV10(node).filter(b=>(!source||b.source===source)&&(!query||String(node.title||'').toLowerCase().includes(query)||String(b.title||b.bookId||'').toLowerCase().includes(query)));
+      if(depth>0&&allHere.length){
+        const details=document.createElement('details');details.className='libraryPickerNodeV10';details.open=depth<2&&!!query;
+        const summary=document.createElement('summary');
+        const cb=document.createElement('input');cb.type='checkbox';cb.checked=allHere.every(b=>selected.has(bookKey(b)));cb.indeterminate=!cb.checked&&allHere.some(b=>selected.has(bookKey(b)));
+        cb.onclick=e=>{e.stopPropagation();addSelection(allHere,e.currentTarget.checked);render()};
+        summary.append(cb,document.createTextNode(' '+(node.title||'תיקייה')+' ('+allHere.length+')'));details.appendChild(summary);
+        const body=document.createElement('div');body.className='libraryPickerNodeBodyV10';details.appendChild(body);host.appendChild(details);
+        const oldHost=host;const originalAppend=host.appendChild.bind(host);
+        const before=host;
+        direct.forEach(book=>{
+          const row=document.createElement('label');row.className='libraryPickerBookV10';const c=document.createElement('input');c.type='checkbox';c.checked=selected.has(bookKey(book));c.onchange=e=>{addSelection([book],e.currentTarget.checked)};row.append(c,document.createTextNode(' '+(book.title||book.bookId||'ספר')));body.appendChild(row);
+        });
+        childRows.forEach(({child})=>{
+          const temp=document.createElement('div');body.appendChild(temp);
+          const savedHost=host;
+          const subAll=treeNodeBooksV10(child).filter(b=>(!source||b.source===source)&&(!query||String(child.title||'').toLowerCase().includes(query)||String(b.title||b.bookId||'').toLowerCase().includes(query)));
+          if(!subAll.length)return;
+          const sub=document.createElement('details');sub.className='libraryPickerNodeV10';sub.open=!!query;
+          const sm=document.createElement('summary');const c=document.createElement('input');c.type='checkbox';c.checked=subAll.every(b=>selected.has(bookKey(b)));c.indeterminate=!c.checked&&subAll.some(b=>selected.has(bookKey(b)));c.onclick=e=>{e.stopPropagation();addSelection(subAll,e.currentTarget.checked);render()};sm.append(c,document.createTextNode(' '+(child.title||'תיקייה')+' ('+subAll.length+')'));sub.appendChild(sm);
+          const inner=document.createElement('div');inner.className='libraryPickerNodeBodyV10';
+          subAll.forEach(book=>{const row=document.createElement('label');row.className='libraryPickerBookV10';const bx=document.createElement('input');bx.type='checkbox';bx.checked=selected.has(bookKey(book));bx.onchange=e=>addSelection([book],e.currentTarget.checked);row.append(bx,document.createTextNode(' '+(book.title||book.bookId||'ספר')));inner.appendChild(row)});
+          sub.appendChild(inner);temp.appendChild(sub);
+        });
+      }
+    };
+    const roots=(tree.categories||[]);
+    roots.forEach(node=>drawNode(node,1));
+    (tree.books||[]).filter(b=>!source||b.source===source).forEach(book=>{if(query&&!String(book.title||book.bookId||'').toLowerCase().includes(query))return;const row=document.createElement('label');row.className='libraryPickerBookV10';const c=document.createElement('input');c.type='checkbox';c.checked=selected.has(bookKey(book));c.onchange=e=>addSelection([book],e.currentTarget.checked);row.append(c,document.createTextNode(' '+(book.title||book.bookId||'ספר')));host.appendChild(row)});
+    if(!host.children.length)host.innerHTML='<div class="hint">לא נמצאו ספרים מתאימים.</div>';
+  };
+  try{tree=await ensureLibraryCatalogueV10();render()}catch(e){fLog('warn','library tree picker failed',e);render()}
+  dialog.querySelector('#libraryPickerSourceV10').onchange=render;dialog.querySelector('#libraryPickerFilterV10').oninput=render;
+  dialog.querySelector('#libraryPickerAddV10').onclick=()=>{const n=onAdd([...selected.values()]);if(n)toast('נוספו '+n+' ספרים לכרטיס');else toast('לא נבחרו ספרים חדשים');close()};
+}
 function openTabSetEditorV4({mode,set,books}){
   const old=$('tabSetDialogV4');if(old)old.remove();
   const dialog=document.createElement('div');dialog.id='tabSetDialogV4';dialog.className='tabSetDialog';
@@ -831,10 +947,10 @@ function openTabSetEditorV4({mode,set,books}){
   const suggested=source.name||('כרטיסיות '+(savedTabSets.length+1));
 
   dialog.innerHTML='<div class="tabSetDialogCard tabSetEditorCard">'+
-    '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'כרטיס ספרים חדש':'עריכת כרטיס')+'</h2><div class="hint">אפשר לחפש ספרים, להוסיף לשוניות פתוחות, לשנות סדר ולהסיר ספרים לפני השמירה.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
+    '<div class="tabSetDialogHeader"><div><h2>'+(mode==='create'?'כרטיס ספרים חדש':'עריכת כרטיס')+'</h2><div class="hint">אפשר לבחור תיקיות או כמה ספרים יחד, לחפש ספר, או להוסיף את הלשוניות הפתוחות.</div></div><button id="tabSetCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div>'+
     '<label>שם הכרטיס</label><input id="tabSetNameV4" maxlength="80" value="'+esc(suggested)+'">'+
     '<div class="tabSetEditorSetting"><span>ספר שכבר פתוח</span><select id="tabSetConflictDefaultV4"><option value="ask">שאל בכל פתיחה</option><option value="keep">השאר במיקום הנוכחי</option><option value="restore">שחזר למיקום השמור</option></select></div>'+
-    '<div class="tabSetEditorTools"><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button><button id="tabSetRepairV4" class="secondaryBtn" type="button">בדוק ותקן ספרים</button></div>'+
+    '<div class="tabSetEditorTools"><button id="tabSetBrowseLibraryV10" class="primaryBtn" type="button">בחר מהספרייה…</button><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button><button id="tabSetRepairV4" class="secondaryBtn" type="button">בדוק ותקן ספרים</button></div>'+
     '<div class="tabSetLibraryAdd"><input id="tabSetBookSearchV4" type="text" placeholder="חפש ספר להוספה…"><div id="tabSetBookSearchResultsV4" class="tabSetBookSearchResults"></div></div>'+
     '<div id="tabSetPreviewV4" class="tabSetPreview"></div>'+
     '<div class="tabSetDialogActions"><button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
@@ -886,6 +1002,7 @@ function openTabSetEditorV4({mode,set,books}){
     renderDraft();return added;
   };
   renderDraft();
+  dialog.querySelector('#tabSetBrowseLibraryV10').onclick=()=>openLibraryMultiPickerV10(addBooks);
 
   dialog.querySelector('#tabSetAddOpenV4').onclick=async()=>{
     let state=null;try{state=dataOf(await Otzaria.call('reader.getCurrentState'))}catch(_){}
