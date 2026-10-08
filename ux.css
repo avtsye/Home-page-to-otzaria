@@ -397,3 +397,14 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
 .aboutModalBrandV9 span{font-size:10px;color:var(--color-on-surface-variant)}
 .aboutModalV9 p{margin:0;font-size:11px;line-height:1.6;color:var(--color-on-surface-variant)}
 .aboutModalV9 .shortcutList{display:grid;gap:7px}
+
+
+/* Plugins card must span full dashboard width */
+.sectionsHost>#section-plugins{
+  grid-column:1/-1!important;
+  width:100%!important;
+  max-width:none!important;
+}
+@media(max-width:920px){
+  .sectionsHost>#section-plugins{grid-column:1/-1!important}
+}
