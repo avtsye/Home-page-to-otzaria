@@ -35,7 +35,7 @@ function setIconButtonV4(button,name,label){
 let featureSettings={
   density:'comfortable',background:'flat',cardSize:'normal',focusMode:false,
   pluginSort:'host',pluginView:'grid',pluginFavorites:[],savedSearches:[],quickPins:[],
-  groupScope:'',sourceScope:'',lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
+  groupScope:'',sourceScope:'',singleBookScope:null,lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
   advancedOpen:false,pluginLastUsed:{},cardSize:'normal',columns:'2',accent:'host',radius:'rounded',feedbackCategory:'general'
 };
 let currentBookScopeV4=null;
@@ -74,6 +74,7 @@ function mergeFeatureSettings(raw){
   const f=Object.assign({},featureSettings,raw||{});
   for(const k of ['pluginFavorites','savedSearches','quickPins'])if(!Array.isArray(f[k]))f[k]=[];
   f.pluginFavorites=f.pluginFavorites.filter(id=>id!==SELF);
+  if(!f.singleBookScope||typeof f.singleBookScope!=='object')f.singleBookScope=null;
   f.background='flat';
   f.accent='host';
   f.radius='rounded';
@@ -187,9 +188,21 @@ function applySearchScopeToBooksV10(){
   const gid=featureSettings.groupScope;
   let books=null;
   if(gid==='__current')books=currentBookScopeV4?[identity(currentBookScopeV4)]:[];
-  else if(gid){
+  else if(gid&&String(gid).startsWith('set:')){
+    const sid=String(gid).slice(4);
+    const set=savedTabSets.find(x=>String(x.id)===sid);
+    books=set?(set.books||[]).map(identity):[];
+  }else if(gid){
     const g=groups.find(x=>x.id===gid);
     books=g?(g.books||[]).map(identity):[];
+  }
+  if(featureSettings.singleBookScope){
+    const one=[identity(featureSettings.singleBookScope)];
+    if(books==null)books=one;
+    else{
+      const key=bookKey(featureSettings.singleBookScope);
+      books=books.filter(b=>bookKey(b)===key);
+    }
   }
   const sourceScope=featureSettings.sourceScope||'';
   if(sourceScope){
@@ -199,25 +212,59 @@ function applySearchScopeToBooksV10(){
   }
   return books;
 }
+function setupSingleBookScopeV11(){
+  const input=$('searchSingleBookV11'),box=$('searchSingleBookResultsV11'),clear=$('clearSingleBookV11');
+  if(!input||!box||input.dataset.bound==='1')return;
+  input.dataset.bound='1';
+  let timer=0,seq=0;
+  const hide=()=>{box.innerHTML='';box.hidden=true};
+  input.oninput=()=>{
+    clearTimeout(timer);
+    const q=input.value.trim();
+    if(featureSettings.singleBookScope&&q!==(featureSettings.singleBookScope.title||featureSettings.singleBookScope.bookId||'')){
+      featureSettings.singleBookScope=null;saveFeatures();
+    }
+    if(q.length<2){hide();return}
+    const my=++seq;
+    timer=setTimeout(async()=>{
+      try{
+        const r=await Otzaria.call('library.findBooks',{query:q,limit:10});
+        if(my!==seq)return;
+        const rows=dataOf(r)||[];box.innerHTML='';box.hidden=false;
+        rows.forEach(book=>{
+          const b=document.createElement('button');b.type='button';
+          b.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><small>'+esc(book.categoryPath||'')+'</small>';
+          b.onclick=async()=>{featureSettings.singleBookScope=compactBook(book);input.value=book.title||book.bookId||'ספר';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
+          box.appendChild(b);
+        });
+        if(!rows.length)box.innerHTML='<div class="hint">לא נמצאו ספרים.</div>';
+      }catch(_){hide()}
+    },180);
+  };
+  input.onfocus=()=>{if(input.value.trim().length>=2&&!featureSettings.singleBookScope)input.oninput()};
+  clear.onclick=async()=>{featureSettings.singleBookScope=null;input.value='';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
+}
 function addSavedSearchControls(){
   if($('savedSearchBar'))return;
   const bar=document.createElement('div');bar.id='savedSearchBar';bar.className='savedSearchBar';
-  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchSourceScope" aria-label="מאגר לחיפוש"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><select id="searchGroupScope" aria-label="חיפוש בקבוצה"><option value="">כל הספרים</option></select>';
+  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchSourceScope" aria-label="מאגר לחיפוש"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><select id="searchGroupScope" aria-label="היקף ספרים"><option value="">כל הספרים</option></select><span class="searchSingleBookWrapV11"><input id="searchSingleBookV11" type="search" autocomplete="off" placeholder="ספר בודד…"><button id="clearSingleBookV11" type="button" title="נקה ספר בודד">×</button><div id="searchSingleBookResultsV11" class="searchSingleBookResultsV11"></div></span>';
   $('advancedPanel').appendChild(bar);
   $('saveSearchProfile').onclick=saveCurrentSearchProfile;$('savedSearchSelect').onchange=applySavedSearchProfile;$('deleteSearchProfile').onclick=deleteSavedSearchProfileV4;
   $('searchGroupScope').onchange=e=>{featureSettings.groupScope=e.target.value;saveFeatures();if($('q').value.trim())runSearch(false)};
   $('searchSourceScope').onchange=async e=>{featureSettings.sourceScope=e.target.value;await saveFeatures();try{await ensureLibraryCatalogueV10()}catch(_){}if($('q').value.trim())runSearch(false)};
+  setupSingleBookScopeV11();
   renderSavedSearchControls();
 }
 function renderSavedSearchControls(){
   const sel=$('savedSearchSelect');if(sel){sel.innerHTML='<option value="">חיפוש שמור…</option>';featureSettings.savedSearches.forEach((x,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=x.name;sel.appendChild(o)})}
   const ss=$('searchSourceScope');if(ss)ss.value=featureSettings.sourceScope||'';
-  const gs=$('searchGroupScope');if(gs){gs.innerHTML='<option value="">כל הספרים</option><option value="__current">הספר הפעיל</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=(g.id==='favorites'?'מועדפים':'קבוצה: '+g.name);gs.appendChild(o)});gs.value=featureSettings.groupScope||''}
+  const gs=$('searchGroupScope');if(gs){gs.innerHTML='<option value="">כל הספרים</option><option value="__current">הספר הפעיל</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=(g.id==='favorites'?'מועדפים':'קבוצה: '+g.name);gs.appendChild(o)});savedTabSets.forEach(set=>{const o=document.createElement('option');o.value='set:'+set.id;o.textContent='כרטיס: '+set.name;gs.appendChild(o)});gs.value=featureSettings.groupScope||''}
+  const one=$('searchSingleBookV11');if(one)one.value=featureSettings.singleBookScope?(featureSettings.singleBookScope.title||featureSettings.singleBookScope.bookId||'ספר נבחר'):'';
 }
 async function saveCurrentSearchProfile(){
   const q=$('q').value.trim();const name=q||'חיפוש '+(featureSettings.savedSearches.length+1);
   const before=[...featureSettings.savedSearches];
-  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH),groupScope:featureSettings.groupScope||'',sourceScope:featureSettings.sourceScope||''});
+  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH),groupScope:featureSettings.groupScope||'',sourceScope:featureSettings.sourceScope||'',singleBookScope:featureSettings.singleBookScope?compactBook(featureSettings.singleBookScope):null});
   featureSettings.savedSearches=featureSettings.savedSearches.slice(0,12);await saveFeatures();renderSavedSearchControls();toast('החיפוש נשמר');
   
 }
@@ -230,7 +277,7 @@ async function deleteSavedSearchProfileV4(){
 function applySavedSearchProfile(){
   const idx=Number($('savedSearchSelect').value);if(!Number.isInteger(idx)||idx<0)return;
   const item=featureSettings.savedSearches[idx];if(!item)return;
-  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);featureSettings.groupScope=item.groupScope||'';featureSettings.sourceScope=item.sourceScope||'';$('q').value=item.query||'';saveFeatures();applySearchSettingsToUi();renderDynamicSearchControls();renderSavedSearchControls();if($('q').value.trim())runSearch(false);
+  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);featureSettings.groupScope=item.groupScope||'';featureSettings.sourceScope=item.sourceScope||'';featureSettings.singleBookScope=item.singleBookScope||null;$('q').value=item.query||'';saveFeatures();applySearchSettingsToUi();renderDynamicSearchControls();renderSavedSearchControls();if($('q').value.trim())runSearch(false);
 }
 const coreBuildSearchParams=buildSearchParams;
 buildSearchParams=function(q,offset){
@@ -409,7 +456,7 @@ function openAllPluginsModalV7(favOnly=false){
     rows.forEach(p=>{
       const row=document.createElement('div');row.className='pluginAllRowV7'+(p.enabled?'':' disabled');row.__homePlugin=p;
       const info=document.createElement('button');info.type='button';info.className='pluginAllOpenV7';
-      info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
+      info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName,p)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
       info.onclick=()=>{if(!p.enabled){toast('התוסף מושבת באוצריא');return}close();openPluginV5(p)};
       const actions=document.createElement('div');actions.className='pluginAllActionsV7';
       const star=document.createElement('button');setIconButtonV4(star,'star',favs.has(p.pluginId)?'הסר ממועדפים':'הוסף למועדפים');star.classList.toggle('on',favs.has(p.pluginId));
@@ -425,7 +472,7 @@ function openAllPluginsModalV7(favOnly=false){
 function renderPluginsV4(favOnly){
   const original=allPlugins.slice();
   const visible=sortedPluginsV7(original,favOnly);
-  allPlugins=visible.slice(0,8);
+  allPlugins=visible;
   coreRenderPlugins();
   const box=$('plugins');box.classList.toggle('listView',featureSettings.pluginView==='list');
   const favs=new Set(featureSettings.pluginFavorites);
@@ -439,8 +486,7 @@ function renderPluginsV4(favOnly){
   });
   let more=$('showAllPluginsV7');
   if(!more){more=document.createElement('button');more.id='showAllPluginsV7';more.type='button';more.className='secondaryBtn showAllPluginsV7';$('section-plugins').appendChild(more)}
-  const remaining=Math.max(0,visible.length-8);
-  more.hidden=remaining===0;more.textContent=remaining?'הצג הכל ('+visible.length+')':'הצג הכל';more.onclick=()=>openAllPluginsModalV7(favOnly);
+  more.hidden=true;more.textContent='הצג הכל';more.onclick=()=>openAllPluginsModalV7(favOnly);
   const active=original.filter(p=>p.enabled).length;if($('pluginCount'))$('pluginCount').textContent=original.length+' מותקנים · '+active+' פעילים';
   allPlugins=original;
 }
