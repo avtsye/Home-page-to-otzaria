@@ -16,8 +16,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.2.3','manifest version must be 4.2.3');
-assert(html.includes('4.2.3'),'UI must show current version');
+assert(manifest.version==='4.2.4','manifest version must be 4.2.4');
+assert(html.includes('4.2.4'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
@@ -175,3 +175,8 @@ assert(/pluginIconMarkup\(p\.toolTabIconName,p\)/.test(main),'plugin cards must 
 assert(/allPluginsListV7/.test(html)&&/grid-template-columns:repeat\(auto-fill/.test(html),'all plugins modal must use a grid');
 assert(/style\.setProperty\('grid-template-columns'/.test(features),'all plugins grid must be enforced inline');
 assert(/pluginSmartFallback/.test(main)&&/pluginSmartFallback/.test(html),'distinct plugin fallback icon missing');
+assert(/pluginDisplayMode:'eight'/.test(features),'plugin display mode default missing');
+assert(/pluginDisplayModeSettingV12/.test(features)&&/pluginDisplayModeSettingV12/.test(html),'plugin display mode setting missing');
+assert(/visible\.slice\(0,8\)/.test(features),'eight-plugin mode missing');
+assert(/showAll\|\|remaining===0/.test(features),'show more visibility logic missing');
+assert(/width:calc\(100vw - 20px\)/.test(html),'all plugins modal must be full width');
