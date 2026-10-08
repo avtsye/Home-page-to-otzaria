@@ -290,16 +290,14 @@ function pluginIconMarkup(name,plugin){
 
   const generic=!svg||key==='puzzle_piece_24_regular';
   if(generic&&plugin){
-    const candidates=[
-      'home_24_regular','book_24_regular','search_24_regular','history_24_regular',
-      'calendar_24_regular','settings_24_regular','code_24_regular','apps_24_regular',
-      'document_24_regular','database_24_regular','bookmark_24_regular','star_24_regular'
-    ].filter(k=>fluent[k]||otz[k]);
-    if(candidates.length){
-      const seed=String(plugin.pluginId||plugin.name||'plugin');
-      let hash=0;for(let i=0;i<seed.length;i++)hash=((hash<<5)-hash+seed.charCodeAt(i))|0;
-      const smart=candidates[Math.abs(hash)%candidates.length];
-      svg=fluent[smart]||otz[smart]||svg;
+    const seed=String(plugin.pluginId||plugin.name||'plugin');
+    let hash=0;for(let i=0;i<seed.length;i++)hash=((hash<<5)-hash+seed.charCodeAt(i))|0;
+    const builtins=['book','search','calendar','settings','code','database','document','star','clock','app'];
+    const chosen=builtins[Math.abs(hash)%builtins.length];
+    svg=ICONS[chosen]||ICONS.app;
+    if(svg){
+      const label=String(plugin.name||plugin.pluginId||'').trim().slice(0,1);
+      return '<span class="pluginSmartFallback" aria-hidden="true">'+svg+(label?'<small>'+esc(label)+'</small>':'')+'</span>';
     }
   }
   if(!svg)svg=fluent.puzzle_piece_24_regular||ICONS.app;
