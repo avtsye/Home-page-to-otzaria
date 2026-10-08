@@ -274,7 +274,7 @@ const ICONS={
   person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4 3.4-6 8-6s7.3 2 8 6"/></svg>',
   app:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'
 };
-function pluginIconMarkup(name){
+function pluginIconMarkup(name,plugin){
   const raw=String(name||'puzzle_piece_24_regular').trim();
   let library='auto';
   let key=raw;
@@ -288,6 +288,20 @@ function pluginIconMarkup(name){
   else if(library==='fluent')svg=fluent[key]||null;
   else svg=otz[key]||fluent[key]||null;
 
+  const generic=!svg||key==='puzzle_piece_24_regular';
+  if(generic&&plugin){
+    const candidates=[
+      'home_24_regular','book_24_regular','search_24_regular','history_24_regular',
+      'calendar_24_regular','settings_24_regular','code_24_regular','apps_24_regular',
+      'document_24_regular','database_24_regular','bookmark_24_regular','star_24_regular'
+    ].filter(k=>fluent[k]||otz[k]);
+    if(candidates.length){
+      const seed=String(plugin.pluginId||plugin.name||'plugin');
+      let hash=0;for(let i=0;i<seed.length;i++)hash=((hash<<5)-hash+seed.charCodeAt(i))|0;
+      const smart=candidates[Math.abs(hash)%candidates.length];
+      svg=fluent[smart]||otz[smart]||svg;
+    }
+  }
   if(!svg)svg=fluent.puzzle_piece_24_regular||ICONS.app;
   return svg;
 }
@@ -300,7 +314,7 @@ function renderPlugins(){
     const cont=document.createElement('button');
     cont.className='pluginCard timelineContinueCard';
     cont.title='המשך מהמקום שבו הפסקת באמצעות Timeline';
-    cont.innerHTML='<div class="pluginIcon">'+pluginIconMarkup(timeline.toolTabIconName||'history_24_regular')+'</div><b>המשך עבודה</b><small>פתח את מצב העבודה האחרון ב-Timeline</small>';
+    cont.innerHTML='<div class="pluginIcon">'+pluginIconMarkup(timeline.toolTabIconName||'history_24_regular',timeline)+'</div><b>המשך עבודה</b><small>פתח את מצב העבודה האחרון ב-Timeline</small>';
     cont.onclick=()=>Otzaria.call('plugin.openOther',{pluginId:'timeline-plugin',param:{action:'continueLatest',source:'home-page'}});
     box.appendChild(cont);
   }
@@ -325,7 +339,7 @@ function renderPlugins(){
     if(!p.enabled)badge='<span class="pluginBadge off">מושבת</span>';
     else if(p.showInTools===false)badge='<span class="pluginBadge">מוסתר</span>';
     else if(p.sourceType&&p.sourceType!=='packaged')badge='<span class="pluginBadge">פיתוח</span>';
-    b.innerHTML=badge+'<div class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName)+'</div><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+'</small>';
+    b.innerHTML=badge+'<div class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName,p)+'</div><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+'</small>';
     b.onclick=()=>{
       if(!p.enabled){
         toast('התוסף מושבת באוצריא');
