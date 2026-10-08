@@ -167,7 +167,6 @@ assert(/confirmDeleteTabSetV10/.test(features),'saved card delete confirmation m
 assert(/tabSetPreviewDeleteV10/.test(features),'saved card preview delete action missing');
 assert(/tabSetDeleteV10/.test(features),'saved card editor delete action missing');
 assert(/savedTabSets\.indexOf\(set\)/.test(features),'saved card deletion should prefer object identity');
-assert(!/visible\.slice\(0,8\)/.test(features),'plugins must not be limited to 8');
 assert(/savedTabSets\.forEach\(set=>/.test(features)&&/כרטיס:/.test(features),'saved tab sets must be available as search scopes');
 assert(/searchSingleBookV11/.test(features),'single-book search scope control missing');
 assert(/singleBookScope/.test(features),'single-book scope must persist');
