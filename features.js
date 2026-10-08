@@ -34,7 +34,7 @@ function setIconButtonV4(button,name,label){
 }
 let featureSettings={
   density:'comfortable',background:'flat',cardSize:'normal',focusMode:false,
-  pluginSort:'host',pluginView:'grid',pluginFavorites:[],savedSearches:[],quickPins:[],
+  pluginSort:'host',pluginView:'grid',pluginDisplayMode:'eight',pluginFavorites:[],savedSearches:[],quickPins:[],
   groupScope:'',sourceScope:'',singleBookScope:null,lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
   advancedOpen:false,pluginLastUsed:{},cardSize:'normal',columns:'2',accent:'host',radius:'rounded',feedbackCategory:'general'
 };
@@ -75,6 +75,7 @@ function mergeFeatureSettings(raw){
   for(const k of ['pluginFavorites','savedSearches','quickPins'])if(!Array.isArray(f[k]))f[k]=[];
   f.pluginFavorites=f.pluginFavorites.filter(id=>id!==SELF);
   if(!f.singleBookScope||typeof f.singleBookScope!=='object')f.singleBookScope=null;
+  if(!['eight','all'].includes(f.pluginDisplayMode))f.pluginDisplayMode='eight';
   f.background='flat';
   f.accent='host';
   f.radius='rounded';
@@ -417,11 +418,12 @@ function markUpdated(id){
 function setupPluginControls(){
   if($('pluginControls'))return;
   const box=document.createElement('div');box.id='pluginControls';box.className='pluginControls';
-  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><button id="pluginFavOnly" type="button"></button>';
+  box.innerHTML='<select id="pluginSort"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><select id="pluginView"><option value="grid">כרטיסים</option><option value="list">רשימה</option></select><select id="pluginDisplayModeQuickV12" aria-label="כמות תוספים בדף הבית"><option value="eight">8 + הצג עוד</option><option value="all">הצג הכל</option></select><button id="pluginFavOnly" type="button"></button>';
   $('section-plugins').querySelector('.pluginToolbar').insertAdjacentElement('beforebegin',box);
-  $('pluginSort').value=featureSettings.pluginSort;$('pluginView').value=featureSettings.pluginView;const favOnlyBtn=$('pluginFavOnly');favOnlyBtn.innerHTML=iconTextV4('star','מועדפים');
+  $('pluginSort').value=featureSettings.pluginSort;$('pluginView').value=featureSettings.pluginView;$('pluginDisplayModeQuickV12').value=featureSettings.pluginDisplayMode||'eight';const favOnlyBtn=$('pluginFavOnly');favOnlyBtn.innerHTML=iconTextV4('star','מועדפים');
   $('pluginSort').onchange=async e=>{featureSettings.pluginSort=e.target.value;await saveFeatures();renderPlugins()};
   $('pluginView').onchange=async e=>{featureSettings.pluginView=e.target.value;await saveFeatures();renderPlugins()};
+  $('pluginDisplayModeQuickV12').onchange=async e=>{featureSettings.pluginDisplayMode=e.target.value==='all'?'all':'eight';const settingsSelect=$('pluginDisplayModeSettingV12');if(settingsSelect)settingsSelect.value=featureSettings.pluginDisplayMode;await saveFeatures();renderPlugins()};
   let favOnly=false;$('pluginFavOnly').onclick=()=>{favOnly=!favOnly;renderPluginsV4(favOnly)};
 }
 const coreRenderPlugins=renderPlugins;
@@ -443,6 +445,8 @@ function openAllPluginsModalV7(favOnly=false){
   const dialog=document.createElement('div');dialog.id='allPluginsDialogV7';dialog.className='tabSetDialog';
   dialog.innerHTML='<div class="tabSetDialogCard allPluginsDialogCardV7"><div class="tabSetDialogHeader"><div><h2>כל התוספים</h2><div class="hint">חיפוש, מיון ומועדפים</div></div><button id="allPluginsCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="allPluginsControlsV8"><input id="allPluginsSearchV8" type="search" placeholder="חפש תוסף…"><select id="allPluginsSortV8"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><label><input id="allPluginsFavOnlyV8" type="checkbox"> מועדפים בלבד</label></div><div id="allPluginsListV7" class="allPluginsListV7"></div></div>';
   document.body.appendChild(dialog);
+  const modalCardV12=dialog.querySelector('.allPluginsDialogCardV7');
+  if(modalCardV12){modalCardV12.style.setProperty('width','calc(100vw - 20px)','important');modalCardV12.style.setProperty('height','calc(100vh - 20px)','important');modalCardV12.style.setProperty('max-width','none','important');modalCardV12.style.setProperty('max-height','none','important');}
   const close=()=>{dialog.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
   dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
   const search=dialog.querySelector('#allPluginsSearchV8'),sort=dialog.querySelector('#allPluginsSortV8'),fav=dialog.querySelector('#allPluginsFavOnlyV8'),list=dialog.querySelector('#allPluginsListV7');
@@ -481,7 +485,8 @@ function openAllPluginsModalV7(favOnly=false){
 function renderPluginsV4(favOnly){
   const original=allPlugins.slice();
   const visible=sortedPluginsV7(original,favOnly);
-  allPlugins=visible;
+  const showAll=featureSettings.pluginDisplayMode==='all';
+  allPlugins=showAll?visible:visible.slice(0,8);
   coreRenderPlugins();
   const box=$('plugins');box.classList.toggle('listView',featureSettings.pluginView==='list');
   const favs=new Set(featureSettings.pluginFavorites);
@@ -495,7 +500,10 @@ function renderPluginsV4(favOnly){
   });
   let more=$('showAllPluginsV7');
   if(!more){more=document.createElement('button');more.id='showAllPluginsV7';more.type='button';more.className='secondaryBtn showAllPluginsV7';$('section-plugins').appendChild(more)}
-  more.hidden=true;more.textContent='הצג הכל';more.onclick=()=>openAllPluginsModalV7(favOnly);
+  const remaining=Math.max(0,visible.length-8);
+  more.hidden=showAll||remaining===0;
+  more.textContent=remaining?'הצג עוד ('+remaining+')':'הצג עוד';
+  more.onclick=()=>openAllPluginsModalV7(favOnly);
   const active=original.filter(p=>p.enabled).length;if($('pluginCount'))$('pluginCount').textContent=original.length+' מותקנים · '+active+' פעילים';
   allPlugins=original;
 }
@@ -591,12 +599,14 @@ function injectSettingsTabsV4(){
   $('columnsSelect').value=featureSettings.columns||'2';
   $('focusModeSetting').checked=featureSettings.focusMode;
   $('dashboardSetting').checked=featureSettings.showDashboard;
+  if($('pluginDisplayModeSettingV12'))$('pluginDisplayModeSettingV12').value=featureSettings.pluginDisplayMode||'eight';
 
   $('densitySelect').onchange=async e=>{featureSettings.density=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('cardSizeSelect').onchange=async e=>{featureSettings.cardSize=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('columnsSelect').onchange=async e=>{featureSettings.columns=e.target.value;await saveFeatures();applyFeatureAppearance()};
   $('focusModeSetting').onchange=async e=>{featureSettings.focusMode=e.target.checked;await saveFeatures();applyFeatureAppearance()};
   $('dashboardSetting').onchange=async e=>{featureSettings.showDashboard=e.target.checked;await saveFeatures();if($('homeDashboard'))$('homeDashboard').hidden=!e.target.checked};
+  if($('pluginDisplayModeSettingV12'))$('pluginDisplayModeSettingV12').onchange=async e=>{featureSettings.pluginDisplayMode=e.target.value==='all'?'all':'eight';const quick=$('pluginDisplayModeQuickV12');if(quick)quick.value=featureSettings.pluginDisplayMode;await saveFeatures();renderPlugins()};
   $('pinCurrentBook').onclick=pinCurrentBook;
 
   document.querySelectorAll('.settingsTab').forEach(b=>{
