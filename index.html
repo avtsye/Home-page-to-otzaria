@@ -79,7 +79,7 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 /* Bulk library picker V10 */
 
 /* Plugins grid and search scopes V11 */
-.allPluginsDialogCardV7{width:calc(100vw - 20px)!important;height:calc(100vh - 20px)!important;max-width:none!important;max-height:none!important;display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;overflow:hidden!important}
+.allPluginsDialogCardV7{width:min(980px,96vw)!important;max-height:90vh!important;display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;overflow:hidden!important}
 .allPluginsControlsV8{display:flex;flex-wrap:wrap;gap:10px;padding:0 16px 12px;align-items:center}
 .allPluginsControlsV8 input[type="search"]{flex:1 1 260px;min-width:180px}
 #allPluginsListV7{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:10px!important;padding:6px 16px 18px!important;overflow:auto!important;align-content:start!important}
@@ -98,7 +98,7 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .searchSingleBookResultsV11 button{width:100%;display:grid;gap:2px;border:0;background:transparent;color:inherit;text-align:start;padding:9px 10px;cursor:pointer}
 .searchSingleBookResultsV11 button:hover{background:var(--color-surface-container-highest)}
 .searchSingleBookResultsV11 small{color:var(--color-on-surface-variant)}
-@media(max-width:620px){.allPluginsDialogCardV7{width:100vw!important;height:100vh!important;border-radius:0!important}#allPluginsListV7{grid-template-columns:repeat(2,minmax(0,1fr))!important}.searchSingleBookWrapV11{flex-basis:100%}}
+@media(max-width:620px){#allPluginsListV7{grid-template-columns:repeat(2,minmax(0,1fr))!important}.searchSingleBookWrapV11{flex-basis:100%}}
 /* Plugins grid and search scopes V11 */
 
 .pluginSmartFallback{position:relative;display:grid;place-items:center;width:100%;height:100%}
@@ -1420,7 +1420,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
     </section>
   </div>
 
-  <div class="footer">דף הבית לאוצריא · גרסה 4.2.4 · מאת אברהם mch</div>
+  <div class="footer">דף הבית לאוצריא · גרסה 4.2.5 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
