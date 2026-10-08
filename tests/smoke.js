@@ -16,8 +16,8 @@ assert(main.indexOf('const clone=')<main.indexOf('let settings=clone('),'clone m
 assert(html.includes('<script src="main.js"></script>'),'main.js must be loaded');
 assert(html.includes('<script src="features.js"></script>'),'features.js must be loaded');
 assert(html.indexOf('main.js')<html.indexOf('features.js'),'features.js must load after main.js');
-assert(manifest.version==='4.2.4','manifest version must be 4.2.4');
-assert(html.includes('4.2.4'),'UI must show current version');
+assert(manifest.version==='4.2.5','manifest version must be 4.2.5');
+assert(html.includes('4.2.5'),'UI must show current version');
 assert(manifest.permissions.includes('search.fulltext.read'),'full-text search permission missing');
 assert(manifest.permissions.includes('app.open_url'),'external browser permission missing');
 assert(/app\.openUrl/.test(features),'external browser API wiring missing');
@@ -179,3 +179,6 @@ assert(/pluginDisplayModeSettingV12/.test(features)&&/pluginDisplayModeSettingV1
 assert(/visible\.slice\(0,8\)/.test(features),'eight-plugin mode missing');
 assert(/showAll\|\|remaining===0/.test(features),'show more visibility logic missing');
 assert(/width:calc\(100vw - 20px\)/.test(html),'all plugins modal must be full width');
+assert(/#section-plugins[\s\S]*grid-column:1\/-1!important/.test(ux),'plugins card must span the full dashboard width');
+assert(/allPluginsDialogCardV7\{width:min\(980px,96vw\)/.test(html),'all plugins modal should keep normal dialog width');
+assert(!/modalCardV12/.test(features),'all plugins modal must not be forced full screen by JavaScript');
