@@ -163,3 +163,7 @@ assert(/searchSourceScope/.test(features),'search repository scope control missi
 assert(/sourceScope/.test(features)&&/groupScope/.test(features),'search scopes must persist');
 assert(/אין ספרים בתחום החיפוש שנבחר/.test(features),'empty search scope guard missing');
 assert(/groupScope:featureSettings\.groupScope/.test(features)&&/sourceScope:featureSettings\.sourceScope/.test(features),'saved searches must retain scopes');
+assert(/confirmDeleteTabSetV10/.test(features),'saved card delete confirmation missing');
+assert(/tabSetPreviewDeleteV10/.test(features),'saved card preview delete action missing');
+assert(/tabSetDeleteV10/.test(features),'saved card editor delete action missing');
+assert(/savedTabSets\.indexOf\(set\)/.test(features),'saved card deletion should prefer object identity');
