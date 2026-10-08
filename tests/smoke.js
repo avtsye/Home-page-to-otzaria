@@ -178,7 +178,6 @@ assert(/pluginDisplayMode:'eight'/.test(features),'plugin display mode default m
 assert(/pluginDisplayModeSettingV12/.test(features)&&/pluginDisplayModeSettingV12/.test(html),'plugin display mode setting missing');
 assert(/visible\.slice\(0,8\)/.test(features),'eight-plugin mode missing');
 assert(/showAll\|\|remaining===0/.test(features),'show more visibility logic missing');
-assert(/width:calc\(100vw - 20px\)/.test(html),'all plugins modal must be full width');
 assert(/#section-plugins[\s\S]*grid-column:1\/-1!important/.test(ux),'plugins card must span the full dashboard width');
 assert(/allPluginsDialogCardV7\{width:min\(980px,96vw\)/.test(html),'all plugins modal should keep normal dialog width');
 assert(!/modalCardV12/.test(features),'all plugins modal must not be forced full screen by JavaScript');
