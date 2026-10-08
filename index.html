@@ -77,6 +77,29 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 #searchSourceScope,#searchGroupScope{min-width:150px}
 @media(max-width:620px){.libraryPickerToolsV10{grid-template-columns:1fr}.libraryMultiPickerCardV10{width:100%!important;max-height:100vh!important;height:100%!important;border-radius:0!important}}
 /* Bulk library picker V10 */
+
+/* Plugins grid and search scopes V11 */
+.allPluginsDialogCardV7{width:min(980px,96vw)!important;max-height:90vh!important}
+.allPluginsControlsV8{display:flex;flex-wrap:wrap;gap:10px;padding:0 16px 12px;align-items:center}
+.allPluginsControlsV8 input[type="search"]{flex:1 1 260px;min-width:180px}
+#allPluginsListV7{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;gap:12px!important;padding:4px 16px 18px!important;overflow:auto!important}
+.pluginAllRowV7{position:relative!important;display:block!important;min-width:0!important;border:1px solid var(--color-outline-variant)!important;border-radius:var(--radius-md)!important;background:var(--color-surface)!important;padding:10px!important}
+.pluginAllOpenV7{width:100%!important;min-height:118px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;background:transparent!important;color:inherit!important;text-align:center!important;cursor:pointer!important}
+.pluginAllOpenV7 .pluginIcon{margin:0!important;width:48px!important;height:48px!important}
+.pluginAllTextV7{display:grid!important;gap:3px!important;min-width:0!important}
+.pluginAllTextV7 b,.pluginAllTextV7 small{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important}
+.pluginAllActionsV7{display:flex!important;justify-content:center!important;gap:6px!important;margin-top:6px!important}
+.pluginAllRowV7.disabled{opacity:.58}
+.searchSingleBookWrapV11{position:relative;display:inline-flex;align-items:center;min-width:210px;flex:1 1 220px}
+#searchSingleBookV11{width:100%;min-height:38px;border:1px solid var(--color-outline);border-radius:var(--radius-sm);background:var(--color-surface);color:var(--color-on-surface);padding:8px 34px 8px 10px}
+#clearSingleBookV11{position:absolute;inset-inline-end:5px;border:0;background:transparent;color:var(--color-on-surface-variant);width:28px;height:28px;border-radius:var(--radius-pill);cursor:pointer}
+.searchSingleBookResultsV11{position:absolute;z-index:140;top:calc(100% + 5px);inset-inline:0;max-height:280px;overflow:auto;background:var(--color-surface-container-high);border:1px solid var(--color-outline-variant);border-radius:var(--radius-sm);box-shadow:0 8px 24px color-mix(in srgb,var(--color-shadow) 18%,transparent)}
+.searchSingleBookResultsV11[hidden]{display:none!important}
+.searchSingleBookResultsV11 button{width:100%;display:grid;gap:2px;border:0;background:transparent;color:inherit;text-align:start;padding:9px 10px;cursor:pointer}
+.searchSingleBookResultsV11 button:hover{background:var(--color-surface-container-highest)}
+.searchSingleBookResultsV11 small{color:var(--color-on-surface-variant)}
+@media(max-width:620px){#allPluginsListV7{grid-template-columns:repeat(2,minmax(0,1fr))!important}.searchSingleBookWrapV11{flex-basis:100%}}
+/* Plugins grid and search scopes V11 */
 </style>
 
 <style id="otzariaNativeStyles">
@@ -1393,7 +1416,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
     </section>
   </div>
 
-  <div class="footer">דף הבית לאוצריא · גרסה 4.2.1 · מאת אברהם mch</div>
+  <div class="footer">דף הבית לאוצריא · גרסה 4.2.2 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
