@@ -445,8 +445,6 @@ function openAllPluginsModalV7(favOnly=false){
   const dialog=document.createElement('div');dialog.id='allPluginsDialogV7';dialog.className='tabSetDialog';
   dialog.innerHTML='<div class="tabSetDialogCard allPluginsDialogCardV7"><div class="tabSetDialogHeader"><div><h2>כל התוספים</h2><div class="hint">חיפוש, מיון ומועדפים</div></div><button id="allPluginsCloseV7" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="allPluginsControlsV8"><input id="allPluginsSearchV8" type="search" placeholder="חפש תוסף…"><select id="allPluginsSortV8"><option value="host">סדר אוצריא</option><option value="name">שם</option><option value="favorite">מועדפים קודם</option><option value="enabled">פעילים קודם</option><option value="recent">שימוש אחרון</option></select><label><input id="allPluginsFavOnlyV8" type="checkbox"> מועדפים בלבד</label></div><div id="allPluginsListV7" class="allPluginsListV7"></div></div>';
   document.body.appendChild(dialog);
-  const modalCardV12=dialog.querySelector('.allPluginsDialogCardV7');
-  if(modalCardV12){modalCardV12.style.setProperty('width','calc(100vw - 20px)','important');modalCardV12.style.setProperty('height','calc(100vh - 20px)','important');modalCardV12.style.setProperty('max-width','none','important');modalCardV12.style.setProperty('max-height','none','important');}
   const close=()=>{dialog.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
   dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
   const search=dialog.querySelector('#allPluginsSearchV8'),sort=dialog.querySelector('#allPluginsSortV8'),fav=dialog.querySelector('#allPluginsFavOnlyV8'),list=dialog.querySelector('#allPluginsListV7');
