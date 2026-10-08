@@ -5,6 +5,7 @@ const main=fs.readFileSync('main.js','utf8');
 const features=fs.readFileSync('features.js','utf8');
 const core=fs.readFileSync('home-core.js','utf8');
 const enhancements=fs.readFileSync('enhancements.js','utf8');
+const ux=fs.readFileSync('ux.css','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
 
 const ids=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
