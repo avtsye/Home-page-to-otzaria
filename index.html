@@ -100,6 +100,10 @@ mark{background:color-mix(in srgb,#ffd95a 60%,transparent);color:inherit;border-
 .searchSingleBookResultsV11 small{color:var(--color-on-surface-variant)}
 @media(max-width:620px){#allPluginsListV7{grid-template-columns:repeat(2,minmax(0,1fr))!important}.searchSingleBookWrapV11{flex-basis:100%}}
 /* Plugins grid and search scopes V11 */
+
+.pluginSmartFallback{position:relative;display:grid;place-items:center;width:100%;height:100%}
+.pluginSmartFallback>svg{width:26px!important;height:26px!important}
+.pluginSmartFallback>small{position:absolute;inset-inline-end:-2px;bottom:-3px;min-width:16px;height:16px;padding:0 3px;border-radius:var(--radius-pill);display:grid;place-items:center;background:var(--color-primary);color:var(--color-on-primary);font-size:9px;font-weight:700;line-height:1}
 </style>
 
 <style id="otzariaNativeStyles">
@@ -1416,7 +1420,7 @@ body.launcher-mode .workspaceCardV6{min-height:58px!important;padding:8px 10px!i
     </section>
   </div>
 
-  <div class="footer">דף הבית לאוצריא · גרסה 4.2.2 · מאת אברהם mch</div>
+  <div class="footer">דף הבית לאוצריא · גרסה 4.2.3 · מאת אברהם mch</div>
 </main>
 
 <div id="settingsModal" class="modal" hidden>
