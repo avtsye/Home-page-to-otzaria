@@ -1,6 +1,6 @@
 /* Home Page to Otzaria 4.0 feature layer */
 const FEATURE_KEY='homeFeaturesV4';
-const FEATURE_VERSION='4.0.10';
+const FEATURE_VERSION='4.2.5';
 const CACHE_TTL=30000;
 const TAB_SETS_KEY='savedTabSetsV1';
 const TAB_SETS_BACKUP_KEY='savedTabSetsBackupV1';
