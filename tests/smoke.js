@@ -182,3 +182,4 @@ assert(/showAll\|\|remaining===0/.test(features),'show more visibility logic mis
 assert(/#section-plugins[\s\S]*grid-column:1\/-1!important/.test(ux),'plugins card must span the full dashboard width');
 assert(/allPluginsDialogCardV7\{width:min\(980px,96vw\)/.test(html),'all plugins modal should keep normal dialog width');
 assert(!/modalCardV12/.test(features),'all plugins modal must not be forced full screen by JavaScript');
+assert(!html.includes('4.0.10')&&!features.includes("FEATURE_VERSION='4.0.10'"),'UI must not contain stale 4.0.10 version');
