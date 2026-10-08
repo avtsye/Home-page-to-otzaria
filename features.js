@@ -446,6 +446,12 @@ function openAllPluginsModalV7(favOnly=false){
   const close=()=>{dialog.remove();if(trigger&&trigger.isConnected&&trigger.focus)trigger.focus()};
   dialog.querySelector('#allPluginsCloseV7').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
   const search=dialog.querySelector('#allPluginsSearchV8'),sort=dialog.querySelector('#allPluginsSortV8'),fav=dialog.querySelector('#allPluginsFavOnlyV8'),list=dialog.querySelector('#allPluginsListV7');
+  list.style.setProperty('display','grid','important');
+  list.style.setProperty('grid-template-columns','repeat(auto-fill,minmax(170px,1fr))','important');
+  list.style.setProperty('gap','12px','important');
+  list.style.setProperty('align-items','stretch','important');
+  list.style.setProperty('width','100%','important');
+  list.style.setProperty('box-sizing','border-box','important');
   sort.value=featureSettings.pluginSort||'host';fav.checked=!!favOnly;
   const draw=()=>{
     const favs=new Set(featureSettings.pluginFavorites),q=search.value.trim().toLowerCase();
@@ -455,6 +461,9 @@ function openAllPluginsModalV7(favOnly=false){
     list.innerHTML='';
     rows.forEach(p=>{
       const row=document.createElement('div');row.className='pluginAllRowV7'+(p.enabled?'':' disabled');row.__homePlugin=p;
+      row.style.setProperty('min-width','0','important');
+      row.style.setProperty('width','auto','important');
+      row.style.setProperty('max-width','none','important');
       const info=document.createElement('button');info.type='button';info.className='pluginAllOpenV7';
       info.innerHTML='<span class="pluginIcon">'+pluginIconMarkup(p.toolTabIconName,p)+'</span><span class="pluginAllTextV7"><b>'+esc(p.name||p.pluginId)+'</b><small>'+esc(p.version||'')+(p.enabled?'':' · מושבת')+'</small></span>';
       info.onclick=()=>{if(!p.enabled){toast('התוסף מושבת באוצריא');return}close();openPluginV5(p)};
