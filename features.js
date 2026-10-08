@@ -953,7 +953,7 @@ function openTabSetEditorV4({mode,set,books}){
     '<div class="tabSetEditorTools"><button id="tabSetBrowseLibraryV10" class="primaryBtn" type="button">בחר מהספרייה…</button><button id="tabSetAddOpenV4" class="secondaryBtn" type="button">הוסף מהלשוניות הפתוחות</button><button id="tabSetRepairV4" class="secondaryBtn" type="button">בדוק ותקן ספרים</button></div>'+
     '<div class="tabSetLibraryAdd"><input id="tabSetBookSearchV4" type="text" placeholder="חפש ספר להוספה…"><div id="tabSetBookSearchResultsV4" class="tabSetBookSearchResults"></div></div>'+
     '<div id="tabSetPreviewV4" class="tabSetPreview"></div>'+
-    '<div class="tabSetDialogActions"><button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
+    '<div class="tabSetDialogActions">'+(mode==='edit'?'<button id="tabSetDeleteV10" class="danger" type="button">מחק כרטיס</button>':'')+'<button id="tabSetCancelV4" class="secondaryBtn" type="button">ביטול</button><button id="tabSetSaveV4" class="primaryBtn" type="button">שמור</button></div></div>';
 
   document.body.appendChild(dialog);
   const behavior=dialog.querySelector('#tabSetConflictDefaultV4');
@@ -963,6 +963,7 @@ function openTabSetEditorV4({mode,set,books}){
   bindTabSetDialogCloseV7(dialog,close);
   dialog.querySelector('#tabSetCloseV4').onclick=close;
   dialog.querySelector('#tabSetCancelV4').onclick=close;
+  const deleteButtonV10=dialog.querySelector('#tabSetDeleteV10');if(deleteButtonV10)deleteButtonV10.onclick=async()=>{if(await deleteTabSetV4(set)){close()}};
 
   const renderDraft=()=>{
     const box=dialog.querySelector('#tabSetPreviewV4');box.innerHTML='';
@@ -1172,7 +1173,7 @@ async function openTabSetPreviewV4(set){
   let current=[];try{current=readerTabsV4(dataOf(await Otzaria.call('reader.getCurrentState')))}catch(_){}
   const dialog=document.createElement('div');dialog.id='tabSetPreviewDialogV4';dialog.className='tabSetDialog';
   const policyLabel=set.conflictDefault==='restore'?'שחזור מיקום':set.conflictDefault==='keep'?'שמירת המיקום הנוכחי':'שאלה בעת התנגשות';
-  dialog.innerHTML='<div class="tabSetDialogCard"><div class="tabSetDialogHeader"><div><h2>'+esc(set.name)+'</h2><div class="hint">'+set.books.length+' ספרים · '+policyLabel+'</div></div><button id="tabSetPreviewCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="tabSetPreviewSelectTools"><button id="tabSetSelectAllV4" class="secondaryBtn" type="button">בחר הכול</button><button id="tabSetClearAllV4" class="secondaryBtn" type="button">נקה</button></div><div id="tabSetOpenChoicesV4" class="tabSetPreview"></div><div class="tabSetDialogActions"><button id="tabSetPreviewEditV4" class="secondaryBtn" type="button">ערוך</button><button id="tabSetPreviewOpenV4" class="primaryBtn" type="button">פתח נבחרים</button></div></div>';
+  dialog.innerHTML='<div class="tabSetDialogCard"><div class="tabSetDialogHeader"><div><h2>'+esc(set.name)+'</h2><div class="hint">'+set.books.length+' ספרים · '+policyLabel+'</div></div><button id="tabSetPreviewCloseV4" class="nativeIconButton" type="button" aria-label="סגור">'+uiIconV4('close')+'</button></div><div class="tabSetPreviewSelectTools"><button id="tabSetSelectAllV4" class="secondaryBtn" type="button">בחר הכול</button><button id="tabSetClearAllV4" class="secondaryBtn" type="button">נקה</button></div><div id="tabSetOpenChoicesV4" class="tabSetPreview"></div><div class="tabSetDialogActions"><button id="tabSetPreviewDeleteV10" class="danger" type="button">מחק כרטיס</button><button id="tabSetPreviewEditV4" class="secondaryBtn" type="button">ערוך</button><button id="tabSetPreviewOpenV4" class="primaryBtn" type="button">פתח נבחרים</button></div></div>';
   document.body.appendChild(dialog);
   const list=dialog.querySelector('#tabSetOpenChoicesV4');
   set.books.forEach((book,i)=>{
@@ -1189,6 +1190,7 @@ async function openTabSetPreviewV4(set){
   dialog.querySelector('#tabSetPreviewCloseV4').onclick=close;
   dialog.querySelector('#tabSetSelectAllV4').onclick=()=>list.querySelectorAll('input').forEach(x=>x.checked=true);
   dialog.querySelector('#tabSetClearAllV4').onclick=()=>list.querySelectorAll('input').forEach(x=>x.checked=false);
+  dialog.querySelector('#tabSetPreviewDeleteV10').onclick=async()=>{if(await deleteTabSetV4(set)){close()}};
   dialog.querySelector('#tabSetPreviewEditV4').onclick=()=>{close();openTabSetEditorV4({mode:'edit',set})};
   dialog.querySelector('#tabSetPreviewOpenV4').onclick=()=>{
     const selected=[...list.querySelectorAll('input:checked')].map(x=>set.books[Number(x.dataset.index)]).filter(Boolean);
@@ -1255,10 +1257,38 @@ async function updateTabSetPositionsV4(set){
   set.updatedAt=Date.now();await saveSavedTabSetsV4();renderSavedTabSetsV4();toast('עודכנו '+updated+' מיקומים');
   
 }
-async function deleteTabSetV4(set){
-  const index=savedTabSets.findIndex(x=>x.id===set.id);if(index<0)return;
-  const removed=cloneSafeV4(savedTabSets[index]);savedTabSets.splice(index,1);await saveSavedTabSetsV4();renderSavedTabSetsV4();toast('הכרטיס נמחק');
-  
+async function confirmDeleteTabSetV10(set){
+  return new Promise(resolve=>{
+    const old=$('tabSetDeleteConfirmV10');if(old)old.remove();
+    const dialog=document.createElement('div');dialog.id='tabSetDeleteConfirmV10';dialog.className='tabSetDialog';
+    dialog.innerHTML='<div class="tabSetDialogCard"><div class="tabSetDialogHeader"><div><h2>מחיקת כרטיס</h2><div class="hint">'+esc(set&&set.name||'כרטיס')+'</div></div></div><p>הכרטיס יימחק מדף הבית. הספרים עצמם לא יימחקו.</p><div class="tabSetDialogActions"><button id="tabSetDeleteCancelV10" class="secondaryBtn" type="button">ביטול</button><button id="tabSetDeleteConfirmBtnV10" class="danger primaryDangerV10" type="button">מחק כרטיס</button></div></div>';
+    document.body.appendChild(dialog);
+    const done=value=>{dialog.remove();resolve(value)};
+    dialog.querySelector('#tabSetDeleteCancelV10').onclick=()=>done(false);
+    dialog.querySelector('#tabSetDeleteConfirmBtnV10').onclick=()=>done(true);
+    dialog.onclick=e=>{if(e.target===dialog)done(false)};
+  });
+}
+async function deleteTabSetV4(set,skipConfirm=false){
+  if(!set)return false;
+  if(!skipConfirm&&!await confirmDeleteTabSetV10(set))return false;
+  let index=savedTabSets.indexOf(set);
+  if(index<0&&set.id!=null)index=savedTabSets.findIndex(x=>x&&x.id===set.id);
+  if(index<0){toast('הכרטיס כבר אינו קיים');renderSavedTabSetsV4();return false}
+  const before=cloneSafeV4(savedTabSets);
+  savedTabSets.splice(index,1);
+  try{
+    await saveSavedTabSetsV4();
+    renderSavedTabSetsV4();
+    toast('הכרטיס נמחק');
+    return true;
+  }catch(e){
+    savedTabSets=before.map(normalizeTabSetV4).filter(Boolean);
+    renderSavedTabSetsV4();
+    fLog('error','delete saved card failed',e);
+    toast('לא ניתן למחוק את הכרטיס כרגע');
+    return false;
+  }
 }
 function exportTabSetsV4(){
   if(!savedTabSets.length){toast('אין כרטיסיות שמורות לייצוא');return}
