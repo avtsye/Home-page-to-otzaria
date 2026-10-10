@@ -703,7 +703,7 @@
 
   function openAboutModalV9(){
     const content=document.createElement('div');content.className='aboutModalV9';
-    content.innerHTML='<div class="aboutModalBrandV9"><img src="plugin-icon.jpg" alt=""><div><b>דף הבית לאוצריא</b><span>גרסה 4.1.0</span></div></div><p>דף בית מתקדם לאוצריא עם חיפוש, ספרים שמורים, היסטוריה, סימניות ותוספים.</p><div class="shortcutList"><span><kbd>Ctrl</kbd> + <kbd>K</kbd><b>מיקוד בחיפוש</b></span><span><kbd>Ctrl</kbd> + <kbd>,</kbd><b>פתיחת הגדרות</b></span><span><kbd>Esc</kbd><b>סגירת חלון</b></span><span><kbd>Alt</kbd> + <kbd>F</kbd><b>Focus Mode</b></span></div>';
+    content.innerHTML='<div class="aboutModalBrandV9"><img src="plugin-icon.jpg" alt=""><div><b>הבית שלי באוצריא</b><span>גרסה 4.2.6</span></div></div><p>דף בית מתקדם לאוצריא עם חיפוש, ספרים שמורים, היסטוריה, סימניות ותוספים.</p><div class="shortcutList"><span><kbd>Ctrl</kbd> + <kbd>K</kbd><b>מיקוד בחיפוש</b></span><span><kbd>Ctrl</kbd> + <kbd>,</kbd><b>פתיחת הגדרות</b></span><span><kbd>Esc</kbd><b>סגירת חלון</b></span><span><kbd>Alt</kbd> + <kbd>F</kbd><b>Focus Mode</b></span></div>';
     Core.ui.openModal({id:'aboutDialogV9',title:'אודות וקיצורים',className:'aboutDialogV9',content});
   }
   function ensureAboutLauncherV9(){
