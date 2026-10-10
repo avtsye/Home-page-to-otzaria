@@ -1,4 +1,5 @@
 name: Package Otzaria plugin
+# Manual packaging trigger for scoped-search improvements
 
 on:
   push:
