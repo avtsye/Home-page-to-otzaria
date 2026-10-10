@@ -7,6 +7,17 @@ const core=fs.readFileSync('home-core.js','utf8');
 const enhancements=fs.readFileSync('enhancements.js','utf8');
 const ux=fs.readFileSync('ux.css','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
+assert(manifest.name==='בית אוצריא שלי','store name mismatch');
+assert(manifest.id==='my-otzaria-home','plugin id mismatch');
+const inlineStyles=[...html.matchAll(/<style[^>]*>([\\s\\S]*?)<\\/style>/gi)].map(m=>m[1]).join('\\n');
+for(const [label,css] of [['index.html <style>',inlineStyles],['ux.css',ux]]){
+  assert(!/#[0-9a-fA-F]{3,8}\\b/.test(css),label+' has hardcoded hex color');
+  assert(!/\\b(?:rgb|rgba|hsl|hsla)\\s*\\(/i.test(css),label+' has hardcoded color function');
+  assert(!/font-size\\s*:\\s*\\d+(?:\\.\\d+)?px/i.test(css),label+' has fixed pixel font size');
+  assert(!/border-radius\\s*:\\s*\\d+(?:\\.\\d+)?px/i.test(css),label+' has fixed pixel radius');
+  assert(!/font-family\\s*:\\s*var\\(--ui\\)/i.test(css),label+' must use --font-main');
+}
+
 
 const ids=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
 for(const [file,src] of [['main.js',main]]){
