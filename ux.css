@@ -41,12 +41,12 @@
   margin-bottom:8px!important;
 }
 .sectionHead h2{
-  font-size:14px!important;
+  font-size:0.875rem!important;
   line-height:1.25!important;
   margin:0!important;
 }
 .sectionHead span{
-  font-size:9px!important;
+  font-size:0.5625rem!important;
   line-height:1.3!important;
 }
 .list{gap:5px!important}
@@ -86,7 +86,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   min-height:34px!important;
   height:auto!important;
   padding:6px 10px!important;
-  font-size:11px!important;
+  font-size:0.6875rem!important;
   width:auto!important;
 }
 .savedSecondaryActionV8{display:none!important}
@@ -102,9 +102,9 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   flex-wrap:wrap!important;
   text-align:start!important;
 }
-#section-saved-tabs .homeEmptyState b{font-size:11px!important}
+#section-saved-tabs .homeEmptyState b{font-size:0.6875rem!important}
 #section-saved-tabs .homeEmptyState span{
-  font-size:9px!important;
+  font-size:0.5625rem!important;
   max-width:none!important;
   flex:1 1 220px!important;
 }
@@ -126,8 +126,8 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   gap:8px!important;
   margin-bottom:5px!important;
 }
-.savedSubsectionHeadV7 b{font-size:12px!important}
-.savedSubsectionHeadV7 span{font-size:9px!important;color:var(--color-on-surface-variant)!important}
+.savedSubsectionHeadV7 b{font-size:0.75rem!important}
+.savedSubsectionHeadV7 span{font-size:0.5625rem!important;color:var(--color-on-surface-variant)!important}
 .savedGroupsHostV7 #groups{
   display:grid!important;
   grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important;
@@ -137,7 +137,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   margin:0!important;
   padding:9px!important;
   border:1px solid var(--color-outline-variant)!important;
-  border-radius:12px!important;
+  border-radius:var(--radius-md)!important;
   background:var(--color-surface)!important;
   min-width:0!important;
 }
@@ -157,17 +157,17 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   position:relative!important;
   min-height:86px!important;
   padding:38px 7px 9px!important;
-  border-radius:13px!important;
+  border-radius:var(--radius-md)!important;
 }
 .pluginIcon{
   width:34px!important;
   height:34px!important;
-  border-radius:10px!important;
+  border-radius:var(--radius-md)!important;
   margin-bottom:5px!important;
 }
 .pluginIcon svg{width:21px!important;height:21px!important}
-.pluginCard b{font-size:11px!important}
-.pluginCard small{font-size:8px!important}
+.pluginCard b{font-size:0.6875rem!important}
+.pluginCard small{font-size:0.5rem!important}
 .pluginCard>.pluginFav{
   position:absolute!important;
   top:6px!important;
@@ -237,7 +237,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   display:grid!important;
   place-items:center!important;
   padding:18px!important;
-  background:rgba(16,12,28,.36)!important;
+  background:var(--color-shadow)!important;
   backdrop-filter:blur(6px)!important;
 }
 .tabSetDialogCard{
@@ -245,11 +245,11 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   max-height:min(86vh,760px)!important;
   overflow:auto!important;
   border:1px solid var(--color-outline-variant)!important;
-  border-radius:18px!important;
+  border-radius:var(--radius-lg)!important;
   background:var(--color-surface)!important;
   color:var(--color-on-surface)!important;
   padding:14px!important;
-  box-shadow:0 18px 55px color-mix(in srgb,var(--color-shadow,#000) 24%,transparent)!important;
+  box-shadow:0 18px 55px color-mix(in srgb,var(--color-shadow,var(--color-on-surface)) 24%,transparent)!important;
 }
 .tabSetDialogHeader{
   display:flex!important;
@@ -258,7 +258,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   gap:12px!important;
   margin-bottom:12px!important;
 }
-.tabSetDialogHeader h2{margin:0!important;font-size:16px!important}
+.tabSetDialogHeader h2{margin:0!important;font-size:1rem!important}
 .tabSetDialogActions{
   display:flex!important;
   align-items:center!important;
@@ -279,7 +279,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   width:100%!important;
   min-height:40px!important;
   border:1px solid var(--color-outline)!important;
-  border-radius:10px!important;
+  border-radius:var(--radius-md)!important;
   background:var(--color-surface)!important;
   color:var(--color-on-surface)!important;
   padding:8px 10px!important;
@@ -304,7 +304,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   justify-content:space-between!important;
   gap:10px!important;
   border:1px solid var(--color-outline-variant)!important;
-  border-radius:10px!important;
+  border-radius:var(--radius-md)!important;
   background:var(--color-surface)!important;
   color:var(--color-on-surface)!important;
   padding:9px 10px!important;
@@ -323,7 +323,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   align-items:center!important;
   gap:6px!important;
   white-space:nowrap!important;
-  font-size:10px!important;
+  font-size:0.625rem!important;
 }
 
 /* Dedicated feedback modal */
@@ -341,14 +341,14 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
   min-height:42px!important;
   padding:8px 10px!important;
   border:1px solid var(--color-outline-variant)!important;
-  border-radius:10px!important;
+  border-radius:var(--radius-md)!important;
 }
 .feedbackModalV9 .feedbackFieldsV9{display:grid!important;gap:9px!important}
 .feedbackModalV9 textarea{
   min-height:180px!important;
   resize:vertical!important;
 }
-.feedbackStatusV9{min-height:18px!important;font-size:10px!important;color:var(--color-on-surface-variant)!important}
+.feedbackStatusV9{min-height:18px!important;font-size:0.625rem!important;color:var(--color-on-surface-variant)!important}
 .feedbackLaunchCardV9{
   display:flex!important;
   align-items:center!important;
@@ -370,7 +370,7 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
 .onboardingV8 select{
   min-height:40px!important;
   border:1px solid var(--color-outline)!important;
-  border-radius:9px!important;
+  border-radius:var(--radius-md)!important;
   background:var(--color-surface)!important;
   padding:6px 8px!important;
 }
@@ -391,11 +391,11 @@ body.homeEditModeV8 #sectionsHost .sectionPanel{
 .aboutDialogV9{width:min(520px,94vw)!important}
 .aboutModalV9{display:grid;gap:12px}
 .aboutModalBrandV9{display:flex;align-items:center;gap:12px}
-.aboutModalBrandV9 img{width:48px;height:48px;border-radius:12px;object-fit:cover}
+.aboutModalBrandV9 img{width:48px;height:48px;border-radius:var(--radius-md);object-fit:cover}
 .aboutModalBrandV9>div{display:grid;gap:3px}
-.aboutModalBrandV9 b{font-size:15px}
-.aboutModalBrandV9 span{font-size:10px;color:var(--color-on-surface-variant)}
-.aboutModalV9 p{margin:0;font-size:11px;line-height:1.6;color:var(--color-on-surface-variant)}
+.aboutModalBrandV9 b{font-size:0.9375rem}
+.aboutModalBrandV9 span{font-size:0.625rem;color:var(--color-on-surface-variant)}
+.aboutModalV9 p{margin:0;font-size:0.6875rem;line-height:1.6;color:var(--color-on-surface-variant)}
 .aboutModalV9 .shortcutList{display:grid;gap:7px}
 
 
