@@ -35,7 +35,7 @@ function setIconButtonV4(button,name,label){
 let featureSettings={
   density:'comfortable',background:'flat',cardSize:'normal',focusMode:false,
   pluginSort:'host',pluginView:'grid',pluginDisplayMode:'eight',pluginFavorites:[],savedSearches:[],quickPins:[],
-  groupScope:'',sourceScope:'',singleBookScope:null,lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
+  groupScope:'',sourceScope:'',repositoryScope:'',singleBookScope:null,lastSettingsTab:'general',lastSeenVersion:'',showDashboard:false,uxDashboardDefaultApplied:false,
   advancedOpen:false,pluginLastUsed:{},cardSize:'normal',columns:'2',accent:'host',radius:'rounded',feedbackCategory:'general'
 };
 let currentBookScopeV4=null;
@@ -75,6 +75,7 @@ function mergeFeatureSettings(raw){
   for(const k of ['pluginFavorites','savedSearches','quickPins'])if(!Array.isArray(f[k]))f[k]=[];
   f.pluginFavorites=f.pluginFavorites.filter(id=>id!==SELF);
   if(!f.singleBookScope||typeof f.singleBookScope!=='object')f.singleBookScope=null;
+  if(typeof f.repositoryScope!=='string')f.repositoryScope='';
   if(!['eight','all'].includes(f.pluginDisplayMode))f.pluginDisplayMode='eight';
   f.background='flat';
   f.accent='host';
@@ -172,14 +173,27 @@ async function ensureLibraryCatalogueV10(force=false){
   const r=await Otzaria.call('library.getTree',{includeBooks:true});
   libraryTreeV10=dataOf(r)||null;
   const out=[];
-  const walk=node=>{
+  const walk=(node,path='')=>{
     if(!node)return;
-    (node.books||[]).forEach(book=>out.push({...book,categoryPath:book.categoryPath||node.path||''}));
-    (node.categories||[]).forEach(walk);
+    const current=String(node.path||[path,node.title||node.name||''].filter(Boolean).join('/'));
+    (node.books||[]).forEach(book=>out.push({...book,categoryPath:book.categoryPath||current}));
+    (node.categories||[]).forEach(child=>walk(child,current));
   };
   walk(libraryTreeV10);
   libraryBooksV10=out;
   return libraryTreeV10;
+}
+function libraryRepositoryOptionsV12(){
+  const roots=(libraryTreeV10&&libraryTreeV10.categories)||[];
+  return roots.map((node,i)=>({path:String(node.path||node.title||node.name||''),name:String(node.title||node.name||node.path||'מאגר '+(i+1))})).filter(x=>x.path);
+}
+function renderRepositoryScopeV12(){
+  const sel=$('searchRepositoryScopeV12');if(!sel)return;
+  const chosen=featureSettings.repositoryScope||'';
+  sel.innerHTML='<option value="">כל מאגרי אוצריא</option>';
+  libraryRepositoryOptionsV12().forEach(item=>{const option=document.createElement('option');option.value=item.path;option.textContent=item.name;sel.appendChild(option)});
+  if(chosen&&!Array.from(sel.options).some(x=>x.value===chosen)){const option=document.createElement('option');option.value=chosen;option.textContent=chosen;sel.appendChild(option)}
+  sel.value=chosen;
 }
 function sourceScopeBooksV10(scope){
   if(!scope)return null;
@@ -205,6 +219,14 @@ function applySearchScopeToBooksV10(){
       books=books.filter(b=>bookKey(b)===key);
     }
   }
+  const repositoryScope=featureSettings.repositoryScope||'';
+  if(repositoryScope){
+    const norm=v=>String(v||'').replace(/^\/+|\/+$/g,'');
+    const root=norm(repositoryScope);
+    const selected=libraryBooksV10.filter(book=>{const p=norm(book.categoryPath);return p===root||p.startsWith(root+'/')});
+    const keys=new Set(selected.map(bookKey));
+    books=books==null?selected.map(identity):books.filter(b=>keys.has(bookKey(b)));
+  }
   const sourceScope=featureSettings.sourceScope||'';
   if(sourceScope){
     const allowed=sourceScopeBooksV10(sourceScope)||[];
@@ -219,53 +241,64 @@ function setupSingleBookScopeV11(){
   input.dataset.bound='1';
   let timer=0,seq=0;
   const hide=()=>{box.innerHTML='';box.hidden=true};
+  const search=async(q,my)=>{
+    box.hidden=false;
+    box.innerHTML='<div class="hint">טוען ספרים…</div>';
+    let rows=[];
+    try{
+      const r=await Otzaria.call('library.findBooks',{query:q,limit:30});
+      const data=dataOf(r);
+      rows=Array.isArray(data)?data:Array.isArray(data&&data.books)?data.books:Array.isArray(data&&data.items)?data.items:[];
+    }catch(e){fLog('warn','single book lookup failed; using catalogue',e)}
+    if(!rows.length){
+      try{await ensureLibraryCatalogueV10()}catch(e){fLog('warn','catalogue for single-book scope failed',e)}
+      rows=libraryBooksV10.filter(b=>String(b.title||b.book||b.bookId||'').toLowerCase().includes(q.toLowerCase())).slice(0,30);
+    }
+    if(my!==seq)return;
+    box.innerHTML='';
+    rows.forEach(book=>{
+      const b=document.createElement('button');b.type='button';
+      b.innerHTML='<b>'+esc(book.title||book.book||book.bookId||'ספר')+'</b><small>'+esc(book.categoryPath||'')+'</small>';
+      b.onclick=async()=>{featureSettings.singleBookScope=compactBook(book);input.value=book.title||book.book||book.bookId||'ספר';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
+      box.appendChild(b);
+    });
+    if(!rows.length)box.innerHTML='<div class="hint">לא נמצאו ספרים. נסה שם חלקי אחר.</div>';
+  };
   input.oninput=()=>{
-    clearTimeout(timer);
-    const q=input.value.trim();
+    clearTimeout(timer);const q=input.value.trim();const my=++seq;
     if(featureSettings.singleBookScope&&q!==(featureSettings.singleBookScope.title||featureSettings.singleBookScope.bookId||'')){
       featureSettings.singleBookScope=null;saveFeatures();
     }
-    if(q.length<2){hide();return}
-    const my=++seq;
-    timer=setTimeout(async()=>{
-      try{
-        const r=await Otzaria.call('library.findBooks',{query:q,limit:10});
-        if(my!==seq)return;
-        const rows=dataOf(r)||[];box.innerHTML='';box.hidden=false;
-        rows.forEach(book=>{
-          const b=document.createElement('button');b.type='button';
-          b.innerHTML='<b>'+esc(book.title||book.bookId||'ספר')+'</b><small>'+esc(book.categoryPath||'')+'</small>';
-          b.onclick=async()=>{featureSettings.singleBookScope=compactBook(book);input.value=book.title||book.bookId||'ספר';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
-          box.appendChild(b);
-        });
-        if(!rows.length)box.innerHTML='<div class="hint">לא נמצאו ספרים.</div>';
-      }catch(_){hide()}
-    },180);
+    if(!q){hide();return}
+    timer=setTimeout(()=>search(q,my),180);
   };
-  input.onfocus=()=>{if(input.value.trim().length>=2&&!featureSettings.singleBookScope)input.oninput()};
-  clear.onclick=async()=>{featureSettings.singleBookScope=null;input.value='';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
+  input.onfocus=()=>{if(input.value.trim()&&!featureSettings.singleBookScope)input.oninput()};
+  clear.onclick=async()=>{++seq;clearTimeout(timer);featureSettings.singleBookScope=null;input.value='';hide();await saveFeatures();if($('q').value.trim())runSearch(false)};
 }
 function addSavedSearchControls(){
   if($('savedSearchBar'))return;
   const bar=document.createElement('div');bar.id='savedSearchBar';bar.className='savedSearchBar';
-  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchSourceScope" aria-label="מאגר לחיפוש"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><select id="searchGroupScope" aria-label="היקף ספרים"><option value="">כל הספרים</option></select><span class="searchSingleBookWrapV11"><input id="searchSingleBookV11" type="search" autocomplete="off" placeholder="ספר בודד…"><button id="clearSingleBookV11" type="button" title="נקה ספר בודד">×</button><div id="searchSingleBookResultsV11" class="searchSingleBookResultsV11"></div></span>';
+  bar.innerHTML='<select id="savedSearchSelect" aria-label="חיפושים שמורים"><option value="">חיפוש שמור…</option></select><button id="saveSearchProfile" type="button">שמור חיפוש</button><button id="deleteSearchProfile" type="button">מחק חיפוש</button><select id="searchSourceScope" aria-label="מאגר לחיפוש"><option value="">כל המאגרים</option><option value="library">ספריית אוצריא</option><option value="user">המאגר האישי</option></select><select id="searchRepositoryScopeV12" aria-label="מאגר מסוים באוצריא"><option value="">כל מאגרי אוצריא</option></select><select id="searchGroupScope" aria-label="היקף ספרים"><option value="">כל הספרים</option></select><span class="searchSingleBookWrapV11"><input id="searchSingleBookV11" type="search" autocomplete="off" placeholder="ספר בודד…"><button id="clearSingleBookV11" type="button" title="נקה ספר בודד">×</button><div id="searchSingleBookResultsV11" class="searchSingleBookResultsV11"></div></span>';
   $('advancedPanel').appendChild(bar);
   $('saveSearchProfile').onclick=saveCurrentSearchProfile;$('savedSearchSelect').onchange=applySavedSearchProfile;$('deleteSearchProfile').onclick=deleteSavedSearchProfileV4;
   $('searchGroupScope').onchange=e=>{featureSettings.groupScope=e.target.value;saveFeatures();if($('q').value.trim())runSearch(false)};
   $('searchSourceScope').onchange=async e=>{featureSettings.sourceScope=e.target.value;await saveFeatures();try{await ensureLibraryCatalogueV10()}catch(_){}if($('q').value.trim())runSearch(false)};
+  $('searchRepositoryScopeV12').onchange=async e=>{featureSettings.repositoryScope=e.target.value;await saveFeatures();if($('q').value.trim())runSearch(false)};
+  ensureLibraryCatalogueV10().then(renderRepositoryScopeV12).catch(e=>fLog('warn','repository selector unavailable',e));
   setupSingleBookScopeV11();
   renderSavedSearchControls();
 }
 function renderSavedSearchControls(){
   const sel=$('savedSearchSelect');if(sel){sel.innerHTML='<option value="">חיפוש שמור…</option>';featureSettings.savedSearches.forEach((x,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=x.name;sel.appendChild(o)})}
   const ss=$('searchSourceScope');if(ss)ss.value=featureSettings.sourceScope||'';
+  renderRepositoryScopeV12();
   const gs=$('searchGroupScope');if(gs){gs.innerHTML='<option value="">כל הספרים</option><option value="__current">הספר הפעיל</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=(g.id==='favorites'?'מועדפים':'קבוצה: '+g.name);gs.appendChild(o)});savedTabSets.forEach(set=>{const o=document.createElement('option');o.value='set:'+set.id;o.textContent='כרטיס: '+set.name;gs.appendChild(o)});gs.value=featureSettings.groupScope||''}
   const one=$('searchSingleBookV11');if(one)one.value=featureSettings.singleBookScope?(featureSettings.singleBookScope.title||featureSettings.singleBookScope.bookId||'ספר נבחר'):'';
 }
 async function saveCurrentSearchProfile(){
   const q=$('q').value.trim();const name=q||'חיפוש '+(featureSettings.savedSearches.length+1);
   const before=[...featureSettings.savedSearches];
-  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH),groupScope:featureSettings.groupScope||'',sourceScope:featureSettings.sourceScope||'',singleBookScope:featureSettings.singleBookScope?compactBook(featureSettings.singleBookScope):null});
+  featureSettings.savedSearches.unshift({name,query:q,config:clone(settings.searchConfig||DEFAULT_SEARCH),groupScope:featureSettings.groupScope||'',sourceScope:featureSettings.sourceScope||'',repositoryScope:featureSettings.repositoryScope||'',singleBookScope:featureSettings.singleBookScope?compactBook(featureSettings.singleBookScope):null});
   featureSettings.savedSearches=featureSettings.savedSearches.slice(0,12);await saveFeatures();renderSavedSearchControls();toast('החיפוש נשמר');
   
 }
@@ -278,7 +311,7 @@ async function deleteSavedSearchProfileV4(){
 function applySavedSearchProfile(){
   const idx=Number($('savedSearchSelect').value);if(!Number.isInteger(idx)||idx<0)return;
   const item=featureSettings.savedSearches[idx];if(!item)return;
-  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);featureSettings.groupScope=item.groupScope||'';featureSettings.sourceScope=item.sourceScope||'';featureSettings.singleBookScope=item.singleBookScope||null;$('q').value=item.query||'';saveFeatures();applySearchSettingsToUi();renderDynamicSearchControls();renderSavedSearchControls();if($('q').value.trim())runSearch(false);
+  settings.searchConfig=clone(item.config||DEFAULT_SEARCH);featureSettings.groupScope=item.groupScope||'';featureSettings.sourceScope=item.sourceScope||'';featureSettings.repositoryScope=item.repositoryScope||'';featureSettings.singleBookScope=item.singleBookScope||null;$('q').value=item.query||'';saveFeatures();applySearchSettingsToUi();renderDynamicSearchControls();renderSavedSearchControls();if($('q').value.trim())runSearch(false);
 }
 const coreBuildSearchParams=buildSearchParams;
 buildSearchParams=function(q,offset){
@@ -289,7 +322,7 @@ buildSearchParams=function(q,offset){
 };
 const coreRunSearchV10=runSearch;
 runSearch=async function(append){
-  if(featureSettings.sourceScope){
+  if(featureSettings.sourceScope||featureSettings.repositoryScope){
     try{await ensureLibraryCatalogueV10()}catch(e){fLog('warn','library tree unavailable for search source filter',e)}
   }
   const scoped=applySearchScopeToBooksV10();
