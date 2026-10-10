@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "id": "new-tab-home",
-  "name": "דף הבית",
+  "id": "my-otzaria-home",
+  "name": "הבית שלי באוצריא",
   "version": "4.2.6",
   "description": "דף בית מתקדם לאוצריא עם חיפוש בתוכן, המשך קריאה, סימניות, מועדפים, קבוצות, תוספים והתאמה אישית מלאה.",
   "author": "אברהם mch",
@@ -28,7 +28,7 @@
   ],
   "contributes": {
     "toolTab": {
-      "title": "דף הבית",
+      "title": "הבית שלי באוצריא",
       "iconName": "home_24_regular",
       "order": 50,
       "defaultPinned": true
