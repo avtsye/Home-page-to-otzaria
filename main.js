@@ -1,5 +1,5 @@
 const $=id=>document.getElementById(id);
-const SELF='new-tab-home';
+const SELF='my-otzaria-home';
 const SETTINGS_KEY='homeSettingsV1';
 const GROUPS_KEY='bookGroupsV1';
 const SEARCH_LIMIT=40;
